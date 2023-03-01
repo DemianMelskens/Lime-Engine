@@ -1,0 +1,10 @@
+# Project exclude paths
+/.idea
+
+/Lime/.gradle/
+/Lime/build/
+/Lime/build/classes/java/main/
+
+/Sandbox/.gradle/
+/Sandbox/build/
+/Sandbox/build/classes/java/main/
