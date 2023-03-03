@@ -11,6 +11,8 @@ import org.lime.core.events.mouse.MouseButtonPressedEvent;
 import org.lime.core.events.mouse.MouseButtonReleasedEvent;
 import org.lime.core.events.mouse.MouseMoveEvent;
 import org.lime.core.events.mouse.MouseScrollEvent;
+import org.lime.core.renderer.GraphicsContext;
+import org.lime.platform.opengl.OpenGLContext;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import org.lwjgl.system.MemoryUtil;
 
@@ -20,7 +22,6 @@ import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 import static org.lime.core.utils.Log.LM_CORE_ERROR;
 import static org.lime.core.utils.Log.LM_CORE_INFO;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL.createCapabilities;
 
 @Getter
 public class Window {
@@ -35,6 +36,7 @@ public class Window {
     private boolean vSync;
     private Consumer<Event> eventCallback;
     private long windowHandle;
+    private GraphicsContext context;
 
     public static Window create() {
         return create("Lime Engine", 1280, 720);
@@ -45,10 +47,7 @@ public class Window {
     }
 
     private Window(String title, int width, int height) {
-        this.title = title;
-        this.width = width;
-        this.height = height;
-        setUp();
+        init(title, width, height);
     }
 
     public void setVSync(boolean enabled) {
@@ -60,7 +59,10 @@ public class Window {
         this.eventCallback = eventCallback;
     }
 
-    private void setUp() {
+    private void init(String title, int width, int height) {
+        this.title = title;
+        this.width = width;
+        this.height = height;
         LM_CORE_INFO(String.format("Creating window %s (%d, %d)", title, width, height));
 
         if (!GLFW_INITIALIZED) {
@@ -70,24 +72,26 @@ public class Window {
         }
 
         windowHandle = glfwCreateWindow(width, height, title, MemoryUtil.NULL, MemoryUtil.NULL);
-        glfwMakeContextCurrent(windowHandle);
-        createCapabilities();
+
+        this.context = new OpenGLContext(windowHandle);
+        context.init();
+
         setVSync(true);
 
         // set GLFW callbacks
-        glfwSetWindowSizeCallback(windowHandle, (window, width, height) -> {
-            this.width = width;
-            this.height = height;
+        glfwSetWindowSizeCallback(windowHandle, (window, w, h) -> {
+            this.width = w;
+            this.height = h;
 
-            eventCallback.accept(new WindowResizeEvent(width, height));
+            eventCallback.accept(new WindowResizeEvent(w, h));
         });
 
-        glfwSetWindowCloseCallback(windowHandle, w -> {
+        glfwSetWindowCloseCallback(windowHandle, window -> {
             tearDown();
             eventCallback.accept(new WindowCloseEvent());
         });
 
-        glfwSetKeyCallback(windowHandle, (w, key, scancode, action, mods) -> {
+        glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
             switch (action) {
                 case GLFW_PRESS -> eventCallback.accept(new KeyPressedEvent(key, 0));
                 case GLFW_RELEASE -> eventCallback.accept(new KeyReleasedEvent(key));
@@ -95,9 +99,9 @@ public class Window {
             }
         });
 
-        glfwSetCharCallback(windowHandle, (w, character) -> eventCallback.accept(new KeyTypedEvent(character)));
+        glfwSetCharCallback(windowHandle, (window, character) -> eventCallback.accept(new KeyTypedEvent(character)));
 
-        glfwSetMouseButtonCallback(windowHandle, (w, button, action, mods) -> {
+        glfwSetMouseButtonCallback(windowHandle, (window, button, action, mods) -> {
             switch (action) {
                 case GLFW_PRESS -> eventCallback.accept(new MouseButtonPressedEvent(button));
                 case GLFW_RELEASE -> eventCallback.accept(new MouseButtonReleasedEvent(button));
@@ -106,18 +110,18 @@ public class Window {
 
         glfwSetScrollCallback(
                 windowHandle,
-                (w, xoffset, yoffset) -> eventCallback.accept(new MouseScrollEvent((float) xoffset, (float) yoffset))
+                (window, xoffset, yoffset) -> eventCallback.accept(new MouseScrollEvent((float) xoffset, (float) yoffset))
         );
 
         glfwSetCursorPosCallback(
                 windowHandle,
-                (w, xpos, ypos) -> eventCallback.accept(new MouseMoveEvent((float) xpos, (float) ypos))
+                (window, xpos, ypos) -> eventCallback.accept(new MouseMoveEvent((float) xpos, (float) ypos))
         );
     }
 
     public void onUpdate() {
         glfwPollEvents();
-        glfwSwapBuffers(windowHandle);
+        context.swapBuffers();
     }
 
     private void tearDown() {
