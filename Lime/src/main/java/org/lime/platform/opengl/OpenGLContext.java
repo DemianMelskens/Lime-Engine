@@ -6,7 +6,7 @@ import static org.lime.core.utils.Log.LM_CORE_INFO;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL.createCapabilities;
-import static org.lwjgl.opengl.GL41.*;
+import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLContext extends GraphicsContext {
 

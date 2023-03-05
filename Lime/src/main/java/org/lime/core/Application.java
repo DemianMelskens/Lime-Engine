@@ -4,17 +4,22 @@ import org.lime.core.events.Event;
 import org.lime.core.events.EventDispatcher;
 import org.lime.core.events.application.WindowCloseEvent;
 import org.lime.core.imgui.ImGuiLayer;
+import org.lime.core.renderer.Renderer;
+import org.lime.core.renderer.Shader;
+import org.lime.core.renderer.buffers.IndexBuffer;
+import org.lime.core.renderer.buffers.VertexBuffer;
 import org.lwjgl.opengl.GL11;
 
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
-import static org.lwjgl.opengl.GL41.*;
+import static org.lwjgl.opengl.GL46.*;
 
 public class Application {
     private static Application instance;
     private boolean isRunning;
     private int vertexArray;
-    private int vertexBuffer;
-    private int indexBuffer;
+    private VertexBuffer vertexBuffer;
+    private IndexBuffer indexBuffer;
+    private Shader shader;
     private LayerStack layerStack;
     private Window window;
     private ImGuiLayer imGuiLayer;
@@ -24,6 +29,7 @@ public class Application {
     }
 
     public Application() {
+        Renderer.setRendererAPI(Renderer.API.Open_GL);
         LM_CORE_ASSERT(instance == null, "There can only be one application instance");
         instance = this;
         this.isRunning = false;
@@ -42,17 +48,40 @@ public class Application {
                 0.5f, -0.5f, 0.0f,
                 0.0f, 0.5f, 0.0f
         };
-        vertexBuffer = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+        vertexBuffer = VertexBuffer.create(vertices);
 
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 12, 0L);
 
         int[] indices = {0, 1, 2};
-        indexBuffer = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+        indexBuffer = IndexBuffer.create(indices);
+
+        String vertexSource = """
+                #version 330 core
+                                
+                layout(location = 0) in vec3 a_Position;
+                                
+                out vec3 v_Position;
+                                
+                void main(){
+                    v_Position = a_Position;
+                    gl_Position = vec4(a_Position, 1.0);    
+                }
+                """;
+
+        String fragmentSource = """
+                #version 330 core
+                                
+                layout(location = 0) out vec4 color;
+
+                in vec3 v_Position;
+                                
+                void main(){
+                    color = vec4(v_Position + 0.5, 1.0);    
+                }
+                """;
+
+        shader = new Shader(vertexSource, fragmentSource);
     }
 
     public Window getWindow() {
@@ -66,8 +95,9 @@ public class Application {
             GL11.glClearColor(0.1f, 0.1f, 0.1f, 1f);
             GL11.glClear(GL_COLOR_BUFFER_BIT);
 
+            shader.bind();
             glBindVertexArray(vertexArray);
-            glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0L);
+            glDrawElements(GL_TRIANGLES, indexBuffer.getCount(), GL_UNSIGNED_INT, 0L);
 
             imGuiLayer.begin();
             for (Layer layer : layerStack)
