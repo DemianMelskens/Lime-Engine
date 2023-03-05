@@ -8,11 +8,11 @@ public class Renderer {
 
     private static API api;
 
-    public static API getRendererAPI() {
+    public static API getAPI() {
         return api;
     }
 
-    public static void setRendererAPI(API api) {
+    public static void setAPI(API api) {
         Renderer.api = api;
     }
 }

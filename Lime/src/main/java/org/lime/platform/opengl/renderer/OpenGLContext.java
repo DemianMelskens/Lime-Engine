@@ -1,4 +1,4 @@
-package org.lime.platform.opengl;
+package org.lime.platform.opengl.renderer;
 
 import org.lime.core.renderer.GraphicsContext;
 

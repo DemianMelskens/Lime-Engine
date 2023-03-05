@@ -1,39 +1,56 @@
 package org.lime.core;
 
 import org.lime.core.utils.Tuple;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
+import org.lime.platform.linux.LinuxInput;
+import org.lime.platform.mac.MacInput;
+import org.lime.platform.windows.WindowsInput;
 
-import java.nio.DoubleBuffer;
+import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 
-import static org.lwjgl.glfw.GLFW.*;
+public abstract class Input {
 
-public class Input {
+    private static Input instance;
+
     public static boolean isKeyPressed(int keycode) {
-        long window = Application.getInstance().getWindow().getWindowHandle();
-        int state = GLFW.glfwGetKey(window, keycode);
-        return state == GLFW_PRESS || state == GLFW_REPEAT;
+        return getInstance().internalIsKeyPressed(keycode);
     }
 
     public static boolean isMouseButtonPressed(int button) {
-        long window = Application.getInstance().getWindow().getWindowHandle();
-        int state = GLFW.glfwGetMouseButton(window, button);
-        return state == GLFW_PRESS;
+        return getInstance().internalIsMouseButtonPressed(button);
     }
 
     public static Tuple<Double, Double> getMousePosition() {
-        long window = Application.getInstance().getWindow().getWindowHandle();
-        DoubleBuffer xPos = BufferUtils.createDoubleBuffer(1);
-        DoubleBuffer yPos = BufferUtils.createDoubleBuffer(1);
-        glfwGetCursorPos(window, xPos, yPos);
-        return Tuple.of(xPos.get(0), yPos.get(0));
+        return getInstance().internalGetMousePosition();
     }
 
     public static double getMouseX() {
-        return getMousePosition().getLeft();
+        return getInstance().internalgetMouseX();
     }
 
     public static double getMouseY() {
-        return getMousePosition().getRight();
+        return getInstance().internalgetMouseY();
     }
+
+    private static Input getInstance() {
+        if (instance == null) {
+            OperationSystem.Vendor vendor = OperationSystem.getVendor();
+            LM_CORE_ASSERT(vendor != null, "OperatingSystem not supported");
+            instance = switch (vendor) {
+                case Windows -> new WindowsInput();
+                case MacOS -> new MacInput();
+                case Linux -> new LinuxInput();
+            };
+        }
+        return instance;
+    }
+
+    protected abstract boolean internalIsKeyPressed(int keycode);
+
+    protected abstract boolean internalIsMouseButtonPressed(int button);
+
+    protected abstract Tuple<Double, Double> internalGetMousePosition();
+
+    protected abstract double internalgetMouseX();
+
+    protected abstract double internalgetMouseY();
 }

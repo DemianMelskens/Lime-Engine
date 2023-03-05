@@ -5,7 +5,7 @@ import org.lime.core.Window;
 public class MacWindow extends Window {
     public MacWindow(String title, int width, int height) {
         super(title, width, height);
-        throw new UnsupportedOperationException("Mac window is not supported yet!");
+        throw new UnsupportedOperationException("Mac is not supported yet!");
     }
 
     @Override

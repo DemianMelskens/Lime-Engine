@@ -5,7 +5,7 @@ import org.lime.core.Window;
 public class LinuxWindow extends Window {
     public LinuxWindow(String title, int width, int height) {
         super(title, width, height);
-        throw new UnsupportedOperationException("Linux window is not supported yet!");
+        throw new UnsupportedOperationException("Linux is not supported yet!");
     }
 
     @Override

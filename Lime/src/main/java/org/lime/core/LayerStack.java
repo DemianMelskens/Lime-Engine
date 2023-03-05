@@ -44,22 +44,6 @@ public class LayerStack implements Iterable<Layer> {
         return layers.iterator();
     }
 
-    public Iterator<Layer> reverseIterator() {
-        ListIterator<Layer> listIterator = layers.listIterator();
-
-        return new Iterator<>() {
-            @Override
-            public boolean hasNext() {
-                return listIterator.hasPrevious();
-            }
-
-            @Override
-            public Layer next() {
-                return listIterator.previous();
-            }
-        };
-    }
-
     @Override
     public void forEach(Consumer<? super Layer> action) {
         this.layers.forEach(action);

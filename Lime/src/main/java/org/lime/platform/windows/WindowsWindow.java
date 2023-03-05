@@ -11,7 +11,7 @@ import org.lime.core.events.mouse.MouseButtonPressedEvent;
 import org.lime.core.events.mouse.MouseButtonReleasedEvent;
 import org.lime.core.events.mouse.MouseMoveEvent;
 import org.lime.core.events.mouse.MouseScrollEvent;
-import org.lime.platform.opengl.OpenGLContext;
+import org.lime.platform.opengl.renderer.OpenGLContext;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import org.lwjgl.system.MemoryUtil;
 

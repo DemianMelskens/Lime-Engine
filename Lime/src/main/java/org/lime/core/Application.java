@@ -6,9 +6,12 @@ import org.lime.core.events.application.WindowCloseEvent;
 import org.lime.core.imgui.ImGuiLayer;
 import org.lime.core.renderer.Renderer;
 import org.lime.core.renderer.Shader;
+import org.lime.core.renderer.ShaderDataType;
+import org.lime.core.renderer.VertexArray;
+import org.lime.core.renderer.buffers.BufferElement;
+import org.lime.core.renderer.buffers.BufferLayout;
 import org.lime.core.renderer.buffers.IndexBuffer;
 import org.lime.core.renderer.buffers.VertexBuffer;
-import org.lwjgl.opengl.GL11;
 
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 import static org.lwjgl.opengl.GL46.*;
@@ -16,7 +19,7 @@ import static org.lwjgl.opengl.GL46.*;
 public class Application {
     private static Application instance;
     private boolean isRunning;
-    private int vertexArray;
+    private VertexArray vertexArray;
     private VertexBuffer vertexBuffer;
     private IndexBuffer indexBuffer;
     private Shader shader;
@@ -29,7 +32,7 @@ public class Application {
     }
 
     public Application() {
-        Renderer.setRendererAPI(Renderer.API.Open_GL);
+        Renderer.setAPI(Renderer.API.Open_GL);
         LM_CORE_ASSERT(instance == null, "There can only be one application instance");
         instance = this;
         this.isRunning = false;
@@ -40,31 +43,37 @@ public class Application {
         this.imGuiLayer = new ImGuiLayer();
         pushOverlay(imGuiLayer);
 
-        vertexArray = glGenVertexArrays();
-        glBindVertexArray(vertexArray);
+        vertexArray = VertexArray.create();
 
         float[] vertices = {
-                -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f,
-                0.0f, 0.5f, 0.0f
+                -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+                0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                0.0f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
         };
         vertexBuffer = VertexBuffer.create(vertices);
-
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 12, 0L);
+        BufferLayout layout = BufferLayout.create(
+                BufferElement.of(ShaderDataType.Float3, "a_Position"),
+                BufferElement.of(ShaderDataType.Float4, "a_Color")
+        );
+        vertexBuffer.setLayout(layout);
+        vertexArray.addVertexBuffer(vertexBuffer);
 
         int[] indices = {0, 1, 2};
         indexBuffer = IndexBuffer.create(indices);
+        vertexArray.setIndexBuffer(indexBuffer);
 
         String vertexSource = """
                 #version 330 core
                                 
                 layout(location = 0) in vec3 a_Position;
+                layout(location = 1) in vec4 a_Color;
                                 
                 out vec3 v_Position;
+                out vec4 v_Color;
                                 
                 void main(){
                     v_Position = a_Position;
+                    v_Color = a_Color;
                     gl_Position = vec4(a_Position, 1.0);    
                 }
                 """;
@@ -75,9 +84,11 @@ public class Application {
                 layout(location = 0) out vec4 color;
 
                 in vec3 v_Position;
+                in vec4 v_Color;
                                 
                 void main(){
-                    color = vec4(v_Position + 0.5, 1.0);    
+                    color = vec4(v_Position + 0.5, 1.0);
+                    color= v_Color;    
                 }
                 """;
 
@@ -92,11 +103,11 @@ public class Application {
         isRunning = true;
 
         while (isRunning) {
-            GL11.glClearColor(0.1f, 0.1f, 0.1f, 1f);
-            GL11.glClear(GL_COLOR_BUFFER_BIT);
+            glClearColor(0.1f, 0.1f, 0.1f, 1f);
+            glClear(GL_COLOR_BUFFER_BIT);
 
             shader.bind();
-            glBindVertexArray(vertexArray);
+            vertexArray.bind();
             glDrawElements(GL_TRIANGLES, indexBuffer.getCount(), GL_UNSIGNED_INT, 0L);
 
             imGuiLayer.begin();

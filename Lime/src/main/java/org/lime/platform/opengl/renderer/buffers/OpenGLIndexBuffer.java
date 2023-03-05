@@ -1,5 +1,6 @@
-package org.lime.platform.opengl.buffers;
+package org.lime.platform.opengl.renderer.buffers;
 
+import lombok.Getter;
 import org.lime.core.renderer.buffers.IndexBuffer;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -7,6 +8,7 @@ import static org.lwjgl.opengl.GL45.glCreateBuffers;
 
 public class OpenGLIndexBuffer extends IndexBuffer {
     private int rendererId;
+    @Getter
     private int count;
 
     public OpenGLIndexBuffer(int[] indices) {
@@ -19,11 +21,6 @@ public class OpenGLIndexBuffer extends IndexBuffer {
         this.rendererId = glCreateBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
-    }
-
-    @Override
-    public int getCount() {
-        return count;
     }
 
     @Override

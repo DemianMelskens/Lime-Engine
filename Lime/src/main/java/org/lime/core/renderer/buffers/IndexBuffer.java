@@ -1,7 +1,7 @@
 package org.lime.core.renderer.buffers;
 
 import org.lime.core.renderer.Renderer;
-import org.lime.platform.opengl.buffers.OpenGLIndexBuffer;
+import org.lime.platform.opengl.renderer.buffers.OpenGLIndexBuffer;
 
 public abstract class IndexBuffer {
 
@@ -18,7 +18,7 @@ public abstract class IndexBuffer {
     public abstract void Unbind();
 
     public static IndexBuffer create(int[] indices) {
-        return switch (Renderer.getRendererAPI()) {
+        return switch (Renderer.getAPI()) {
             case Open_GL -> new OpenGLIndexBuffer(indices);
         };
     }
