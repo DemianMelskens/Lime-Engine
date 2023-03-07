@@ -40,7 +40,7 @@ public abstract class Window {
         init(title, width, height);
     }
 
-    protected abstract void setVSync(boolean enabled);
+    public abstract void setVSync(boolean enabled);
 
     protected void setEventCallback(Consumer<Event> eventCallback) {
         this.eventCallback = eventCallback;

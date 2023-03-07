@@ -1,18 +1,34 @@
 package org.lime.core.renderer;
 
+import org.joml.Matrix4f;
+import org.lime.core.renderer.camera.OrthographicCamera;
+
 public class Renderer {
 
-    public enum API {
-        Open_GL
+    private static OrthographicCamera camera;
+
+    public static RendererAPI.Type getAPI() {
+        return RendererAPI.getType();
     }
 
-    private static API api;
-
-    public static API getAPI() {
-        return api;
+    public static void beginScene(OrthographicCamera camera) {
+        Renderer.camera = camera;
     }
 
-    public static void setAPI(API api) {
-        Renderer.api = api;
+    public static void endScene() {
+
+    }
+
+    public static void submit(Shader shader, VertexArray vertexArray) {
+        submit(shader, vertexArray, new Matrix4f());
+    }
+
+    public static void submit(Shader shader, VertexArray vertexArray, Matrix4f transform) {
+        shader.bind();
+        shader.uploadUniformMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+        shader.uploadUniformMat4("u_Transform", transform);
+
+        vertexArray.bind();
+        RenderCommand.drawIndexed(vertexArray);
     }
 }

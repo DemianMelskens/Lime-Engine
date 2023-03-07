@@ -12,8 +12,7 @@ import java.util.List;
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.*;
 
 public class OpenGLVertexArray extends VertexArray {
     private int rendererId;
@@ -23,6 +22,13 @@ public class OpenGLVertexArray extends VertexArray {
     public OpenGLVertexArray() {
         rendererId = glGenVertexArrays();
         vertexBuffers = new ArrayList<>();
+    }
+
+    @Override
+    public void tearDown() {
+        vertexBuffers.forEach(VertexBuffer::tearDown);
+        indexBuffer.tearDown();
+        glDeleteVertexArrays(rendererId);
     }
 
     @Override

@@ -5,11 +5,19 @@ import org.lime.platform.opengl.renderer.buffers.OpenGLVertexBuffer;
 
 public abstract class VertexBuffer {
 
+    public static VertexBuffer create(float[] vertices) {
+        return switch (Renderer.getAPI()) {
+            case Open_GL -> new OpenGLVertexBuffer(vertices);
+        };
+    }
+
     public VertexBuffer(float[] vertices) {
         init(vertices);
     }
 
     protected abstract void init(float[] vertices);
+
+    public abstract void tearDown();
 
     public abstract void bind();
 
@@ -18,10 +26,4 @@ public abstract class VertexBuffer {
     public abstract void setLayout(BufferLayout layout);
 
     public abstract BufferLayout getLayout();
-
-    public static VertexBuffer create(float[] vertices) {
-        return switch (Renderer.getAPI()) {
-            case Open_GL -> new OpenGLVertexBuffer(vertices);
-        };
-    }
 }

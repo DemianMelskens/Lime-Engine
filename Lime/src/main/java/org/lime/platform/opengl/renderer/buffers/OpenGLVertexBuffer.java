@@ -41,7 +41,8 @@ public class OpenGLVertexBuffer extends VertexBuffer {
         return layout;
     }
 
-    private void tearDown() {
+    @Override
+    public void tearDown() {
         glDeleteBuffers(rendererId);
     }
 }

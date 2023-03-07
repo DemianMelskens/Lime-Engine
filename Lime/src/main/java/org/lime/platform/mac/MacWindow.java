@@ -9,7 +9,7 @@ public class MacWindow extends Window {
     }
 
     @Override
-    protected void setVSync(boolean enabled) {
+    public void setVSync(boolean enabled) {
 
     }
 

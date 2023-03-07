@@ -1,5 +1,11 @@
 package org.lime.core.renderer;
 
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryStack;
+
+import java.nio.FloatBuffer;
+
 import static org.lime.core.utils.Log.LM_CORE_ERROR;
 import static org.lwjgl.opengl.GL46.*;
 
@@ -59,6 +65,18 @@ public class Shader {
 
     public void unbind() {
         glUseProgram(0);
+    }
+
+    /**
+     * you should always bind the shader before uploading a uniform
+     */
+    public void uploadUniformMat4(String name, Matrix4f matrix) {
+        int location = glGetUniformLocation(rendererId, name);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer buffer = stack.mallocFloat(16);
+            matrix.get(buffer);
+            glUniformMatrix4fv(location, false, buffer);
+        }
     }
 
     private void tearDown() {

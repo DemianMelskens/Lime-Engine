@@ -33,7 +33,8 @@ public class OpenGLIndexBuffer extends IndexBuffer {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    private void tearDown() {
+    @Override
+    public void tearDown() {
         glDeleteBuffers(rendererId);
     }
 }
