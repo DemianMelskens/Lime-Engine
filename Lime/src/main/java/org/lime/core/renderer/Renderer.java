@@ -2,6 +2,7 @@ package org.lime.core.renderer;
 
 import org.joml.Matrix4f;
 import org.lime.core.renderer.camera.OrthographicCamera;
+import org.lime.platform.opengl.renderer.OpenGLShader;
 
 public class Renderer {
 
@@ -25,8 +26,8 @@ public class Renderer {
 
     public static void submit(Shader shader, VertexArray vertexArray, Matrix4f transform) {
         shader.bind();
-        shader.uploadUniformMat4("u_ViewProjection", camera.getViewProjectionMatrix());
-        shader.uploadUniformMat4("u_Transform", transform);
+        ((OpenGLShader) shader).uploadUniformMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+        ((OpenGLShader) shader).uploadUniformMat4("u_Transform", transform);
 
         vertexArray.bind();
         RenderCommand.drawIndexed(vertexArray);
