@@ -6,4 +6,8 @@ public class Assert {
         if (!condition)
             throw new RuntimeException(String.format("Lime Engine Core assertion failed: %s", message));
     }
+
+    public static RuntimeException LM_CORE_EXCEPTION(String message) {
+        return new RuntimeException(String.format("Lime Engine Core assertion failed: %s", message));
+    }
 }

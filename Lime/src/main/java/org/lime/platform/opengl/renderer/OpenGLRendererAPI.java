@@ -7,6 +7,12 @@ import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLRendererAPI extends RendererAPI {
     @Override
+    public void init() {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    @Override
     public void setClearColor(float red, float green, float blue, float alpha) {
         glClearColor(red, green, blue, alpha);
     }

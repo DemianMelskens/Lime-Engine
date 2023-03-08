@@ -4,6 +4,7 @@ import org.lime.core.events.Event;
 import org.lime.core.events.EventDispatcher;
 import org.lime.core.events.application.WindowCloseEvent;
 import org.lime.core.imgui.ImGuiLayer;
+import org.lime.core.renderer.Renderer;
 import org.lime.core.renderer.RendererAPI;
 import org.lime.core.time.Time;
 import org.lime.core.time.TimeStep;
@@ -31,6 +32,8 @@ public class Application {
         this.layerStack = new LayerStack();
         this.window = Window.create();
         this.window.setEventCallback(this::onEvent);
+
+        Renderer.init();
 
         this.imGuiLayer = new ImGuiLayer();
         pushOverlay(imGuiLayer);

@@ -2,15 +2,9 @@ package org.lime.platform.opengl.renderer.textures;
 
 import org.lime.core.Image;
 import org.lime.core.renderer.textures.Texture2D;
-import org.lwjgl.system.MemoryStack;
+import org.lime.core.utils.Tuple;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
-import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
-import static org.lwjgl.stb.STBImage.stbi_image_free;
-import static org.lwjgl.stb.STBImage.stbi_load;
-import static org.lwjgl.system.MemoryStack.*;
+import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLTexture2D implements Texture2D {
@@ -26,13 +20,15 @@ public class OpenGLTexture2D implements Texture2D {
         this.width = image.getWidth();
         this.height = image.getHeight();
 
+        Tuple<Integer, Integer> formats = getFormats(image.getChannels());
+
         rendererId = glCreateTextures(GL_TEXTURE_2D);
-        glTextureStorage2D(rendererId, 1, GL_RGB8, width, height);
+        glTextureStorage2D(rendererId, 1, formats.getLeft(), width, height);
 
         glTextureParameteri(rendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(rendererId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        glTextureSubImage2D(rendererId, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, image.getData());
+        glTextureSubImage2D(rendererId, 0, 0, 0, width, height, formats.getRight(), GL_UNSIGNED_BYTE, image.getData());
 
         image.free();
     }
@@ -55,5 +51,13 @@ public class OpenGLTexture2D implements Texture2D {
     @Override
     public int getHeight() {
         return height;
+    }
+
+    private Tuple<Integer, Integer> getFormats(int channels) {
+        return switch (channels) {
+            case 4 -> Tuple.of(GL_RGBA8, GL_RGBA);
+            case 3 -> Tuple.of(GL_RGB8, GL_RGB);
+            default -> throw LM_CORE_EXCEPTION("Format not supported");
+        };
     }
 }

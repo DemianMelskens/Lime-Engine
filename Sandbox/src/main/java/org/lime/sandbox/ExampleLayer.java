@@ -1,8 +1,6 @@
 package org.lime.sandbox;
 
-import imgui.ImGui;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lime.core.Input;
 import org.lime.core.Layer;
 import org.lime.core.events.Event;
@@ -26,7 +24,7 @@ public class ExampleLayer extends Layer {
     private Vector3f cameraPosition;
     private VertexArray vertexArray;
     private Shader shader;
-    private Texture texture;
+    private Texture texture, logoTexture;
 
     public ExampleLayer() {
         super("Example");
@@ -52,39 +50,9 @@ public class ExampleLayer extends Layer {
         IndexBuffer indexBuffer = IndexBuffer.create(indices);
         vertexArray.setIndexBuffer(indexBuffer);
 
-        String vertexSource = """
-                #version 330 core
-                                
-                layout(location = 0) in vec3 a_Position;
-                layout(location = 1) in vec2 a_TexCoord;
-
-                uniform mat4 u_ViewProjection;
-                uniform mat4 u_Transform;
-                                               
-                out vec2 v_TexCoord;
-                                               
-                void main(){
-                    v_TexCoord = a_TexCoord;
-                    gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);    
-                }
-                """;
-
-        String fragmentSource = """
-                #version 330 core
-                                
-                layout(location = 0) out vec4 color;
-                                
-                in vec2 v_TexCoord;
-                                
-                uniform sampler2D u_Texture;
-
-                void main(){
-                    color= texture(u_Texture, v_TexCoord);    
-                }
-                """;
-
-        shader = Shader.create(vertexSource, fragmentSource);
-        texture = Texture2D.create("C:\\Users\\Demian Melskens\\IdeaProjects\\Lime-Engine\\Sandbox\\src\\main\\resources\\assets\\textures\\Checkerboard.png");
+        shader = Shader.create("/assets/shaders/Texture.glsl");
+        texture = Texture2D.create("/assets/textures/Checkerboard.png");
+        logoTexture = Texture2D.create("/assets/textures/Logo.png");
         ((OpenGLShader) shader).uploadUniformInt("u_Texture", 0);
     }
 
@@ -117,7 +85,9 @@ public class ExampleLayer extends Layer {
         Renderer.beginScene(camera);
 
         texture.bind();
+        Renderer.submit(shader, vertexArray);
 
+        logoTexture.bind();
         Renderer.submit(shader, vertexArray);
 
         Renderer.endScene();

@@ -16,6 +16,8 @@ public abstract class RendererAPI {
         return instance;
     }
 
+    public abstract void init();
+
     public static Type getType() {
         return type;
     }

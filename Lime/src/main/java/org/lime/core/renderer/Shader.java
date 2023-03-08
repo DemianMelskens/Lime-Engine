@@ -9,6 +9,12 @@ public interface Shader {
         };
     }
 
+    static Shader create(String filePath) {
+        return switch (Renderer.getAPI()) {
+            case Open_GL -> new OpenGLShader(filePath);
+        };
+    }
+
     void bind();
 
     void unbind();

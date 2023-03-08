@@ -2,61 +2,39 @@ package org.lime.platform.opengl.renderer;
 
 import org.joml.*;
 import org.lime.core.renderer.Shader;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.FloatBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
+import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 import static org.lime.core.utils.Log.LM_CORE_ERROR;
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glDeleteShader;
+import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLShader implements Shader {
     private int rendererId;
 
+    public OpenGLShader(String filePath) {
+        String source = readFile(filePath);
+        Map<Integer, String> shaderSources = preProcess(source);
+        compile(shaderSources);
+    }
+
     public OpenGLShader(String vertexSource, String fragmentSource) {
-        int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, vertexSource);
-        glCompileShader(vertexShader);
-
-        if (glGetShaderi(vertexShader, GL_COMPILE_STATUS) == GL_FALSE) {
-            glDeleteShader(vertexShader);
-
-            LM_CORE_ERROR("Vertex shader compilation failure!");
-            LM_CORE_ERROR(glGetShaderInfoLog(vertexShader));
-            return;
-        }
-
-        int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, fragmentSource);
-        glCompileShader(fragmentShader);
-
-        if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE) {
-            glDeleteShader(fragmentShader);
-
-            LM_CORE_ERROR("Fragment shader compilation failure!");
-            LM_CORE_ERROR(glGetShaderInfoLog(fragmentShader));
-            return;
-        }
-
-        rendererId = glCreateProgram();
-        int program = rendererId;
-        glAttachShader(program, vertexShader);
-        glAttachShader(program, fragmentShader);
-
-        glLinkProgram(program);
-
-        if (glGetProgrami(program, GL_LINK_STATUS) == GL_FALSE) {
-            glDeleteProgram(program);
-            glDeleteShader(vertexShader);
-            glDeleteShader(fragmentShader);
-
-            LM_CORE_ERROR("Shader program linking failure!");
-            LM_CORE_ERROR(glGetProgramInfoLog(program));
-            return;
-        }
-
-        glDetachShader(program, vertexShader);
-        glDetachShader(program, fragmentShader);
+        Map<Integer, String> shaderSources = Map.of(
+                GL_VERTEX_SHADER, vertexSource,
+                GL_FRAGMENT_SHADER, fragmentSource
+        );
+        compile(shaderSources);
     }
 
     @Override
@@ -115,5 +93,69 @@ public class OpenGLShader implements Shader {
             value.get(buffer);
             glUniformMatrix4fv(location, false, buffer);
         }
+    }
+
+    private String readFile(String filePath) {
+        try (InputStream inputStream = this.getClass().getResourceAsStream(filePath)) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LM_CORE_ASSERT(false, String.format("Could not open file '%s', reason: %s", filePath, e.getCause()));
+        }
+        return "";
+    }
+
+    private Map<Integer, String> preProcess(String shaderSource) {
+        return Arrays.stream(shaderSource.split("((?=#type))"))
+                .map(source -> source.split("((?=#version))"))
+                .collect(Collectors.toMap(
+                        values -> shaderTypeFromString(values[0]),
+                        values -> values[1]
+                ));
+    }
+
+    private int shaderTypeFromString(String type) {
+        return switch (type.replace("#type", "").trim()) {
+            case "vertex" -> GL_VERTEX_SHADER;
+            case "fragment", "pixel" -> GL_FRAGMENT_SHADER;
+            default -> throw LM_CORE_EXCEPTION("Shader type not supported");
+        };
+    }
+
+    private void compile(Map<Integer, String> shaderSources) {
+        int program = glCreateProgram();
+        Set<Integer> shaderIds = shaderSources.entrySet()
+                .stream()
+                .map(entry -> {
+                    int type = entry.getKey();
+                    String source = entry.getValue();
+                    int shader = glCreateShader(type);
+                    glShaderSource(shader, source);
+                    glCompileShader(shader);
+
+                    if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
+                        glDeleteShader(shader);
+
+                        LM_CORE_ERROR("Shader compilation failure!");
+                        LM_CORE_ERROR(glGetShaderInfoLog(shader));
+                    }
+
+                    glAttachShader(program, shader);
+                    return shader;
+                }).collect(Collectors.toSet());
+
+        rendererId = program;
+
+        glLinkProgram(program);
+
+        if (glGetProgrami(program, GL_LINK_STATUS) == GL_FALSE) {
+            glDeleteProgram(program);
+            shaderIds.forEach(GL20::glDeleteShader);
+
+            LM_CORE_ERROR("Shader program linking failure!");
+            LM_CORE_ERROR(glGetProgramInfoLog(program));
+            return;
+        }
+
+        shaderIds.forEach(shader -> glDetachShader(program, shader));
     }
 }

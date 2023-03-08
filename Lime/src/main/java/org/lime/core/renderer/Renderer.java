@@ -12,12 +12,15 @@ public class Renderer {
         return RendererAPI.getType();
     }
 
+    public static void init() {
+        RenderCommand.init();
+    }
+
     public static void beginScene(OrthographicCamera camera) {
         Renderer.camera = camera;
     }
 
     public static void endScene() {
-
     }
 
     public static void submit(Shader shader, VertexArray vertexArray) {
