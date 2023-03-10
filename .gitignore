@@ -1,6 +1,7 @@
 # Project exclude paths
 /.idea
 /*.iml
+imgui.ini
 
 /Lime/.gradle/
 /Lime/gradle/
@@ -11,3 +12,8 @@
 /Sandbox/gradle/
 /Sandbox/build/
 /Sandbox/build/classes/java/main/
+
+/Sandbox2D/.gradle/
+/Sandbox2D/gradle/
+/Sandbox2D/build/
+/Sandbox2D/build/classes/java/main/

@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+group 'org.lime.sandbox2d'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation 'org.lime:lime:1.0'
+}
+
+test {
+    useJUnitPlatform()
+}

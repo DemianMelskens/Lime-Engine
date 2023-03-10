@@ -7,7 +7,7 @@ import org.lime.platform.opengl.renderer.OpenGLShader;
 
 public class Renderer {
 
-    private static OrthographicCamera camera;
+    private static Matrix4f viewProjectionMatrix;
 
     public static RendererAPI.Type getAPI() {
         return RendererAPI.getType();
@@ -18,7 +18,7 @@ public class Renderer {
     }
 
     public static void beginScene(OrthographicCamera camera) {
-        Renderer.camera = camera;
+        Renderer.viewProjectionMatrix = camera.getViewProjectionMatrix();
     }
 
     public static void endScene() {
@@ -30,7 +30,7 @@ public class Renderer {
 
     public static void submit(Shader shader, VertexArray vertexArray, Matrix4f transform) {
         shader.bind();
-        ((OpenGLShader) shader).uploadUniformMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+        ((OpenGLShader) shader).uploadUniformMat4("u_ViewProjection", viewProjectionMatrix);
         ((OpenGLShader) shader).uploadUniformMat4("u_Transform", transform);
 
         vertexArray.bind();
