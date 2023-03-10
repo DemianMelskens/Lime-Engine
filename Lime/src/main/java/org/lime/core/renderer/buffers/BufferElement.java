@@ -2,7 +2,7 @@ package org.lime.core.renderer.buffers;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.lime.core.renderer.ShaderDataType;
+import org.lime.core.renderer.shader.ShaderDataType;
 
 @Getter
 public class BufferElement {

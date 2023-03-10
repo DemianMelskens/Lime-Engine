@@ -1,4 +1,4 @@
-package org.lime.core.renderer;
+package org.lime.core.renderer.shader;
 
 import lombok.Getter;
 

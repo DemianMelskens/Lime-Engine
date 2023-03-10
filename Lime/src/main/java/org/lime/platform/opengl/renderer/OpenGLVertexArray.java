@@ -1,6 +1,6 @@
 package org.lime.platform.opengl.renderer;
 
-import org.lime.core.renderer.ShaderDataType;
+import org.lime.core.renderer.shader.ShaderDataType;
 import org.lime.core.renderer.VertexArray;
 import org.lime.core.renderer.buffers.BufferElement;
 import org.lime.core.renderer.buffers.IndexBuffer;

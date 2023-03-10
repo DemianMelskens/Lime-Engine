@@ -2,6 +2,7 @@ package org.lime.core.renderer;
 
 import org.joml.Matrix4f;
 import org.lime.core.renderer.camera.OrthographicCamera;
+import org.lime.core.renderer.shader.Shader;
 import org.lime.platform.opengl.renderer.OpenGLShader;
 
 public class Renderer {

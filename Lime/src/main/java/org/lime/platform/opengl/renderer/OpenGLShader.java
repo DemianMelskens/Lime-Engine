@@ -1,10 +1,11 @@
 package org.lime.platform.opengl.renderer;
 
 import org.joml.*;
-import org.lime.core.renderer.Shader;
+import org.lime.core.renderer.shader.Shader;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
@@ -20,16 +21,18 @@ import static org.lime.core.utils.Log.LM_CORE_ERROR;
 import static org.lwjgl.opengl.GL20.glDeleteShader;
 import static org.lwjgl.opengl.GL46.*;
 
-public class OpenGLShader implements Shader {
+public class OpenGLShader extends Shader {
     private int rendererId;
 
     public OpenGLShader(String filePath) {
+        super(filePath);
         String source = readFile(filePath);
         Map<Integer, String> shaderSources = preProcess(source);
         compile(shaderSources);
     }
 
-    public OpenGLShader(String vertexSource, String fragmentSource) {
+    public OpenGLShader(String name, String vertexSource, String fragmentSource) {
+        super(name);
         Map<Integer, String> shaderSources = Map.of(
                 GL_VERTEX_SHADER, vertexSource,
                 GL_FRAGMENT_SHADER, fragmentSource

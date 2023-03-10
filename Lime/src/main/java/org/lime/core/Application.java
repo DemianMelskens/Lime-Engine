@@ -24,7 +24,7 @@ public class Application {
         return instance;
     }
 
-    public Application() {
+    protected Application() {
         RendererAPI.setType(RendererAPI.Type.Open_GL);
         LM_CORE_ASSERT(instance == null, "There can only be one application instance");
         instance = this;

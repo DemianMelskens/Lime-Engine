@@ -4,12 +4,16 @@ import org.joml.Vector3f;
 import org.lime.core.Input;
 import org.lime.core.Layer;
 import org.lime.core.events.Event;
-import org.lime.core.renderer.*;
+import org.lime.core.renderer.RenderCommand;
+import org.lime.core.renderer.Renderer;
+import org.lime.core.renderer.VertexArray;
 import org.lime.core.renderer.buffers.BufferElement;
 import org.lime.core.renderer.buffers.BufferLayout;
 import org.lime.core.renderer.buffers.IndexBuffer;
 import org.lime.core.renderer.buffers.VertexBuffer;
 import org.lime.core.renderer.camera.OrthographicCamera;
+import org.lime.core.renderer.shader.ShaderDataType;
+import org.lime.core.renderer.shader.ShaderLibrary;
 import org.lime.core.renderer.textures.Texture;
 import org.lime.core.renderer.textures.Texture2D;
 import org.lime.core.time.TimeStep;
@@ -23,11 +27,12 @@ public class ExampleLayer extends Layer {
     private OrthographicCamera camera;
     private Vector3f cameraPosition;
     private VertexArray vertexArray;
-    private Shader shader;
+    private ShaderLibrary shaderLibrary;
     private Texture texture, logoTexture;
 
     public ExampleLayer() {
         super("Example");
+        this.shaderLibrary = new ShaderLibrary();
         this.camera = new OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
         this.cameraPosition = new Vector3f(0.0f, 0.0f, 0.0f);
         vertexArray = VertexArray.create();
@@ -50,10 +55,10 @@ public class ExampleLayer extends Layer {
         IndexBuffer indexBuffer = IndexBuffer.create(indices);
         vertexArray.setIndexBuffer(indexBuffer);
 
-        shader = Shader.create("/assets/shaders/Texture.glsl");
-        texture = Texture2D.create("/assets/textures/Checkerboard.png");
-        logoTexture = Texture2D.create("/assets/textures/Logo.png");
-        ((OpenGLShader) shader).uploadUniformInt("u_Texture", 0);
+        shaderLibrary.load("/shaders/Texture.glsl");
+        texture = Texture2D.create("/textures/Checkerboard.png");
+        logoTexture = Texture2D.create("/textures/Logo.png");
+        shaderLibrary.get(OpenGLShader.class, "Texture").uploadUniformInt("u_Texture", 0);
     }
 
     @Override
@@ -63,7 +68,7 @@ public class ExampleLayer extends Layer {
     @Override
     public void onDetach() {
         vertexArray.tearDown();
-        shader.tearDown();
+        shaderLibrary.tearDown();
     }
 
     @Override
@@ -85,10 +90,10 @@ public class ExampleLayer extends Layer {
         Renderer.beginScene(camera);
 
         texture.bind();
-        Renderer.submit(shader, vertexArray);
+        Renderer.submit(shaderLibrary.get("Texture"), vertexArray);
 
         logoTexture.bind();
-        Renderer.submit(shader, vertexArray);
+        Renderer.submit(shaderLibrary.get("Texture"), vertexArray);
 
         Renderer.endScene();
     }
