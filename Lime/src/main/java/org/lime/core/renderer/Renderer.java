@@ -16,13 +16,14 @@ public class Renderer {
 
     public static void init() {
         RenderCommand.init();
+        Renderer2D.init();
     }
 
     public static void onWindowResizedEvent(WindowResizeEvent event) {
         RenderCommand.setViewport(0, 0, event.getWidth(), event.getHeight());
     }
 
-    public static void beginScene(OrthographicCamera camera) {
+    public static void beginScene(final OrthographicCamera camera) {
         Renderer.viewProjectionMatrix = camera.getViewProjectionMatrix();
     }
 
