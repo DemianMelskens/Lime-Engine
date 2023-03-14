@@ -23,6 +23,11 @@ public class OrthographicCamera {
         reCalculateViewMatrix();
     }
 
+    public void setProjection(float left, float right, float bottom, float top) {
+        this.projectionMatrix = new Matrix4f().ortho(left, right, bottom, top, -1.0f, 1.0f);
+        reCalculateViewMatrix();
+    }
+
     public void setPosition(Vector3f position) {
         this.position = position;
         reCalculateViewMatrix();

@@ -6,6 +6,7 @@ public class Sandbox2D extends Application {
 
     public Sandbox2D() {
         super();
+        pushLayer(new ExampleLayer());
     }
 
     public static void main(String[] args) {

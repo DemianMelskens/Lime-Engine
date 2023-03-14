@@ -28,6 +28,8 @@ public abstract class RendererAPI {
 
     public abstract void setClearColor(float red, float green, float blue, float alpha);
 
+    public abstract void setViewport(int x, int y, int width, int height);
+
     public abstract void clear();
 
     public abstract void drawIndexed(VertexArray vertexArray);

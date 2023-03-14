@@ -18,8 +18,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.util.function.Consumer;
 
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
-import static org.lime.core.utils.Log.LM_CORE_ERROR;
-import static org.lime.core.utils.Log.LM_CORE_INFO;
+import static org.lime.core.utils.Log.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class WindowsWindow extends Window {

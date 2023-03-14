@@ -3,6 +3,7 @@ package org.lime.core;
 import org.lime.core.events.Event;
 import org.lime.core.events.EventDispatcher;
 import org.lime.core.events.application.WindowCloseEvent;
+import org.lime.core.events.application.WindowResizeEvent;
 import org.lime.core.imgui.ImGuiLayer;
 import org.lime.core.renderer.Renderer;
 import org.lime.core.renderer.RendererAPI;
@@ -14,6 +15,7 @@ import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 public class Application {
     private static Application instance;
     private boolean isRunning;
+    private boolean isMinimized;
     private LayerStack layerStack;
     private Window window;
     private ImGuiLayer imGuiLayer;
@@ -51,8 +53,10 @@ public class Application {
             TimeStep timestep = new TimeStep(time - lastFrameTime);
             lastFrameTime = time;
 
-            for (Layer layer : layerStack)
-                layer.onUpdate(timestep);
+            if (!isMinimized) {
+                for (Layer layer : layerStack)
+                    layer.onUpdate(timestep);
+            }
 
             imGuiLayer.begin();
             for (Layer layer : layerStack)
@@ -73,7 +77,8 @@ public class Application {
 
     public void onEvent(Event event) {
         EventDispatcher dispatcher = new EventDispatcher(event);
-        dispatcher.dispatch(this::onWindowClose);
+        dispatcher.dispatch(this::onWindowCloseEvent);
+        dispatcher.dispatch(this::onWindowResizedEvent);
 
         for (Layer layer : layerStack) {
             layer.onEvent(event);
@@ -82,9 +87,20 @@ public class Application {
         }
     }
 
-    private boolean onWindowClose(WindowCloseEvent event) {
+    private boolean onWindowCloseEvent(WindowCloseEvent event) {
         this.isRunning = false;
         this.layerStack.forEach(Layer::onDetach);
         return true;
+    }
+
+    private boolean onWindowResizedEvent(WindowResizeEvent event) {
+        if (event.getWidth() == 0 || event.getHeight() == 0) {
+            isMinimized = true;
+            return false;
+        }
+
+        isMinimized = false;
+        Renderer.onWindowResizedEvent(event);
+        return false;
     }
 }

@@ -1,6 +1,7 @@
 package org.lime.core.renderer;
 
 import org.joml.Matrix4f;
+import org.lime.core.events.application.WindowResizeEvent;
 import org.lime.core.renderer.camera.OrthographicCamera;
 import org.lime.core.renderer.shader.Shader;
 import org.lime.platform.opengl.renderer.OpenGLShader;
@@ -15,6 +16,10 @@ public class Renderer {
 
     public static void init() {
         RenderCommand.init();
+    }
+
+    public static void onWindowResizedEvent(WindowResizeEvent event) {
+        RenderCommand.setViewport(0, 0, event.getWidth(), event.getHeight());
     }
 
     public static void beginScene(OrthographicCamera camera) {
