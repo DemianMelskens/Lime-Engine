@@ -4,9 +4,6 @@ import lombok.Getter;
 import org.joml.Vector4f;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-
-import static org.lime.core.utils.Log.LM_CORE_TRACE;
 
 public class Color {
     @Getter

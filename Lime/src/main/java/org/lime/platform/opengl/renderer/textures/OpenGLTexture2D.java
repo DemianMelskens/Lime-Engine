@@ -5,7 +5,6 @@ import org.lime.core.renderer.textures.Texture2D;
 import org.lime.core.utils.Tuple;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 
 import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 import static org.lwjgl.opengl.GL46.*;
