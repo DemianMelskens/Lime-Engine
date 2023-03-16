@@ -4,7 +4,6 @@ import org.joml.Matrix4f;
 import org.lime.core.events.application.WindowResizeEvent;
 import org.lime.core.renderer.camera.OrthographicCamera;
 import org.lime.core.renderer.shader.Shader;
-import org.lime.platform.opengl.renderer.OpenGLShader;
 
 public class Renderer {
 
@@ -36,8 +35,8 @@ public class Renderer {
 
     public static void submit(Shader shader, VertexArray vertexArray, Matrix4f transform) {
         shader.bind();
-        ((OpenGLShader) shader).uploadUniformMat4("u_ViewProjection", viewProjectionMatrix);
-        ((OpenGLShader) shader).uploadUniformMat4("u_Transform", transform);
+        shader.setMat4("u_ViewProjection", viewProjectionMatrix);
+        shader.setMat4("u_Transform", transform);
 
         vertexArray.bind();
         RenderCommand.drawIndexed(vertexArray);

@@ -5,7 +5,6 @@ import org.lime.core.renderer.shader.Shader;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
@@ -55,32 +54,52 @@ public class OpenGLShader extends Shader {
         glDeleteProgram(rendererId);
     }
 
-    public void uploadUniformInt(String name, int value) {
+    @Override
+    public void setInt(String name, int value) {
+        uploadUniformInt(name, value);
+    }
+
+    @Override
+    public void setFloat3(String name, Vector3f value) {
+        uploadUniformFloat3(name, value);
+    }
+
+    @Override
+    public void setFloat4(String name, Vector4f value) {
+        uploadUniformFloat4(name, value);
+    }
+
+    @Override
+    public void setMat4(String name, Matrix4f value) {
+        uploadUniformMat4(name, value);
+    }
+
+    private void uploadUniformInt(String name, int value) {
         int location = glGetUniformLocation(rendererId, name);
         glUniform1i(location, value);
     }
 
-    public void uploadUniformFloat(String name, float value) {
+    private void uploadUniformFloat(String name, float value) {
         int location = glGetUniformLocation(rendererId, name);
         glUniform1f(location, value);
     }
 
-    public void uploadUniformFloat2(String name, Vector2f value) {
+    private void uploadUniformFloat2(String name, Vector2f value) {
         int location = glGetUniformLocation(rendererId, name);
         glUniform2f(location, value.x, value.y);
     }
 
-    public void uploadUniformFloat3(String name, Vector3f value) {
+    private void uploadUniformFloat3(String name, Vector3f value) {
         int location = glGetUniformLocation(rendererId, name);
         glUniform3f(location, value.x, value.y, value.z);
     }
 
-    public void uploadUniformFloat4(String name, Vector4f value) {
+    private void uploadUniformFloat4(String name, Vector4f value) {
         int location = glGetUniformLocation(rendererId, name);
         glUniform4f(location, value.x, value.y, value.z, value.w);
     }
 
-    public void uploadUniformMat3(String name, Matrix3f value) {
+    private void uploadUniformMat3(String name, Matrix3f value) {
         int location = glGetUniformLocation(rendererId, name);
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer buffer = stack.mallocFloat(9);
@@ -89,7 +108,7 @@ public class OpenGLShader extends Shader {
         }
     }
 
-    public void uploadUniformMat4(String name, Matrix4f value) {
+    private void uploadUniformMat4(String name, Matrix4f value) {
         int location = glGetUniformLocation(rendererId, name);
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer buffer = stack.mallocFloat(16);
@@ -138,7 +157,7 @@ public class OpenGLShader extends Shader {
                     if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
                         glDeleteShader(shader);
 
-                        LM_CORE_ERROR("Shader compilation failure!");
+                        LM_CORE_ERROR(String.format("Shader compilation failure! (%s)", name));
                         LM_CORE_ERROR(glGetShaderInfoLog(shader));
                     }
 

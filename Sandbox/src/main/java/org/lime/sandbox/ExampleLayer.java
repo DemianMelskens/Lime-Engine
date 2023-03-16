@@ -16,7 +16,6 @@ import org.lime.core.renderer.shader.ShaderLibrary;
 import org.lime.core.renderer.textures.Texture;
 import org.lime.core.renderer.textures.Texture2D;
 import org.lime.core.time.TimeStep;
-import org.lime.platform.opengl.renderer.OpenGLShader;
 
 public class ExampleLayer extends Layer {
 
@@ -59,7 +58,7 @@ public class ExampleLayer extends Layer {
         shaderLibrary.load("/shaders/Texture.glsl");
         texture = Texture2D.create("/textures/Checkerboard.png");
         logoTexture = Texture2D.create("/textures/Logo.png");
-        shaderLibrary.get(OpenGLShader.class, "Texture").uploadUniformInt("u_Texture", 0);
+        shaderLibrary.get("Texture").setInt("u_Texture", 0);
     }
 
     @Override

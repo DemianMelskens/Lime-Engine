@@ -13,14 +13,6 @@ public class ShaderLibrary {
         return shaders.get(name);
     }
 
-    public <T extends Shader> T get(Class<T> type, String name) {
-        LM_CORE_ASSERT(contains(name), String.format("Shader with name: %s does not exists!", name));
-        Shader shader = shaders.get(name);
-
-        LM_CORE_ASSERT(type.isInstance(shader), String.format("Shader with name: %s does not exists!", name));
-        return type.cast(shader);
-    }
-
     public void add(Shader shader) {
         add(shader.getName(), shader);
     }

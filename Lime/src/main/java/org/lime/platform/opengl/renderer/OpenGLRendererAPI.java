@@ -10,6 +10,7 @@ public class OpenGLRendererAPI extends RendererAPI {
     public void init() {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_DEPTH_TEST);
     }
 
     @Override
@@ -30,5 +31,6 @@ public class OpenGLRendererAPI extends RendererAPI {
     @Override
     public void drawIndexed(VertexArray vertexArray) {
         glDrawElements(GL_TRIANGLES, vertexArray.getIndexBuffer().getCount(), GL_UNSIGNED_INT, 0L);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 }

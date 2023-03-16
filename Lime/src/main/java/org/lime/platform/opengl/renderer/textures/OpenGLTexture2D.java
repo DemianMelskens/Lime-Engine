@@ -4,14 +4,26 @@ import org.lime.core.Image;
 import org.lime.core.renderer.textures.Texture2D;
 import org.lime.core.utils.Tuple;
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+
 import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLTexture2D implements Texture2D {
     private int rendererId;
     private String path;
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
+    private int internalFormat;
+    private int dataFormat;
+
+    public OpenGLTexture2D(int width, int height) {
+        this.width = width;
+        this.height = height;
+        determineFormats(4);
+        init();
+    }
 
     public OpenGLTexture2D(String path) {
         Image image = new Image(path);
@@ -19,18 +31,22 @@ public class OpenGLTexture2D implements Texture2D {
         this.path = path;
         this.width = image.getWidth();
         this.height = image.getHeight();
+        determineFormats(image.getChannels());
+        init();
 
-        Tuple<Integer, Integer> formats = getFormats(image.getChannels());
+        glTextureSubImage2D(rendererId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, image.getData());
+        image.free();
+    }
 
+    private void init() {
         rendererId = glCreateTextures(GL_TEXTURE_2D);
-        glTextureStorage2D(rendererId, 1, formats.getLeft(), width, height);
+        glTextureStorage2D(rendererId, 1, internalFormat, width, height);
 
         glTextureParameteri(rendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(rendererId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        glTextureSubImage2D(rendererId, 0, 0, 0, width, height, formats.getRight(), GL_UNSIGNED_BYTE, image.getData());
-
-        image.free();
+        glTextureParameteri(rendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(rendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
 
     @Override
@@ -44,6 +60,11 @@ public class OpenGLTexture2D implements Texture2D {
     }
 
     @Override
+    public void setData(ByteBuffer data) {
+        glTextureSubImage2D(rendererId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
+    }
+
+    @Override
     public int getWidth() {
         return width;
     }
@@ -53,11 +74,13 @@ public class OpenGLTexture2D implements Texture2D {
         return height;
     }
 
-    private Tuple<Integer, Integer> getFormats(int channels) {
-        return switch (channels) {
-            case 4 -> Tuple.of(GL_RGBA8, GL_RGBA);
+    private void determineFormats(int channels) {
+        Tuple<Integer, Integer> formats = switch (channels) {
             case 3 -> Tuple.of(GL_RGB8, GL_RGB);
+            case 4 -> Tuple.of(GL_RGBA8, GL_RGBA);
             default -> throw LM_CORE_EXCEPTION("Format not supported");
         };
+        this.internalFormat = formats.getLeft();
+        this.dataFormat = formats.getRight();
     }
 }
