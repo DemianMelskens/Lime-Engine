@@ -1,5 +1,10 @@
 plugins {
     id 'java'
+    id 'application'
+}
+
+ext {
+    javaMainClass = "org.lime.sandbox2d.Sandbox2D"
 }
 
 group 'org.lime.sandbox2d'
@@ -14,6 +19,6 @@ dependencies {
     implementation 'org.lime:lime:1.0'
 }
 
-test {
-    useJUnitPlatform()
+application {
+    mainClassName = javaMainClass
 }

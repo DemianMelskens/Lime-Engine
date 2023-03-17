@@ -31,14 +31,13 @@ public class Timer implements Iterable<ProfileResult> {
         ProfileResult result = new ProfileResult(name, startTimePoint, endTimePoint);
         timer.results.put(name, result);
 
-        if (Instrumentor.get().isRunning()) {
+        if (Profiler.output) {
             Instrumentor.get().writeProfile(result);
         }
     }
 
     static void clear() {
         Timer timer = get();
-        timer.profiles.clear();
         timer.results.clear();
     }
 

@@ -37,24 +37,16 @@ public class ExampleLayer extends Layer {
 
     @Override
     public void onUpdate(TimeStep timestep) {
-        Profiler.startProfile("Sandbox2D::onUpdate");
-        Profiler.startProfile("CameraController::onUpdate");
         cameraController.onUpdate(timestep);
-        Profiler.stopProfile("CameraController::onUpdate");
 
-        Profiler.startProfile("Renderer prep");
         RenderCommand.setClearColor(0.1f, 0.1f, 0.1f, 1f);
         RenderCommand.clear();
-        Profiler.stopProfile("Renderer prep");
 
-        Profiler.startProfile("Renderer draw");
         Renderer2D.beginScene(cameraController.getCamera());
         Renderer2D.drawQuad(new Vector2f(-1.0f, 0.0f), new Vector2f(0.8f, 0.8f), color.getValue());
         Renderer2D.drawQuad(new Vector2f(0.5f, -0.5f), new Vector2f(0.5f, 0.75f), Color.blue().getValue());
         Renderer2D.drawQuad(new Vector3f(0.0f, 0.0f, -0.1f), new Vector2f(10.0f, 10.0f), checkerBoardTexture);
         Renderer2D.endScene();
-        Profiler.stopProfile("Renderer draw");
-        Profiler.stopProfile("Sandbox2D::onUpdate");
     }
 
     @Override
