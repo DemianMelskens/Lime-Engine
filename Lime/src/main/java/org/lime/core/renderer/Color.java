@@ -29,8 +29,21 @@ public class Color {
         return new Color(r, g, b, a);
     }
 
+    public static Color create(String hex) {
+        return new Color(hex);
+    }
+
     private Color(float r, float g, float b, float a) {
         this.value = new Vector4f(r, g, b, a);
+    }
+
+    private Color(String hex) {
+        this.value = new Vector4f(
+                toColorSpace(hex.substring(1, 3)),
+                toColorSpace(hex.substring(3, 5)),
+                toColorSpace(hex.substring(5, 7)),
+                getOptionalAlpha(hex)
+        );
     }
 
     public void set(float r, float g, float b, float a) {
@@ -77,5 +90,22 @@ public class Color {
         buffer.put((byte) (255.0f * a()));
         buffer.rewind();
         return buffer;
+    }
+
+    private float getOptionalAlpha(String hex) {
+        try {
+            return toColorSpace(hex.substring(7, 9));
+        } catch (IndexOutOfBoundsException ignored) {
+            return 1.0f;
+        }
+    }
+
+    /***
+     * puts a hex 0-255 space to 0-1 space used by engine
+     * @param value
+     * @return normalized color value
+     */
+    private float toColorSpace(String value) {
+        return Integer.valueOf(value, 16).floatValue() / 255;
     }
 }

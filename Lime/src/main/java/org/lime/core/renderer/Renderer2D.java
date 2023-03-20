@@ -17,6 +17,10 @@ import org.lime.core.renderer.textures.Texture2D;
 
 public class Renderer2D {
 
+    private static final String TILING_FACTOR = "u_TilingFactor";
+    private static final String COLOR = "u_Color";
+    private static final String TRANSFORM = "u_Transform";
+    private static final String SHADER_NAME = "Texture";
     private static Data data;
 
     private Renderer2D() {
@@ -24,6 +28,7 @@ public class Renderer2D {
 
     public static void init() {
         data = new Data();
+        data.shaderLibrary = new ShaderLibrary();
         data.quadVertexArray = VertexArray.create();
 
         float[] vertices = {
@@ -58,57 +63,73 @@ public class Renderer2D {
     }
 
     public static void beginScene(final OrthographicCamera camera) {
-        Shader textureShader = data.shaderLibrary.get("Texture");
+        Shader textureShader = data.shaderLibrary.get(SHADER_NAME);
         textureShader.bind();
         textureShader.setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
     }
 
     public static void endScene() {
-    }
-
-    public static void drawQuad(Vector2f position, Vector2f size, Vector4f color) {
-        drawQuad(new Vector3f(position, 0.0f), size, color);
+        data.shaderLibrary.get(SHADER_NAME).unbind();
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, Vector4f color) {
-        Shader textureShader = data.shaderLibrary.get("Texture");
-        textureShader.setFloat4("u_Color", color);
-        data.whiteTexture.bind();
-
-        Matrix4f transform = new Matrix4f().translate(position).scale(new Vector3f(size, 1.0f));
-        textureShader.setMat4("u_Transform", transform);
-
-        data.quadVertexArray.bind();
-        RenderCommand.drawIndexed(data.quadVertexArray);
-    }
-
-    public static void drawQuad(Vector2f position, Vector2f size, Texture2D texture) {
-        drawQuad(new Vector3f(position, 0.0f), size, texture);
+        drawQuad(position, size, data.whiteTexture, color);
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture) {
-        Shader textureShader = data.shaderLibrary.get("Texture");
-        textureShader.setFloat4("u_Color", Color.white().getValue());
+        drawQuad(position, size, texture, Color.white().getValue());
+    }
+
+    public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture, float tilingFactor) {
+        drawQuad(position, size, texture, Color.white().getValue(), tilingFactor);
+    }
+
+    public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture, Vector4f color) {
+        drawQuad(position, size, texture, color, 1.0f);
+    }
+
+    public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture, Vector4f color, float tilingFactor) {
+        Shader textureShader = data.shaderLibrary.get(SHADER_NAME);
+        textureShader.setFloat4(COLOR, color);
+        textureShader.setFloat(TILING_FACTOR, tilingFactor);
         texture.bind();
 
-        Matrix4f transform = new Matrix4f().translate(position).scale(new Vector3f(size, 1.0f));
-        textureShader.setMat4("u_Transform", transform);
+        Matrix4f transform = new Matrix4f()
+                .translate(position)
+                .scale(new Vector3f(size, 1.0f));
+        textureShader.setMat4(TRANSFORM, transform);
 
         data.quadVertexArray.bind();
         RenderCommand.drawIndexed(data.quadVertexArray);
     }
 
-    public static void drawQuad(Vector2f position, Vector2f size, Texture2D texture, Vector4f color) {
-        drawQuad(new Vector3f(position, 0.0f), size, texture, color);
+    public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Vector4f color) {
+        drawRotatedQuad(position, size, radians, data.whiteTexture, color);
     }
 
-    public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture, Vector4f color) {
-        Shader textureShader = data.shaderLibrary.get("Texture");
-        textureShader.setFloat4("u_Color", color);
+    public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Texture2D texture) {
+        drawRotatedQuad(position, size, radians, texture, Color.white().getValue());
+    }
+
+    public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Texture2D texture, float tilingFactor) {
+        drawRotatedQuad(position, size, radians, texture, Color.white().getValue(), tilingFactor);
+    }
+
+    public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Texture2D texture, Vector4f color) {
+        drawRotatedQuad(position, size, radians, texture, color, 1.0f);
+    }
+
+    public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Texture2D texture, Vector4f color, float tilingFactor) {
+        Shader textureShader = data.shaderLibrary.get(SHADER_NAME);
+        textureShader.setFloat4(COLOR, color);
+        textureShader.setFloat(TILING_FACTOR, tilingFactor);
         texture.bind();
 
-        Matrix4f transform = new Matrix4f().translate(position).scale(new Vector3f(size, 1.0f));
-        textureShader.setMat4("u_Transform", transform);
+        Matrix4f transform = new Matrix4f()
+                .translate(position)
+                .rotate(radians, new Vector3f(0.0f, 0.0f, 1.0f))
+                .scale(new Vector3f(size, 1.0f));
+        textureShader.setMat4(TRANSFORM, transform);
 
         data.quadVertexArray.bind();
         RenderCommand.drawIndexed(data.quadVertexArray);

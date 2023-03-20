@@ -60,6 +60,11 @@ public class OpenGLShader extends Shader {
     }
 
     @Override
+    public void setFloat(String name, float value) {
+        uploadUniformFloat(name, value);
+    }
+
+    @Override
     public void setFloat3(String name, Vector3f value) {
         uploadUniformFloat3(name, value);
     }

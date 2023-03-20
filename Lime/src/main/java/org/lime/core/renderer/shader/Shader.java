@@ -43,6 +43,7 @@ public abstract class Shader {
     public abstract void shutdown();
 
     public abstract void setInt(String name, int value);
+    public abstract void setFloat(String name, float value);
     public abstract void setFloat3(String name, Vector3f value);
 
     public abstract void setFloat4(String name, Vector4f value);
