@@ -1,6 +1,8 @@
 package org.lime.core;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 
 public class LayerStack implements Iterable<Layer> {
@@ -14,12 +16,10 @@ public class LayerStack implements Iterable<Layer> {
 
     public void pushLayer(Layer layer) {
         this.layers.add(layerInsertIndex++, layer);
-        layer.onAttach();
     }
 
     public void pushOverlay(Layer layer) {
         this.layers.add(layer);
-        layer.onAttach();
     }
 
     public void popLayer(Layer layer) {

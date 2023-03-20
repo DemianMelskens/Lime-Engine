@@ -38,7 +38,7 @@ public class ShaderLibrary {
         return shaders.containsKey(name);
     }
 
-    public void tearDown() {
-        shaders.values().forEach(Shader::tearDown);
+    public void shutdown() {
+        shaders.values().forEach(Shader::shutdown);
     }
 }

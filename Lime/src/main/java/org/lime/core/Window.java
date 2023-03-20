@@ -50,5 +50,5 @@ public abstract class Window {
 
     protected abstract void onUpdate();
 
-    protected abstract void tearDown();
+    protected abstract void shutdown();
 }

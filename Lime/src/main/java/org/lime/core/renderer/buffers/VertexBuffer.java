@@ -17,7 +17,7 @@ public abstract class VertexBuffer {
 
     protected abstract void init(float[] vertices);
 
-    public abstract void tearDown();
+    public abstract void shutdown();
 
     public abstract void bind();
 

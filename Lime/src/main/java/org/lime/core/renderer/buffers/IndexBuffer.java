@@ -17,11 +17,11 @@ public abstract class IndexBuffer {
 
     protected abstract void init(int[] indices);
 
-    public abstract void tearDown();
+    public abstract void shutdown();
 
     public abstract int getCount();
 
-    public abstract void Bind();
+    public abstract void bind();
 
-    public abstract void Unbind();
+    public abstract void unbind();
 }

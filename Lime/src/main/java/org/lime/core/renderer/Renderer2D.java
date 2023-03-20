@@ -12,6 +12,7 @@ import org.lime.core.renderer.buffers.VertexBuffer;
 import org.lime.core.renderer.camera.OrthographicCamera;
 import org.lime.core.renderer.shader.Shader;
 import org.lime.core.renderer.shader.ShaderDataType;
+import org.lime.core.renderer.shader.ShaderLibrary;
 import org.lime.core.renderer.textures.Texture2D;
 
 public class Renderer2D {
@@ -47,18 +48,19 @@ public class Renderer2D {
         data.whiteTexture = Texture2D.create(1, 1);
         data.whiteTexture.setData(Color.white().getBuffer());
 
-        data.textureShader = Shader.create("/shaders/Texture.glsl");
-        data.textureShader.bind();
-        data.textureShader.setInt("u_Texture", 0);
+        Shader textureShader = data.shaderLibrary.load("/shaders/Texture.glsl");
+        textureShader.bind();
+        textureShader.setInt("u_Texture", 0);
     }
 
-    public static void tearDown() {
+    public static void shutdown() {
         data.delete();
     }
 
     public static void beginScene(final OrthographicCamera camera) {
-        data.textureShader.bind();
-        data.textureShader.setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+        Shader textureShader = data.shaderLibrary.get("Texture");
+        textureShader.bind();
+        textureShader.setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
     }
 
     public static void endScene() {
@@ -69,11 +71,12 @@ public class Renderer2D {
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, Vector4f color) {
-        data.textureShader.setFloat4("u_Color", color);
+        Shader textureShader = data.shaderLibrary.get("Texture");
+        textureShader.setFloat4("u_Color", color);
         data.whiteTexture.bind();
 
         Matrix4f transform = new Matrix4f().translate(position).scale(new Vector3f(size, 1.0f));
-        data.textureShader.setMat4("u_Transform", transform);
+        textureShader.setMat4("u_Transform", transform);
 
         data.quadVertexArray.bind();
         RenderCommand.drawIndexed(data.quadVertexArray);
@@ -84,11 +87,12 @@ public class Renderer2D {
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture) {
-        data.textureShader.setFloat4("u_Color", Color.white().getValue());
+        Shader textureShader = data.shaderLibrary.get("Texture");
+        textureShader.setFloat4("u_Color", Color.white().getValue());
         texture.bind();
 
         Matrix4f transform = new Matrix4f().translate(position).scale(new Vector3f(size, 1.0f));
-        data.textureShader.setMat4("u_Transform", transform);
+        textureShader.setMat4("u_Transform", transform);
 
         data.quadVertexArray.bind();
         RenderCommand.drawIndexed(data.quadVertexArray);
@@ -99,11 +103,12 @@ public class Renderer2D {
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture, Vector4f color) {
-        data.textureShader.setFloat4("u_Color", color);
+        Shader textureShader = data.shaderLibrary.get("Texture");
+        textureShader.setFloat4("u_Color", color);
         texture.bind();
 
         Matrix4f transform = new Matrix4f().translate(position).scale(new Vector3f(size, 1.0f));
-        data.textureShader.setMat4("u_Transform", transform);
+        textureShader.setMat4("u_Transform", transform);
 
         data.quadVertexArray.bind();
         RenderCommand.drawIndexed(data.quadVertexArray);
@@ -112,14 +117,14 @@ public class Renderer2D {
     @NoArgsConstructor
     private static class Data {
         public VertexArray quadVertexArray;
-        public Shader textureShader;
+        public ShaderLibrary shaderLibrary;
         public Texture2D whiteTexture;
 
         public void delete() {
-            this.quadVertexArray.tearDown();
+            this.quadVertexArray.shutdown();
             this.quadVertexArray = null;
-            this.textureShader.tearDown();
-            this.textureShader = null;
+            this.shaderLibrary.shutdown();
+            this.shaderLibrary = null;
         }
     }
 }

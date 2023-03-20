@@ -63,8 +63,8 @@ public class ExampleLayer extends Layer {
 
     @Override
     public void onDetach() {
-        vertexArray.tearDown();
-        shaderLibrary.tearDown();
+        vertexArray.shutdown();
+        shaderLibrary.shutdown();
     }
 
     @Override

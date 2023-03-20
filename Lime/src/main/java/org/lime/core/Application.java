@@ -9,7 +9,6 @@ import org.lime.core.renderer.Renderer;
 import org.lime.core.renderer.RendererAPI;
 import org.lime.core.time.Time;
 import org.lime.core.time.TimeStep;
-import org.lime.debug.Profiler;
 
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 
@@ -28,8 +27,6 @@ public class Application {
     }
 
     protected Application() {
-        Profiler.beginSession("startUp", "profiler/startup.json");
-        Profiler.startProfile("startUp");
         RendererAPI.setType(RendererAPI.Type.Open_GL);
         LM_CORE_ASSERT(instance == null, "There can only be one application instance");
         instance = this;
@@ -42,8 +39,6 @@ public class Application {
 
         this.imGuiLayer = new ImGuiLayer();
         pushOverlay(imGuiLayer);
-        Profiler.stopProfile("startUp");
-        Profiler.endSession();
     }
 
     public Window getWindow() {
@@ -51,11 +46,9 @@ public class Application {
     }
 
     public void run() {
-        Profiler.beginSession("runtime", "profiler/runtime.json");
         isRunning = true;
 
         while (isRunning) {
-            Profiler.startProfile("onUpdate");
             float time = Time.getTime();
             TimeStep timestep = new TimeStep(time - lastFrameTime);
             lastFrameTime = time;
@@ -63,25 +56,25 @@ public class Application {
             if (!isMinimized) {
                 for (Layer layer : layerStack)
                     layer.onUpdate(timestep);
+
+                imGuiLayer.begin();
+                for (Layer layer : layerStack)
+                    layer.onImGuiRender();
+                imGuiLayer.end();
             }
 
-            imGuiLayer.begin();
-            for (Layer layer : layerStack)
-                layer.onImGuiRender();
-            imGuiLayer.end();
-
             window.onUpdate();
-            Profiler.stopProfile("onUpdate");
         }
-        Profiler.endSession();
     }
 
     public void pushLayer(Layer layer) {
         layerStack.pushLayer(layer);
+        layer.onAttach();
     }
 
-    public void pushOverlay(Layer overlay) {
-        layerStack.pushOverlay(overlay);
+    public void pushOverlay(Layer layer) {
+        layerStack.pushOverlay(layer);
+        layer.onAttach();
     }
 
     public void onEvent(Event event) {
@@ -99,6 +92,7 @@ public class Application {
     private boolean onWindowCloseEvent(WindowCloseEvent event) {
         this.isRunning = false;
         this.layerStack.forEach(Layer::onDetach);
+        this.shutdown();
         return true;
     }
 
@@ -111,5 +105,9 @@ public class Application {
         isMinimized = false;
         Renderer.onWindowResizedEvent(event);
         return false;
+    }
+
+    private void shutdown() {
+        Renderer.shutdown();
     }
 }

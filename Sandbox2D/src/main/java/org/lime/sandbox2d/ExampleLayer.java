@@ -11,8 +11,6 @@ import org.lime.core.renderer.RenderCommand;
 import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.textures.Texture2D;
 import org.lime.core.time.TimeStep;
-import org.lime.debug.ProfileResult;
-import org.lime.debug.Profiler;
 
 public class ExampleLayer extends Layer {
     private OrthographicCameraController cameraController;
@@ -57,11 +55,6 @@ public class ExampleLayer extends Layer {
         if (ImGui.colorEdit4("Color", value)) {
             color.set(value[0], value[1], value[2], value[3]);
         }
-
-        for (ProfileResult result : Profiler.results()) {
-            ImGui.text(String.format("%.3fms %s", (result.getEnd() - result.getStart()) * 0.000001f, result.getName()));
-        }
-        Profiler.clearProfiles();
 
         ImGui.end();
     }

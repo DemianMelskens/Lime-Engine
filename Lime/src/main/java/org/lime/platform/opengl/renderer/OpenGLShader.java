@@ -50,7 +50,7 @@ public class OpenGLShader extends Shader {
     }
 
     @Override
-    public void tearDown() {
+    public void shutdown() {
         glDeleteProgram(rendererId);
     }
 

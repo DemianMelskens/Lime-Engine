@@ -42,7 +42,7 @@ public class OpenGLVertexBuffer extends VertexBuffer {
     }
 
     @Override
-    public void tearDown() {
+    public void shutdown() {
         glDeleteBuffers(rendererId);
     }
 }

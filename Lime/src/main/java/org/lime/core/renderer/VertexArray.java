@@ -14,7 +14,7 @@ public abstract class VertexArray {
         };
     }
 
-    public abstract void tearDown();
+    public abstract void shutdown();
 
     public abstract void bind();
 

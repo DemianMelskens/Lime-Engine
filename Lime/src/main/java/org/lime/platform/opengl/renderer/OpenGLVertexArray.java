@@ -1,10 +1,10 @@
 package org.lime.platform.opengl.renderer;
 
-import org.lime.core.renderer.shader.ShaderDataType;
 import org.lime.core.renderer.VertexArray;
 import org.lime.core.renderer.buffers.BufferElement;
 import org.lime.core.renderer.buffers.IndexBuffer;
 import org.lime.core.renderer.buffers.VertexBuffer;
+import org.lime.core.renderer.shader.ShaderDataType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +25,9 @@ public class OpenGLVertexArray extends VertexArray {
     }
 
     @Override
-    public void tearDown() {
-        vertexBuffers.forEach(VertexBuffer::tearDown);
-        indexBuffer.tearDown();
+    public void shutdown() {
+        vertexBuffers.forEach(VertexBuffer::shutdown);
+        indexBuffer.shutdown();
         glDeleteVertexArrays(rendererId);
     }
 
@@ -73,7 +73,7 @@ public class OpenGLVertexArray extends VertexArray {
     @Override
     public void setIndexBuffer(IndexBuffer indexBuffer) {
         glBindVertexArray(rendererId);
-        indexBuffer.Bind();
+        indexBuffer.bind();
 
         this.indexBuffer = indexBuffer;
     }

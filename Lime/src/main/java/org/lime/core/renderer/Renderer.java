@@ -41,4 +41,8 @@ public class Renderer {
         vertexArray.bind();
         RenderCommand.drawIndexed(vertexArray);
     }
+
+    public static void shutdown() {
+        Renderer2D.shutdown();
+    }
 }

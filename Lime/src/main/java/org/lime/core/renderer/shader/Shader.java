@@ -40,7 +40,7 @@ public abstract class Shader {
 
     public abstract void unbind();
 
-    public abstract void tearDown();
+    public abstract void shutdown();
 
     public abstract void setInt(String name, int value);
     public abstract void setFloat3(String name, Vector3f value);

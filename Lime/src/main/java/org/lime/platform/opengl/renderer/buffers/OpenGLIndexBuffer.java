@@ -24,17 +24,17 @@ public class OpenGLIndexBuffer extends IndexBuffer {
     }
 
     @Override
-    public void Bind() {
+    public void bind() {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId);
     }
 
     @Override
-    public void Unbind() {
+    public void unbind() {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     @Override
-    public void tearDown() {
+    public void shutdown() {
         glDeleteBuffers(rendererId);
     }
 }
