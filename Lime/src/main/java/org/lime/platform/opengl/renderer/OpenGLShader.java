@@ -60,6 +60,11 @@ public class OpenGLShader extends Shader {
     }
 
     @Override
+    public void setIntArray(String name, int[] value) {
+        uploadUniformIntArray(name, value);
+    }
+
+    @Override
     public void setFloat(String name, float value) {
         uploadUniformFloat(name, value);
     }
@@ -82,6 +87,11 @@ public class OpenGLShader extends Shader {
     private void uploadUniformInt(String name, int value) {
         int location = glGetUniformLocation(rendererId, name);
         glUniform1i(location, value);
+    }
+
+    private void uploadUniformIntArray(String name, int[] value) {
+        int location = glGetUniformLocation(rendererId, name);
+        glUniform1iv(location, value);
     }
 
     private void uploadUniformFloat(String name, float value) {

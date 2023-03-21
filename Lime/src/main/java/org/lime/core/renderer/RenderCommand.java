@@ -22,6 +22,10 @@ public class RenderCommand {
     }
 
     public static void drawIndexed(VertexArray vertexArray) {
-        RendererAPI.get().drawIndexed(vertexArray);
+        RendererAPI.get().drawIndexed(vertexArray, 0);
+    }
+
+    public static void drawIndexed(VertexArray vertexArray, int count) {
+        RendererAPI.get().drawIndexed(vertexArray, count);
     }
 }

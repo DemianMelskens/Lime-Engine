@@ -9,11 +9,13 @@ import org.lime.core.renderer.buffers.BufferElement;
 import org.lime.core.renderer.buffers.BufferLayout;
 import org.lime.core.renderer.buffers.IndexBuffer;
 import org.lime.core.renderer.buffers.VertexBuffer;
+import org.lime.core.renderer.buffers.vertices.QuadVertex;
 import org.lime.core.renderer.camera.OrthographicCamera;
 import org.lime.core.renderer.shader.Shader;
 import org.lime.core.renderer.shader.ShaderDataType;
 import org.lime.core.renderer.shader.ShaderLibrary;
 import org.lime.core.renderer.textures.Texture2D;
+import org.lime.core.renderer.textures.TextureSlots;
 
 public class Renderer2D {
 
@@ -21,41 +23,58 @@ public class Renderer2D {
     private static final String COLOR = "u_Color";
     private static final String TRANSFORM = "u_Transform";
     private static final String SHADER_NAME = "Texture";
-    private static Data data;
+    private static final Data data = new Data();
 
     private Renderer2D() {
     }
 
     public static void init() {
-        data = new Data();
         data.shaderLibrary = new ShaderLibrary();
         data.quadVertexArray = VertexArray.create();
+        data.textureSlots = TextureSlots.create();
 
-        float[] vertices = {
-                -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-                0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-                0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-                -0.5f, 0.5f, 0.0f, 0.0f, 1.0f
-        };
-
-        VertexBuffer vertexBuffer = VertexBuffer.create(vertices);
+        data.quadVertexBuffer = VertexBuffer.create(data.maxVertices * QuadVertex.getSize());
         BufferLayout layout = BufferLayout.create(
                 BufferElement.of(ShaderDataType.Float3, "a_Position"),
-                BufferElement.of(ShaderDataType.Float2, "a_TexCoord")
+                BufferElement.of(ShaderDataType.Float4, "a_Color"),
+                BufferElement.of(ShaderDataType.Float2, "a_TexCoord"),
+                BufferElement.of(ShaderDataType.Float, "a_TexIndex")
         );
-        vertexBuffer.setLayout(layout);
-        data.quadVertexArray.addVertexBuffer(vertexBuffer);
+        data.quadVertexBuffer.setLayout(layout);
+        data.quadVertexArray.addVertexBuffer(data.quadVertexBuffer);
 
-        int[] indices = {0, 1, 2, 2, 3, 0};
-        IndexBuffer indexBuffer = IndexBuffer.create(indices);
+        data.quadVertexBase = new QuadVertex[data.maxQuad];
+
+        int[] quadIndices = new int[data.maxIndices];
+
+        int offset = 0;
+        for (int i = 0; i < data.maxIndices; i += 6) {
+            quadIndices[i] = offset;
+            quadIndices[i + 1] = offset + 1;
+            quadIndices[i + 2] = offset + 2;
+
+            quadIndices[i + 3] = offset + 2;
+            quadIndices[i + 4] = offset + 3;
+            quadIndices[i + 5] = offset;
+
+            offset += 4;
+        }
+
+        IndexBuffer indexBuffer = IndexBuffer.create(quadIndices);
         data.quadVertexArray.setIndexBuffer(indexBuffer);
 
         data.whiteTexture = Texture2D.create(1, 1);
         data.whiteTexture.setData(Color.white().getBuffer());
 
+        int[] samplers = new int[TextureSlots.MAX_SLOTS];
+        for (int i = 0; i < TextureSlots.MAX_SLOTS; i++)
+            samplers[i] = i;
+
         Shader textureShader = data.shaderLibrary.load("/shaders/Texture.glsl");
         textureShader.bind();
-        textureShader.setInt("u_Texture", 0);
+        textureShader.setIntArray("u_Textures", samplers);
+
+        data.textureSlots.add(data.whiteTexture);
     }
 
     public static void shutdown() {
@@ -63,13 +82,24 @@ public class Renderer2D {
     }
 
     public static void beginScene(final OrthographicCamera camera) {
+        data.quadIndexCount = 0;
         Shader textureShader = data.shaderLibrary.get(SHADER_NAME);
         textureShader.bind();
         textureShader.setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
     }
 
     public static void endScene() {
+        data.quadVertexBuffer.setData(data.getQuadVertexBaseData());
+        flush();
+
         data.shaderLibrary.get(SHADER_NAME).unbind();
+    }
+
+    public static void flush() {
+        for (int i = 0; i < data.textureSlots.size(); i++)
+            data.textureSlots.get(i).bind(i);
+
+        RenderCommand.drawIndexed(data.quadVertexArray, data.quadIndexCount);
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, Vector4f color) {
@@ -89,18 +119,41 @@ public class Renderer2D {
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture, Vector4f color, float tilingFactor) {
-        Shader textureShader = data.shaderLibrary.get(SHADER_NAME);
-        textureShader.setFloat4(COLOR, color);
-        textureShader.setFloat(TILING_FACTOR, tilingFactor);
-        texture.bind();
+        float textureIndex = data.textureSlots.add(texture);
 
-        Matrix4f transform = new Matrix4f()
-                .translate(position)
-                .scale(new Vector3f(size, 1.0f));
-        textureShader.setMat4(TRANSFORM, transform);
+        data.quadVertexBase[data.quadVertexBasePtr] = new QuadVertex(
+                position,
+                color,
+                new Vector2f(0.0f, 0.0f),
+                textureIndex
+        );
+        data.quadVertexBasePtr++;
 
-        data.quadVertexArray.bind();
-        RenderCommand.drawIndexed(data.quadVertexArray);
+        data.quadVertexBase[data.quadVertexBasePtr] = new QuadVertex(
+                new Vector3f(position.x + size.x, position.y, 0.0f),
+                color,
+                new Vector2f(1.0f, 0.0f),
+                textureIndex
+        );
+        data.quadVertexBasePtr++;
+
+        data.quadVertexBase[data.quadVertexBasePtr] = new QuadVertex(
+                new Vector3f(position.x + size.x, position.y + size.y, 0.0f),
+                color,
+                new Vector2f(1.0f, 1.0f),
+                textureIndex
+        );
+        data.quadVertexBasePtr++;
+
+        data.quadVertexBase[data.quadVertexBasePtr] = new QuadVertex(
+                new Vector3f(position.x, position.y + size.y, 0.0f),
+                color,
+                new Vector2f(0.0f, 1.0f),
+                textureIndex
+        );
+        data.quadVertexBasePtr++;
+
+        data.quadIndexCount += 6;
     }
 
     public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Vector4f color) {
@@ -137,9 +190,34 @@ public class Renderer2D {
 
     @NoArgsConstructor
     private static class Data {
+        public final int maxQuad = 10000;
+        public final int maxVertices = maxQuad * 4;
+        public final int maxIndices = maxQuad * 6;
+        public final int maxTextureSlots = 32;
+
         public VertexArray quadVertexArray;
+        public VertexBuffer quadVertexBuffer;
         public ShaderLibrary shaderLibrary;
         public Texture2D whiteTexture;
+
+        public int quadIndexCount;
+        public QuadVertex[] quadVertexBase;
+        public int quadVertexBasePtr = 0;
+        public TextureSlots textureSlots;
+
+        public float[] getQuadVertexBaseData() {
+            float[] result = new float[0];
+            for (int i = 0; i < quadVertexBasePtr; i++) {
+                float[] element = quadVertexBase[i].getData();
+                float[] temp = new float[result.length + element.length];
+
+                System.arraycopy(result, 0, temp, 0, result.length);
+                System.arraycopy(element, 0, temp, result.length, element.length);
+
+                result = temp;
+            }
+            return result;
+        }
 
         public void delete() {
             this.quadVertexArray.shutdown();

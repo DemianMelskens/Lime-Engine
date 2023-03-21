@@ -29,8 +29,9 @@ public class OpenGLRendererAPI extends RendererAPI {
     }
 
     @Override
-    public void drawIndexed(VertexArray vertexArray) {
-        glDrawElements(GL_TRIANGLES, vertexArray.getIndexBuffer().getCount(), GL_UNSIGNED_INT, 0L);
+    public void drawIndexed(VertexArray vertexArray, int indexCount) {
+        int count = indexCount == 0 ? vertexArray.getIndexBuffer().getCount() : indexCount;
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0L);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 }

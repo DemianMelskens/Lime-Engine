@@ -32,7 +32,7 @@ public abstract class RendererAPI {
 
     public abstract void clear();
 
-    public abstract void drawIndexed(VertexArray vertexArray);
+    public abstract void drawIndexed(VertexArray vertexArray, int indexCount);
 
     public enum Type {
         Open_GL
