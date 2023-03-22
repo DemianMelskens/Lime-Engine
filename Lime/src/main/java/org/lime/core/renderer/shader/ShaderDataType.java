@@ -6,21 +6,23 @@ import static org.lwjgl.opengl.GL46.*;
 
 @Getter
 public enum ShaderDataType {
-    Bool(1),
-    Int(4),
-    Int2(4 * 2),
-    Int3(4 * 3),
-    Int4(4 * 4),
-    Float(4),
-    Float2(4 * 2),
-    Float3(4 * 3),
-    Float4(4 * 4),
-    Mat3(4 * 3 * 3),
-    Mat4(4 * 4 * 4);
+    Bool(1, 1),
+    Int(4, 1),
+    Int2(4 * 2, 2),
+    Int3(4 * 3, 3),
+    Int4(4 * 4, 4),
+    Float(4, 1),
+    Float2(4 * 2, 2),
+    Float3(4 * 3, 3),
+    Float4(4 * 4, 4),
+    Mat3(4 * 3 * 3, 3 * 3),
+    Mat4(4 * 4 * 4, 4 * 4);
 
+    private final int bytes;
     private final int size;
 
-    ShaderDataType(int size) {
+    ShaderDataType(int bytes, int size) {
+        this.bytes = bytes;
         this.size = size;
     }
 

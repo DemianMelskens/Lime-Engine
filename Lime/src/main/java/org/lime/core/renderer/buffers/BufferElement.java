@@ -26,7 +26,7 @@ public class BufferElement {
     private BufferElement(ShaderDataType type, String name, boolean normalized) {
         this.name = name;
         this.type = type;
-        this.size = type.getSize();
+        this.size = type.getBytes();
         this.normalized = normalized;
     }
 
