@@ -43,7 +43,7 @@ public class ExampleLayer extends Layer {
         Renderer2D.beginScene(cameraController.getCamera());
         Renderer2D.drawQuad(new Vector3f(-1.0f, 0.0f, 0.0f), new Vector2f(0.8f, 0.8f), color.getValue());
         Renderer2D.drawQuad(new Vector3f(0.5f, -0.5f, 0.0f), new Vector2f(0.5f, 0.75f), Color.blue().getValue());
-        Renderer2D.drawQuad(new Vector3f(0.0f, 0.0f, -0.1f), new Vector2f(10.0f, 10.0f), checkerBoardTexture, Color.create("#2fba9a").getValue(), 10.0f);
+        Renderer2D.drawQuad(new Vector3f(-5.0f, -5.0f, -0.1f), new Vector2f(10.0f, 10.0f), checkerBoardTexture, Color.create("#2fba9a").getValue(), 10.0f);
         Renderer2D.endScene();
     }
 

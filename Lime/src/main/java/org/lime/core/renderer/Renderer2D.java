@@ -17,6 +17,9 @@ import org.lime.core.renderer.shader.ShaderLibrary;
 import org.lime.core.renderer.textures.Texture2D;
 import org.lime.core.renderer.textures.TextureSlots;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Renderer2D {
 
     private static final String TILING_FACTOR = "u_TilingFactor";
@@ -43,7 +46,7 @@ public class Renderer2D {
         data.quadVertexBuffer.setLayout(layout);
         data.quadVertexArray.addVertexBuffer(data.quadVertexBuffer);
 
-        data.quadVertexBase = new QuadVertex[data.maxQuad];
+        data.quadVertexBase = new ArrayList<>();
 
         int[] quadIndices = new int[data.maxIndices];
 
@@ -82,7 +85,7 @@ public class Renderer2D {
     }
 
     public static void beginScene(final OrthographicCamera camera) {
-        data.quadIndexCount = 0;
+        data.quadVertexBase.clear();
         Shader textureShader = data.shaderLibrary.get(SHADER_NAME);
         textureShader.bind();
         textureShader.setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
@@ -121,37 +124,33 @@ public class Renderer2D {
     public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture, Vector4f color, float tilingFactor) {
         float textureIndex = data.textureSlots.add(texture);
 
-        data.quadVertexBase[data.quadVertexBasePtr] = new QuadVertex(
+        data.quadVertexBase.add(new QuadVertex(
                 position,
                 color,
                 new Vector2f(0.0f, 0.0f),
                 textureIndex
-        );
-        data.quadVertexBasePtr++;
+        ));
 
-        data.quadVertexBase[data.quadVertexBasePtr] = new QuadVertex(
+        data.quadVertexBase.add(new QuadVertex(
                 new Vector3f(position.x + size.x, position.y, 0.0f),
                 color,
                 new Vector2f(1.0f, 0.0f),
                 textureIndex
-        );
-        data.quadVertexBasePtr++;
+        ));
 
-        data.quadVertexBase[data.quadVertexBasePtr] = new QuadVertex(
+        data.quadVertexBase.add(new QuadVertex(
                 new Vector3f(position.x + size.x, position.y + size.y, 0.0f),
                 color,
                 new Vector2f(1.0f, 1.0f),
                 textureIndex
-        );
-        data.quadVertexBasePtr++;
+        ));
 
-        data.quadVertexBase[data.quadVertexBasePtr] = new QuadVertex(
+        data.quadVertexBase.add(new QuadVertex(
                 new Vector3f(position.x, position.y + size.y, 0.0f),
                 color,
                 new Vector2f(0.0f, 1.0f),
                 textureIndex
-        );
-        data.quadVertexBasePtr++;
+        ));
 
         data.quadIndexCount += 6;
     }
@@ -201,22 +200,18 @@ public class Renderer2D {
         public Texture2D whiteTexture;
 
         public int quadIndexCount;
-        public QuadVertex[] quadVertexBase;
+        public List<QuadVertex> quadVertexBase;
         public int quadVertexBasePtr = 0;
         public TextureSlots textureSlots;
 
         public float[] getQuadVertexBaseData() {
-            float[] result = new float[0];
-            for (int i = 0; i < quadVertexBasePtr; i++) {
-                float[] element = quadVertexBase[i].getData();
-                float[] temp = new float[result.length + element.length];
+            float[] temp = new float[quadVertexBase.size() * QuadVertex.getSize()];
 
-                System.arraycopy(result, 0, temp, 0, result.length);
-                System.arraycopy(element, 0, temp, result.length, element.length);
-
-                result = temp;
+            for (int i = 0; i < quadVertexBase.size(); i++) {
+                quadVertexBase.get(i).getData(temp, i * 10);
             }
-            return result;
+
+            return temp;
         }
 
         public void delete() {
