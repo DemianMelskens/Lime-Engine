@@ -6,9 +6,9 @@ import org.lime.core.renderer.buffers.vertices.QuadVertex;
 
 import static org.lwjgl.opengl.GL46.*;
 
-public class OpenGLVertexBuffer extends VertexBuffer {
+public class OpenGLVertexBuffer implements VertexBuffer {
 
-    private int rendererId;
+    private final int rendererId;
     private BufferLayout layout;
 
     public OpenGLVertexBuffer(int size) {

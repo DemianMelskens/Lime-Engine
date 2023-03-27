@@ -18,6 +18,7 @@ public class OpenGLTexture2D implements Texture2D {
     private int dataFormat;
 
     public OpenGLTexture2D(int width, int height) {
+        this.path = "generated";
         this.width = width;
         this.height = height;
         determineFormats(4);

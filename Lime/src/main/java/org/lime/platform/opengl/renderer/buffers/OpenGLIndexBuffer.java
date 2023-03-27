@@ -6,17 +6,12 @@ import org.lime.core.renderer.buffers.IndexBuffer;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL45.glCreateBuffers;
 
-public class OpenGLIndexBuffer extends IndexBuffer {
-    private int rendererId;
+public class OpenGLIndexBuffer implements IndexBuffer {
+    private final int rendererId;
     @Getter
-    private int count;
+    private final int count;
 
     public OpenGLIndexBuffer(int[] indices) {
-        super(indices);
-    }
-
-    @Override
-    protected void init(int[] indices) {
         this.count = indices.length;
         this.rendererId = glCreateBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId);
