@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'org.lime'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 project.ext.lwjglVersion = "3.3.1"
 project.ext.lwjglNatives = "natives-windows"
@@ -111,7 +111,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'org.lime'
             artifactId = 'lime'
-            version = '1.0'
+            version = version
 
             from components.java
         }

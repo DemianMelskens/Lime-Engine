@@ -4,11 +4,11 @@ plugins {
 }
 
 ext {
-    javaMainClass = "org.lime.sandbox.Sandbox"
+    javaMainClass = "org.lime.editor.Editor"
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group 'org.lime.editor'
+version '1.0.0'
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.lime:lime:1.0'
+    implementation "org.lime:lime:1.0.0"
 }
 
 application {

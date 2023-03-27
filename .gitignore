@@ -8,10 +8,10 @@ imgui.ini
 /Lime/build/
 /Lime/build/classes/java/main/
 
-/Sandbox/.gradle/
-/Sandbox/gradle/
-/Sandbox/build/
-/Sandbox/build/classes/java/main/
+/LimeEditor/.gradle/
+/LimeEditor/gradle/
+/LimeEditor/build/
+/LimeEditor/build/classes/java/main/
 
 /Sandbox2D/.gradle/
 /Sandbox2D/gradle/

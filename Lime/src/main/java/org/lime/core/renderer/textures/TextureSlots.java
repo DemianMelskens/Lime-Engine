@@ -7,7 +7,7 @@ import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 
 public class TextureSlots {
     public static final int MAX_SLOTS = 32;
-    private List<Texture2D> slots;
+    private final List<Texture2D> slots;
 
     public static TextureSlots create() {
         return new TextureSlots();
@@ -18,7 +18,7 @@ public class TextureSlots {
     }
 
     public int add(Texture2D texture) {
-        LM_CORE_ASSERT(slots.size() > MAX_SLOTS, "Maximum supported textures reached!");
+        LM_CORE_ASSERT(slots.size() <= MAX_SLOTS, "Maximum supported textures reached!");
 
         int index = slots.indexOf(texture);
         if (index != -1) {

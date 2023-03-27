@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.lime:lime:1.0'
+    implementation 'org.lime:lime:1.0.0'
 }
 
 application {
