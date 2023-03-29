@@ -22,6 +22,8 @@ import org.lime.core.time.TimeStep;
 
 import java.util.Objects;
 
+import static org.lime.core.utils.Log.LM_CORE_WARN;
+
 public class EditorLayer extends Layer {
     private OrthographicCameraController cameraController;
     private Color color;
@@ -30,6 +32,8 @@ public class EditorLayer extends Layer {
     private FrameBuffer frameBuffer;
     private SubTexture2D chairSprite;
     private ImVec2 viewPortSize;
+    private boolean viewportFocused = false;
+    private boolean viewportHovered = false;
 
     public EditorLayer() {
         super("Example");
@@ -57,7 +61,8 @@ public class EditorLayer extends Layer {
     @Override
     public void onUpdate(TimeStep timestep) {
         Renderer2D.resetStatistics();
-        cameraController.onUpdate(timestep);
+        if (viewportFocused)
+            cameraController.onUpdate(timestep);
 
         frameBuffer.bind();
         RenderCommand.setClearColor(0.1f, 0.1f, 0.1f, 1f);
@@ -127,18 +132,22 @@ public class EditorLayer extends Layer {
         ImGui.text(String.format("%d index Count", Renderer2D.getStatistics().getTotalIndexCount()));
         ImGui.end();
 
-        ImGui.begin("Viewport");
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0.0f, 0.0f);
+        ImGui.begin("Viewport");
+        viewportFocused = ImGui.isWindowFocused();
+        viewportHovered = ImGui.isWindowHovered();
+        Application.get().getImGuiLayer().setBlockEvents(!viewportFocused || !viewportHovered);
 
         ImVec2 viewPortPanelSize = ImGui.getContentRegionAvail();
         if (!Objects.equals(viewPortSize, viewPortPanelSize)) {
             frameBuffer.resize((int) viewPortPanelSize.x, (int) viewPortPanelSize.y);
             viewPortSize = viewPortPanelSize;
+            cameraController.onResize(viewPortPanelSize.x, viewPortPanelSize.y);
         }
-        ImGui.image(frameBuffer.getColorAttachment(), viewPortPanelSize.x, viewPortPanelSize.y, 0, 1, 1, 0);
+        ImGui.image(frameBuffer.getColorAttachment(), viewPortSize.x, viewPortSize.y, 0, 1, 1, 0);
 
-        ImGui.popStyleVar();
         ImGui.end();
+        ImGui.popStyleVar();
     }
 
     @Override

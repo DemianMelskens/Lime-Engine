@@ -3,7 +3,6 @@ package org.lime.platform.opengl.renderer.buffers;
 import org.lime.core.renderer.buffers.FrameBuffer;
 
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
-import static org.lime.core.utils.Log.LM_CORE_TRACE;
 import static org.lwjgl.opengl.GL46.*;
 
 
@@ -49,9 +48,7 @@ public class OpenGLFrameBuffer implements FrameBuffer {
     @Override
     public void invalidate() {
         if (rendererId != 0) {
-            glDeleteFramebuffers(rendererId);
-            glDeleteTextures(colorAttachment);
-            glDeleteTextures(depthAttachment);
+            shutdown();
         }
 
         rendererId = glCreateFramebuffers();

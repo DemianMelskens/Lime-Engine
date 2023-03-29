@@ -10,6 +10,8 @@ import org.lime.core.renderer.RendererAPI;
 import org.lime.core.time.Time;
 import org.lime.core.time.TimeStep;
 
+import java.util.ListIterator;
+
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 
 public class Application {
@@ -22,7 +24,7 @@ public class Application {
     private float lastFrameTime;
 
 
-    public static Application getInstance() {
+    public static Application get() {
         return instance;
     }
 
@@ -46,7 +48,7 @@ public class Application {
     }
 
     public static Window getWindow() {
-        return getInstance().window;
+        return get().window;
     }
 
     public void run() {
@@ -81,14 +83,20 @@ public class Application {
         layer.onAttach();
     }
 
+    public ImGuiLayer getImGuiLayer() {
+        return imGuiLayer;
+    }
+
     public void onEvent(Event event) {
         EventDispatcher dispatcher = new EventDispatcher(event);
         dispatcher.dispatch(this::onWindowCloseEvent);
         dispatcher.dispatch(this::onWindowResizedEvent);
 
-        for (Layer layer : layerStack) {
+        ListIterator<Layer> iterator = layerStack.reverseIterator();
+        while (iterator.hasPrevious()) {
+            Layer layer = iterator.previous();
             layer.onEvent(event);
-            if (event.isHandled())
+            if (event.isHandled)
                 break;
         }
     }

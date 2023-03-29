@@ -12,7 +12,7 @@ public class EventDispatcher {
 
     public <T extends Event> boolean dispatch(Predicate<T> predicate) {
         try {
-            this.event.handled = predicate.test((T) this.event);
+            this.event.isHandled = predicate.test((T) this.event);
             return true;
         } catch (ClassCastException ignored) {
         }

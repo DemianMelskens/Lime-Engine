@@ -7,7 +7,10 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import lombok.Setter;
 import org.lime.core.Layer;
+import org.lime.core.events.Event;
+import org.lime.core.events.EventCategory;
 import org.lime.core.time.TimeStep;
 import org.lwjgl.glfw.GLFW;
 
@@ -15,6 +18,9 @@ public class ImGuiLayer extends Layer {
 
     private final ImGuiImplGlfw imGuiGlfw;
     private final ImGuiImplGl3 imGuiGl3;
+
+    @Setter
+    private boolean blockEvents = true;
 
     public ImGuiLayer() {
         super("ImGui Layer");
@@ -72,5 +78,14 @@ public class ImGuiLayer extends Layer {
 
     @Override
     public void onImGuiRender() {
+    }
+
+    @Override
+    public void onEvent(Event event) {
+        if (blockEvents) {
+            ImGuiIO io = ImGui.getIO();
+            event.isHandled |= event.isInCategory(EventCategory.MOUSE) & io.getWantCaptureMouse();
+            event.isHandled |= event.isInCategory(EventCategory.KEYBOARD) & io.getWantCaptureKeyboard();
+        }
     }
 }

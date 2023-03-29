@@ -2,6 +2,7 @@ package org.lime.core;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
@@ -42,6 +43,10 @@ public class LayerStack implements Iterable<Layer> {
     @Override
     public Iterator<Layer> iterator() {
         return layers.iterator();
+    }
+
+    public ListIterator<Layer> reverseIterator() {
+        return layers.listIterator(layers.size());
     }
 
     @Override

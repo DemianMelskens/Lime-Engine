@@ -13,21 +13,21 @@ import static org.lwjgl.glfw.GLFW.*;
 public class WindowsInput extends Input {
     @Override
     protected boolean internalIsKeyPressed(int keycode) {
-        long window = Application.getInstance().getWindow().getWindowHandle();
+        long window = Application.getWindow().getWindowHandle();
         int state = GLFW.glfwGetKey(window, keycode);
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
 
     @Override
     protected boolean internalIsMouseButtonPressed(int button) {
-        long window = Application.getInstance().getWindow().getWindowHandle();
+        long window = Application.getWindow().getWindowHandle();
         int state = GLFW.glfwGetMouseButton(window, button);
         return state == GLFW_PRESS;
     }
 
     @Override
     protected Tuple<Double, Double> internalGetMousePosition() {
-        long window = Application.getInstance().getWindow().getWindowHandle();
+        long window = Application.getWindow().getWindowHandle();
         DoubleBuffer xPos = BufferUtils.createDoubleBuffer(1);
         DoubleBuffer yPos = BufferUtils.createDoubleBuffer(1);
         glfwGetCursorPos(window, xPos, yPos);

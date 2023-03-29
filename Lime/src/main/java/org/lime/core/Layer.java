@@ -21,6 +21,5 @@ public abstract class Layer {
 
     public abstract void onImGuiRender();
 
-    public void onEvent(Event event) {
-    }
+    public abstract void onEvent(Event event);
 }
