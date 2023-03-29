@@ -73,7 +73,6 @@ public class WindowsWindow extends Window {
 
         glfwSetWindowCloseCallback(windowHandle, window -> {
             eventCallback.accept(new WindowCloseEvent());
-            shutdown();
         });
 
         glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
@@ -111,7 +110,7 @@ public class WindowsWindow extends Window {
     }
 
     @Override
-    protected void shutdown() {
+    public void shutdown() {
         glfwDestroyWindow(windowHandle);
     }
 }

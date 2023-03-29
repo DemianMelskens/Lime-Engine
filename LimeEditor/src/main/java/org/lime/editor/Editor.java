@@ -5,7 +5,7 @@ import org.lime.core.Application;
 public class Editor extends Application {
 
     private Editor() {
-        super();
+        super("Lime Editor");
         pushLayer(new EditorLayer());
     }
 

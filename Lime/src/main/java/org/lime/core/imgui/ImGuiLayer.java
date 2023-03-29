@@ -7,7 +7,6 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
-import imgui.type.ImBoolean;
 import org.lime.core.Layer;
 import org.lime.core.time.TimeStep;
 import org.lwjgl.glfw.GLFW;
@@ -52,7 +51,6 @@ public class ImGuiLayer extends Layer {
 
     @Override
     public void onUpdate(TimeStep timestep) {
-
     }
 
     public void begin() {

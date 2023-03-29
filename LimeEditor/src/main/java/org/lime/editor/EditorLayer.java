@@ -3,8 +3,6 @@ package org.lime.editor;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
-import imgui.flag.ImGuiCond;
-import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
@@ -12,7 +10,6 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lime.core.Application;
 import org.lime.core.Layer;
-import org.lime.core.Window;
 import org.lime.core.controllers.OrthographicCameraController;
 import org.lime.core.events.Event;
 import org.lime.core.renderer.Color;
@@ -23,14 +20,16 @@ import org.lime.core.renderer.textures.SubTexture2D;
 import org.lime.core.renderer.textures.Texture2D;
 import org.lime.core.time.TimeStep;
 
+import java.util.Objects;
+
 public class EditorLayer extends Layer {
     private OrthographicCameraController cameraController;
     private Color color;
     private Texture2D checkerBoardTexture;
     private Texture2D spriteSheet;
-
     private FrameBuffer frameBuffer;
     private SubTexture2D chairSprite;
+    private ImVec2 viewPortSize;
 
     public EditorLayer() {
         super("Example");
@@ -44,14 +43,15 @@ public class EditorLayer extends Layer {
         this.spriteSheet = Texture2D.create("/textures/RPG_sheet.png");
         this.chairSprite = SubTexture2D.create(spriteSheet, new Vector2f(7.0f, 6.0f), new Vector2f(128.0f, 128.0f));
         FrameBuffer.Specification specification = FrameBuffer.createSpec(
-                Application.getInstance().getWindow().getWidth(),
-                Application.getInstance().getWindow().getHeight()
+                Application.getWindow().getWidth(),
+                Application.getWindow().getHeight()
         );
         this.frameBuffer = FrameBuffer.create(specification);
     }
 
     @Override
     public void onDetach() {
+        frameBuffer.shutdown();
     }
 
     @Override
@@ -103,6 +103,13 @@ public class EditorLayer extends Layer {
         ImGui.begin("dockspace", new ImBoolean(true), windowFlags);
         ImGui.popStyleVar(3);
 
+        if (ImGui.beginMenuBar()) {
+            if (ImGui.beginMenu("File")) {
+                ImGui.endMenu();
+            }
+            ImGui.endMenuBar();
+        }
+
         ImGui.dockSpace(ImGui.getID("Dockspace"));
 
         ImGui.end();
@@ -121,7 +128,16 @@ public class EditorLayer extends Layer {
         ImGui.end();
 
         ImGui.begin("Viewport");
-        ImGui.image(frameBuffer.getColorAttachment(), 1280.0f, 720.0f);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0.0f, 0.0f);
+
+        ImVec2 viewPortPanelSize = ImGui.getContentRegionAvail();
+        if (!Objects.equals(viewPortSize, viewPortPanelSize)) {
+            frameBuffer.resize((int) viewPortPanelSize.x, (int) viewPortPanelSize.y);
+            viewPortSize = viewPortPanelSize;
+        }
+        ImGui.image(frameBuffer.getColorAttachment(), viewPortPanelSize.x, viewPortPanelSize.y, 0, 1, 1, 0);
+
+        ImGui.popStyleVar();
         ImGui.end();
     }
 

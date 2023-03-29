@@ -27,12 +27,16 @@ public class Application {
     }
 
     protected Application() {
+        this("Lime Engine");
+    }
+
+    protected Application(String name) {
         RendererAPI.setType(RendererAPI.Type.Open_GL);
         LM_CORE_ASSERT(instance == null, "There can only be one application instance");
         instance = this;
         this.isRunning = false;
         this.layerStack = new LayerStack();
-        this.window = Window.create();
+        this.window = Window.create(name);
         this.window.setEventCallback(this::onEvent);
 
         Renderer.init();
@@ -41,8 +45,8 @@ public class Application {
         pushOverlay(imGuiLayer);
     }
 
-    public Window getWindow() {
-        return window;
+    public static Window getWindow() {
+        return getInstance().window;
     }
 
     public void run() {
@@ -90,8 +94,6 @@ public class Application {
     }
 
     private boolean onWindowCloseEvent(WindowCloseEvent event) {
-        this.isRunning = false;
-        this.layerStack.forEach(Layer::onDetach);
         this.shutdown();
         return true;
     }
@@ -107,7 +109,10 @@ public class Application {
         return false;
     }
 
-    private void shutdown() {
+    public void shutdown() {
+        window.shutdown();
+        layerStack.forEach(Layer::onDetach);
         Renderer.shutdown();
+        isRunning = false;
     }
 }

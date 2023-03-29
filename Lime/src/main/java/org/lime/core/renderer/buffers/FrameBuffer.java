@@ -1,8 +1,5 @@
 package org.lime.core.renderer.buffers;
 
-import lombok.AllArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.lime.core.renderer.Renderer;
 import org.lime.platform.opengl.renderer.buffers.OpenGLFrameBuffer;
 
@@ -28,10 +25,10 @@ public interface FrameBuffer {
 
     void unbind();
 
-    void resize();
+    void invalidate();
 
-    @Setter
-    @Accessors(chain = true)
+    void resize(int width, int height);
+
     class Specification {
         public int width;
         public int height;

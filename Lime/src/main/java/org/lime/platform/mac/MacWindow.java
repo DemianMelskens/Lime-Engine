@@ -24,7 +24,7 @@ public class MacWindow extends Window {
     }
 
     @Override
-    protected void shutdown() {
+    public void shutdown() {
 
     }
 }

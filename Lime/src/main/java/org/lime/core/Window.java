@@ -14,8 +14,8 @@ import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 @Getter
 public abstract class Window {
 
-    public static Window create() {
-        return create("Lime Engine", 1280, 720);
+    public static Window create(String title) {
+        return create(title, 1280, 720);
     }
 
     public static Window create(String title, int width, int height) {
@@ -50,5 +50,5 @@ public abstract class Window {
 
     protected abstract void onUpdate();
 
-    protected abstract void shutdown();
+    public abstract void shutdown();
 }
