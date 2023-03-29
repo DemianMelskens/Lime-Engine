@@ -2,7 +2,9 @@ package org.lime.editor;
 
 import imgui.ImGui;
 import imgui.ImGuiViewport;
+import imgui.ImGuiWindowClass;
 import imgui.ImVec2;
+import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
@@ -133,13 +135,18 @@ public class EditorLayer extends Layer {
         ImGui.end();
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0.0f, 0.0f);
+
+        ImGuiWindowClass viewPortClass = new ImGuiWindowClass();
+        viewPortClass.addDockNodeFlagsOverrideSet(ImGuiDockNodeFlags.AutoHideTabBar);
+        ImGui.setNextWindowClass(viewPortClass);
         ImGui.begin("Viewport");
+
         viewportFocused = ImGui.isWindowFocused();
         viewportHovered = ImGui.isWindowHovered();
         Application.get().getImGuiLayer().setBlockEvents(!viewportFocused || !viewportHovered);
 
         ImVec2 viewPortPanelSize = ImGui.getContentRegionAvail();
-        if (!Objects.equals(viewPortSize, viewPortPanelSize)) {
+        if (!Objects.equals(viewPortSize, viewPortPanelSize) && viewPortPanelSize.x > 0 && viewPortPanelSize.y > 0) {
             frameBuffer.resize((int) viewPortPanelSize.x, (int) viewPortPanelSize.y);
             viewPortSize = viewPortPanelSize;
             cameraController.onResize(viewPortPanelSize.x, viewPortPanelSize.y);

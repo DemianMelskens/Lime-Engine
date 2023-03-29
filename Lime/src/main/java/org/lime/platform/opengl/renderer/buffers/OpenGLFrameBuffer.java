@@ -3,10 +3,12 @@ package org.lime.platform.opengl.renderer.buffers;
 import org.lime.core.renderer.buffers.FrameBuffer;
 
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
+import static org.lime.core.utils.Log.LM_CORE_WARN;
 import static org.lwjgl.opengl.GL46.*;
 
 
 public class OpenGLFrameBuffer implements FrameBuffer {
+    private static int MAX_FRAME_BUFFER_SIZE = 8192;
     private int rendererId = 0;
     private int colorAttachment = 0;
     private int depthAttachment = 0;
@@ -73,6 +75,11 @@ public class OpenGLFrameBuffer implements FrameBuffer {
 
     @Override
     public void resize(int width, int height) {
+        if (width <= 0 || height <= 0 || width > MAX_FRAME_BUFFER_SIZE || height > MAX_FRAME_BUFFER_SIZE) {
+            LM_CORE_WARN(String.format("Attempted to resize framebuffer to %d, %d", width, height));
+            return;
+        }
+
         specification.width = width;
         specification.height = height;
         invalidate();
