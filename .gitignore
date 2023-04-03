@@ -8,6 +8,11 @@ imgui.ini
 /Lime/build/
 /Lime/build/classes/java/main/
 
+/Lentt/.gradle/
+/Lentt/gradle/
+/Lentt/build/
+/Lentt/build/classes/java/main/
+
 /LimeEditor/.gradle/
 /LimeEditor/gradle/
 /LimeEditor/build/

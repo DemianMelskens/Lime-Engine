@@ -2,14 +2,10 @@ package org.lime.editor;
 
 import imgui.ImGui;
 import imgui.ImGuiViewport;
-import imgui.ImGuiWindowClass;
 import imgui.ImVec2;
-import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.lime.core.Application;
 import org.lime.core.Layer;
 import org.lime.core.controllers.OrthographicCameraController;
@@ -18,21 +14,23 @@ import org.lime.core.renderer.Color;
 import org.lime.core.renderer.RenderCommand;
 import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.buffers.FrameBuffer;
-import org.lime.core.renderer.textures.SubTexture2D;
 import org.lime.core.renderer.textures.Texture2D;
+import org.lime.core.scene.Entity;
+import org.lime.core.scene.Scene;
+import org.lime.core.scene.components.SpriteRendererComponent;
+import org.lime.core.scene.components.TransformComponent;
 import org.lime.core.time.TimeStep;
 
 import java.util.Objects;
 
-import static org.lime.core.utils.Log.LM_CORE_WARN;
+import static org.lime.core.utils.Log.LM_CORE_DEBUG;
 
 public class EditorLayer extends Layer {
+    private Scene activeScene;
+    private Entity entity;
     private OrthographicCameraController cameraController;
-    private Color color;
-    private Texture2D checkerBoardTexture;
     private Texture2D spriteSheet;
     private FrameBuffer frameBuffer;
-    private SubTexture2D chairSprite;
     private ImVec2 viewPortSize;
     private boolean viewportFocused = false;
     private boolean viewportHovered = false;
@@ -40,19 +38,21 @@ public class EditorLayer extends Layer {
     public EditorLayer() {
         super("Example");
         this.cameraController = new OrthographicCameraController(1280.0f / 720.0f, false);
-        this.color = Color.create(0.8f, 0.2f, 0.3f, 1.0f);
     }
 
     @Override
     public void onAttach() {
-        this.checkerBoardTexture = Texture2D.create("/textures/Checkerboard.png");
         this.spriteSheet = Texture2D.create("/textures/RPG_sheet.png");
-        this.chairSprite = SubTexture2D.create(spriteSheet, new Vector2f(7.0f, 6.0f), new Vector2f(128.0f, 128.0f));
         FrameBuffer.Specification specification = FrameBuffer.createSpec(
                 Application.getWindow().getWidth(),
                 Application.getWindow().getHeight()
         );
         this.frameBuffer = FrameBuffer.create(specification);
+        this.activeScene = new Scene();
+
+        entity = activeScene.createEntity();
+        entity.addComponent(new TransformComponent());
+        entity.addComponent(new SpriteRendererComponent(Color.create(0.8f, 0.2f, 0.3f, 1.0f)));
     }
 
     @Override
@@ -66,29 +66,15 @@ public class EditorLayer extends Layer {
         if (viewportFocused)
             cameraController.onUpdate(timestep);
 
+
         frameBuffer.bind();
         RenderCommand.setClearColor(0.1f, 0.1f, 0.1f, 1f);
         RenderCommand.clear();
 
         Renderer2D.beginScene(cameraController.getCamera());
-        Renderer2D.drawQuad(new Vector3f(-1.0f, 0.0f, 0.0f), new Vector2f(0.8f, 0.8f), color.getValue());
-        Renderer2D.drawQuad(new Vector3f(0.5f, -0.5f, 0.0f), new Vector2f(0.5f, 0.75f), Color.blue().getValue());
-        Renderer2D.drawQuad(new Vector3f(0.0f, 0.0f, -0.1f), new Vector2f(20.0f, 20.0f), checkerBoardTexture, 10.0f);
-
-        for (float y = -5.0f; y < 5.0f; y += 0.5f) {
-            for (float x = -5.0f; x < 5.0f; x += 0.5f) {
-                Renderer2D.drawQuad(
-                        new Vector3f(x, y, 0.0f),
-                        new Vector2f(0.45f, 0.45f),
-                        Color.create((x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f).getValue()
-                );
-            }
-        }
+        activeScene.onUpdate(timestep);
         Renderer2D.endScene();
 
-        Renderer2D.beginScene(cameraController.getCamera());
-        Renderer2D.drawQuad(new Vector3f(0.0f, 0.0f, 0.1f), new Vector2f(1.0f, 1.0f), chairSprite);
-        Renderer2D.endScene();
         frameBuffer.unbind();
     }
 
@@ -112,6 +98,9 @@ public class EditorLayer extends Layer {
 
         if (ImGui.beginMenuBar()) {
             if (ImGui.beginMenu("File")) {
+                if (ImGui.menuItem("close")) {
+                    Application.get().shutdown();
+                }
                 ImGui.endMenu();
             }
             ImGui.endMenuBar();
@@ -121,7 +110,12 @@ public class EditorLayer extends Layer {
 
         ImGui.end();
 
-        ImGui.begin("Settings");
+        ImGui.begin("Project");
+        ImGui.end();
+
+        ImGui.begin("Inspector");
+
+        Color color = entity.getComponent(SpriteRendererComponent.class).color;
         float[] value = new float[]{color.r(), color.g(), color.b(), color.a()};
 
         if (ImGui.colorEdit4("Color", value)) {
@@ -135,23 +129,19 @@ public class EditorLayer extends Layer {
         ImGui.end();
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0.0f, 0.0f);
-
-        ImGuiWindowClass viewPortClass = new ImGuiWindowClass();
-        viewPortClass.addDockNodeFlagsOverrideSet(ImGuiDockNodeFlags.AutoHideTabBar);
-        ImGui.setNextWindowClass(viewPortClass);
-        ImGui.begin("Viewport");
+        ImGui.begin("Scene");
 
         viewportFocused = ImGui.isWindowFocused();
         viewportHovered = ImGui.isWindowHovered();
         Application.get().getImGuiLayer().setBlockEvents(!viewportFocused || !viewportHovered);
 
         ImVec2 viewPortPanelSize = ImGui.getContentRegionAvail();
+        ImGui.image(frameBuffer.getColorAttachment(), viewPortPanelSize.x, viewPortPanelSize.y, 0, 1, 1, 0);
         if (!Objects.equals(viewPortSize, viewPortPanelSize) && viewPortPanelSize.x > 0 && viewPortPanelSize.y > 0) {
             frameBuffer.resize((int) viewPortPanelSize.x, (int) viewPortPanelSize.y);
             viewPortSize = viewPortPanelSize;
             cameraController.onResize(viewPortPanelSize.x, viewPortPanelSize.y);
         }
-        ImGui.image(frameBuffer.getColorAttachment(), viewPortSize.x, viewPortSize.y, 0, 1, 1, 0);
 
         ImGui.end();
         ImGui.popStyleVar();

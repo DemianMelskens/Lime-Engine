@@ -139,7 +139,7 @@ public class Renderer2D {
                 .translate(position)
                 .scale(new Vector3f(size, 1.0f));
 
-        drawTransformedQuad(transform, texture, color, tilingFactor);
+        drawQuad(transform, texture, color, tilingFactor);
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, SubTexture2D subTexture, Vector4f color, float tilingFactor) {
@@ -147,7 +147,36 @@ public class Renderer2D {
                 .translate(position)
                 .scale(new Vector3f(size, 1.0f));
 
-        drawTransformedQuad(transform, subTexture.getTexture(), subTexture.getTextureCoordinates(), color, tilingFactor);
+        drawQuad(transform, subTexture.getTexture(), subTexture.getTextureCoordinates(), color, tilingFactor);
+    }
+
+    public static void drawQuad(Matrix4f transform, Vector4f color) {
+        drawQuad(transform, data.whiteTexture, Data.QUAD_TEXTURE_COORDS, color, 1.0f);
+    }
+
+    public static void drawQuad(Matrix4f transform, Texture2D texture, Vector4f color, float tilingFactor) {
+        drawQuad(transform, texture, Data.QUAD_TEXTURE_COORDS, color, tilingFactor);
+    }
+
+    public static void drawQuad(Matrix4f transform, Texture2D texture, Vector2f[] textureCoordinates, Vector4f color, float tilingFactor) {
+        if (data.quadIndexCount >= Data.MAX_INDICES)
+            flush();
+
+        float textureIndex = data.textureSlots.add(texture);
+
+        for (int i = 0; i < 4; i++) {
+            data.quadVertexBase.add(new QuadVertex(
+                    new Vector4f(Data.QUAD_VERTEX_POSITIONS[i]).mul(transform),
+                    color,
+                    textureCoordinates[i],
+                    textureIndex,
+                    tilingFactor
+            ));
+        }
+
+        data.quadIndexCount += 6;
+
+        data.statistics.quadCount++;
     }
 
     public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Vector4f color) {
@@ -184,7 +213,7 @@ public class Renderer2D {
                 .rotate(radians, new Vector3f(0.0f, 0.0f, 1.0f))
                 .scale(new Vector3f(size, 1.0f));
 
-        drawTransformedQuad(transform, texture, color, tilingFactor);
+        drawQuad(transform, texture, color, tilingFactor);
     }
 
     public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, SubTexture2D subTexture, Vector4f color, float tilingFactor) {
@@ -193,32 +222,7 @@ public class Renderer2D {
                 .rotate(radians, new Vector3f(0.0f, 0.0f, 1.0f))
                 .scale(new Vector3f(size, 1.0f));
 
-        drawTransformedQuad(transform, subTexture.getTexture(), subTexture.getTextureCoordinates(), color, tilingFactor);
-    }
-
-    private static void drawTransformedQuad(Matrix4f transform, Texture2D texture, Vector4f color, float tilingFactor) {
-        drawTransformedQuad(transform, texture, Data.QUAD_TEXTURE_COORDS, color, tilingFactor);
-    }
-
-    private static void drawTransformedQuad(Matrix4f transform, Texture2D texture, Vector2f[] textureCoordinates, Vector4f color, float tilingFactor) {
-        if (data.quadIndexCount >= Data.MAX_INDICES)
-            flush();
-
-        float textureIndex = data.textureSlots.add(texture);
-
-        for (int i = 0; i < 4; i++) {
-            data.quadVertexBase.add(new QuadVertex(
-                    new Vector4f(Data.QUAD_VERTEX_POSITIONS[i]).mul(transform),
-                    color,
-                    textureCoordinates[i],
-                    textureIndex,
-                    tilingFactor
-            ));
-        }
-
-        data.quadIndexCount += 6;
-
-        data.statistics.quadCount++;
+        drawQuad(transform, subTexture.getTexture(), subTexture.getTextureCoordinates(), color, tilingFactor);
     }
 
     public static void resetStatistics() {

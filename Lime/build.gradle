@@ -12,6 +12,7 @@ project.ext.lwjglNatives = "natives-windows"
 project.ext.jomlVersion = "1.10.5"
 project.ext.jomlPrimVersion = "1.10.0"
 project.ext.imguiVersion = "1.86.7"
+project.ext.artemisVersion = "2.3.0"
 
 repositories {
     mavenCentral()
@@ -23,9 +24,13 @@ dependencies {
     api "io.github.spair:imgui-java-binding:$imguiVersion"
     api "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
     api "io.github.spair:imgui-java-natives-windows:$imguiVersion"
+
     // JOML
     api "org.joml:joml:${jomlVersion}"
     api "org.joml:joml-primitives:${jomlPrimVersion}"
+
+    // Lentt
+    api "org.lime.lentt:lentt:1.0.0"
 
     // Logging
     implementation 'org.slf4j:slf4j-api:2.0.6'
