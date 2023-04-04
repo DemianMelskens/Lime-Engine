@@ -4,14 +4,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Registry {
-    int entityCount;
-    Map<Integer, Set<Class<?>>> entities;
-    Map<Class<?>, Map<Integer, Object>> pools;
+    private int entityCount;
+    private final Map<Integer, Set<Class<?>>> entities;
+    private final Map<Class<?>, Map<Integer, Object>> pools;
 
     public Registry() {
         this.pools = new HashMap<>();
@@ -32,6 +30,10 @@ public class Registry {
     }
 
     public <T> T emplace(int entity, T component) {
+        if (has(entity, component.getClass())) {
+            return null;
+        }
+
         Class<?> clazz = component.getClass();
         getPool(clazz).put(entity, component);
         entities.get(entity).add(clazz);
@@ -46,17 +48,23 @@ public class Registry {
         return entities.get(entity).contains(clazz);
     }
 
-    public <T> View<T> view(Class<T> clazz) {
-        return new View<>(entities, (Map<Integer, T>) getPool(clazz));
+    public View view(Class<?> clazz) {
+        Set<Integer> filteredEntities = entities.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().contains(clazz))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+        return new View(filteredEntities, this);
     }
 
     public Group group(Class<?>... classes) {
-        Map<Class<?>, Map<Integer, Object>> groups = Stream.of(classes)
-                .collect(Collectors.toMap(
-                        Function.identity(),
-                        this::getPool
-                ));
-        return new Group(entities, groups);
+        Set<Integer> filteredEntities = entities.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().containsAll(Set.of(classes)))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        return new Group(filteredEntities, this);
     }
 
     public void remove(int entity, Class<?> clazz) {

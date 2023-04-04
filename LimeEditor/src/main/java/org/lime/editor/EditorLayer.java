@@ -15,9 +15,9 @@ import org.lime.core.renderer.Color;
 import org.lime.core.renderer.RenderCommand;
 import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.buffers.FrameBuffer;
-import org.lime.core.renderer.textures.Texture2D;
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.Scene;
+import org.lime.core.scene.components.CameraComponent;
 import org.lime.core.scene.components.SpriteRendererComponent;
 import org.lime.core.scene.components.TagComponent;
 import org.lime.core.scene.components.TransformComponent;
@@ -27,13 +27,15 @@ import java.util.Objects;
 
 public class EditorLayer extends Layer {
     private Scene activeScene;
-    private Entity entity;
+    private Entity squareEntity;
+    private Entity cameraEntity;
+    private Entity secondCamera;
     private OrthographicCameraController cameraController;
-    private Texture2D spriteSheet;
     private FrameBuffer frameBuffer;
     private ImVec2 viewPortSize;
     private boolean viewportFocused = false;
     private boolean viewportHovered = false;
+    private boolean primaryCamera = false;
 
     public EditorLayer() {
         super("Example");
@@ -42,7 +44,6 @@ public class EditorLayer extends Layer {
 
     @Override
     public void onAttach() {
-        this.spriteSheet = Texture2D.create("/textures/RPG_sheet.png");
         FrameBuffer.Specification specification = FrameBuffer.createSpec(
                 Application.getWindow().getWidth(),
                 Application.getWindow().getHeight()
@@ -50,8 +51,15 @@ public class EditorLayer extends Layer {
         this.frameBuffer = FrameBuffer.create(specification);
         this.activeScene = new Scene();
 
-        entity = activeScene.createEntity("Square");
-        entity.addComponent(new SpriteRendererComponent(Color.create(0.8f, 0.2f, 0.3f, 1.0f)));
+        squareEntity = activeScene.createEntity("Square");
+        squareEntity.addComponent(new SpriteRendererComponent(Color.create(0.8f, 0.2f, 0.3f, 1.0f)));
+
+        cameraEntity = activeScene.createEntity("Camera");
+        cameraEntity.addComponent(new CameraComponent(new Matrix4f().ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f)));
+
+        secondCamera = activeScene.createEntity("Clip space Camera");
+        var cc = secondCamera.addComponent(new CameraComponent(new Matrix4f().ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f)));
+        cc.isPrimary = false;
     }
 
     @Override
@@ -70,9 +78,7 @@ public class EditorLayer extends Layer {
         RenderCommand.setClearColor(0.1f, 0.1f, 0.1f, 1f);
         RenderCommand.clear();
 
-        Renderer2D.beginScene(cameraController.getCamera());
         activeScene.onUpdate(timestep);
-        Renderer2D.endScene();
 
         frameBuffer.unbind();
     }
@@ -114,17 +120,32 @@ public class EditorLayer extends Layer {
 
         ImGui.begin("Inspector");
 
-        ImGui.separator();
-        if (entity.isValid()) {
-            ImGui.text(entity.getComponent(TagComponent.class).tag);
+        if (squareEntity.isValid()) {
+            ImGui.separator();
+            ImGui.text(squareEntity.getComponent(TagComponent.class).tag);
 
-            Color color = entity.getComponent(SpriteRendererComponent.class).color;
+            Color color = squareEntity.getComponent(SpriteRendererComponent.class).color;
             float[] colorValue = new float[]{color.r(), color.g(), color.b(), color.a()};
             if (ImGui.colorEdit4("Color", colorValue)) {
                 color.set(colorValue[0], colorValue[1], colorValue[2], colorValue[3]);
             }
+            ImGui.separator();
         }
-        ImGui.separator();
+
+        if (cameraEntity.isValid()) {
+            Matrix4f transform = cameraEntity.getComponent(TransformComponent.class).transform;
+            float[] transformValue = new float[]{transform.m30(), transform.m31(), transform.m32()};
+            if (ImGui.dragFloat3("Camera Transform", transformValue)) {
+                transform.m30(2.0f);
+                transform.m31(2.0f);
+                transform.m32(2.0f);
+            }
+
+            if (ImGui.checkbox("Camera A", primaryCamera)) {
+                cameraEntity.getComponent(CameraComponent.class).isPrimary = primaryCamera;
+                secondCamera.getComponent(CameraComponent.class).isPrimary = !primaryCamera;
+            }
+        }
 
         ImGui.text(String.format("%d drawCalls", Renderer2D.getStatistics().drawCalls));
         ImGui.text(String.format("%d quad Count", Renderer2D.getStatistics().quadCount));

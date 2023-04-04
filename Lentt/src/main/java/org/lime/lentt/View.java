@@ -1,36 +1,35 @@
 package org.lime.lentt;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-public class View<T> implements Iterable<Integer> {
-    Map<Integer, Set<Class<?>>> entities;
-    Map<Integer, T> pool;
+public class View implements Iterable<Integer> {
+    private final Set<Integer> entities;
+    private final Registry registry;
 
-    public View(Map<Integer, Set<Class<?>>> entities, Map<Integer, T> pool) {
+    public View(Set<Integer> entities, Registry registry) {
         this.entities = entities;
-        this.pool = pool;
+        this.registry = registry;
     }
 
-    public T get(int entity) {
-        return pool.get(entity);
+    public <T> T get(int entity, Class<T> clazz) {
+        return registry.get(entity, clazz);
     }
 
     @Override
     public Iterator<Integer> iterator() {
-        return entities.keySet().iterator();
+        return entities.iterator();
     }
 
     @Override
     public void forEach(Consumer<? super Integer> action) {
-        entities.keySet().forEach(action);
+        entities.forEach(action);
     }
 
     @Override
     public Spliterator<Integer> spliterator() {
-        return entities.keySet().spliterator();
+        return entities.spliterator();
     }
 }

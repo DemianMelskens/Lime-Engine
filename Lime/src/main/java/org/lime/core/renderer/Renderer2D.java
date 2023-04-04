@@ -10,6 +10,7 @@ import org.lime.core.renderer.buffers.BufferLayout;
 import org.lime.core.renderer.buffers.IndexBuffer;
 import org.lime.core.renderer.buffers.VertexBuffer;
 import org.lime.core.renderer.buffers.vertices.QuadVertex;
+import org.lime.core.renderer.camera.Camera;
 import org.lime.core.renderer.camera.OrthographicCamera;
 import org.lime.core.renderer.shader.Shader;
 import org.lime.core.renderer.shader.ShaderDataType;
@@ -83,10 +84,18 @@ public class Renderer2D {
         data.delete();
     }
 
-    public static void beginScene(final OrthographicCamera camera) {
+    public static void beginScene(OrthographicCamera camera) {
         Shader textureShader = data.shaderLibrary.get(SHADER_NAME);
         textureShader.bind();
         textureShader.setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+    }
+
+    public static void beginScene(Camera camera, Matrix4f transform) {
+        Matrix4f viewProjection = new Matrix4f();
+        camera.getProjection().mul(transform.invert(), viewProjection);
+        Shader textureShader = data.shaderLibrary.get(SHADER_NAME);
+        textureShader.bind();
+        textureShader.setMat4("u_ViewProjection", viewProjection);
     }
 
     public static void endScene() {
