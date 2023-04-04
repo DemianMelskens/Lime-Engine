@@ -7,10 +7,10 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 public class View<T> implements Iterable<Integer> {
-    Set<Integer> entities;
+    Map<Integer, Set<Class<?>>> entities;
     Map<Integer, T> pool;
 
-    public View(Set<Integer> entities, Map<Integer, T> pool) {
+    public View(Map<Integer, Set<Class<?>>> entities, Map<Integer, T> pool) {
         this.entities = entities;
         this.pool = pool;
     }
@@ -21,16 +21,16 @@ public class View<T> implements Iterable<Integer> {
 
     @Override
     public Iterator<Integer> iterator() {
-        return entities.iterator();
+        return entities.keySet().iterator();
     }
 
     @Override
     public void forEach(Consumer<? super Integer> action) {
-        entities.forEach(action);
+        entities.keySet().forEach(action);
     }
 
     @Override
     public Spliterator<Integer> spliterator() {
-        return entities.spliterator();
+        return entities.keySet().spliterator();
     }
 }

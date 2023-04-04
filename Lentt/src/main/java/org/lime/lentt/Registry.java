@@ -10,26 +10,31 @@ import java.util.stream.Stream;
 
 public class Registry {
     int entityCount;
-    Set<Integer> entities;
+    Map<Integer, Set<Class<?>>> entities;
     Map<Class<?>, Map<Integer, Object>> pools;
 
     public Registry() {
         this.pools = new HashMap<>();
-        this.entities = new HashSet<>();
+        this.entities = new HashMap<>();
         this.entityCount = 0;
     }
 
     public int create() {
         int entity = entityCount++;
-        entities.add(entity);
+        entities.put(entity, new HashSet<>());
         return entity;
+    }
+
+    public void delete(int entity) {
+        entities.get(entity)
+                .forEach(clazz -> pools.get(clazz).remove(entity));
+        entities.remove(entity);
     }
 
     public <T> T emplace(int entity, T component) {
         Class<?> clazz = component.getClass();
-        Map<Integer, Object> pool = getPool(clazz);
-        pool.put(entity, component);
-        pools.put(clazz, pool);
+        getPool(clazz).put(entity, component);
+        entities.get(entity).add(clazz);
         return component;
     }
 
@@ -38,7 +43,7 @@ public class Registry {
     }
 
     public boolean has(int entity, Class<?> clazz) {
-        return getPool(clazz).containsKey(entity);
+        return entities.get(entity).contains(clazz);
     }
 
     public <T> View<T> view(Class<T> clazz) {
@@ -55,11 +60,17 @@ public class Registry {
     }
 
     public void remove(int entity, Class<?> clazz) {
-        entities.remove(entity);
         getPool(clazz).remove(entity);
+        entities.get(entity).remove(clazz);
     }
 
     private Map<Integer, Object> getPool(Class<?> clazz) {
-        return pools.getOrDefault(clazz, new HashMap<>());
+        if (pools.containsKey(clazz)) {
+            return pools.get(clazz);
+        }
+
+        HashMap<Integer, Object> pool = new HashMap<>();
+        pools.put(clazz, pool);
+        return pool;
     }
 }

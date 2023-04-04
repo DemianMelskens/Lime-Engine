@@ -7,10 +7,10 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 public class Group implements Iterable<Integer> {
-    Set<Integer> entities;
+    Map<Integer, Set<Class<?>>> entities;
     Map<Class<?>, Map<Integer, Object>> pools;
 
-    public Group(Set<Integer> entities, Map<Class<?>, Map<Integer, Object>> pools) {
+    public Group(Map<Integer, Set<Class<?>>> entities, Map<Class<?>, Map<Integer, Object>> pools) {
         this.entities = entities;
         this.pools = pools;
     }
@@ -25,16 +25,16 @@ public class Group implements Iterable<Integer> {
 
     @Override
     public Iterator<Integer> iterator() {
-        return entities.iterator();
+        return entities.keySet().iterator();
     }
 
     @Override
     public void forEach(Consumer<? super Integer> action) {
-        entities.forEach(action);
+        entities.keySet().forEach(action);
     }
 
     @Override
     public Spliterator<Integer> spliterator() {
-        return entities.spliterator();
+        return entities.keySet().spliterator();
     }
 }

@@ -1,29 +1,44 @@
 package org.lime.core.scene;
 
+import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
+
 public class Entity {
 
-    private int handle;
+    private Integer entityHandle;
     private Scene scene;
 
-    public Entity(int handle, Scene scene) {
-        this.handle = handle;
+    public Entity() {
+    }
+
+    public Entity(int entityHandle, Scene scene) {
+        this.entityHandle = entityHandle;
         this.scene = scene;
     }
 
     public Entity(Entity other) {
-        this.handle = other.handle;
+        this.entityHandle = other.entityHandle;
         this.scene = other.scene;
     }
 
     public boolean hasComponent(Class<?> clazz) {
-        return scene.registry.has(handle, clazz);
+        return scene.registry.has(entityHandle, clazz);
     }
 
     public <T> T getComponent(Class<T> clazz) {
-        return scene.registry.get(handle, clazz);
+        LM_CORE_ASSERT(hasComponent(clazz), "Entity does not have component!");
+        return scene.registry.get(entityHandle, clazz);
     }
 
     public <T> T addComponent(T component) {
-        return scene.registry.emplace(handle, component);
+        LM_CORE_ASSERT(!hasComponent(component.getClass()), "Entity already has component!");
+        return scene.registry.emplace(entityHandle, component);
+    }
+
+    public void removeComponent(Class<?> clazz) {
+        scene.registry.remove(entityHandle, clazz);
+    }
+
+    public boolean isValid() {
+        return entityHandle != null;
     }
 }

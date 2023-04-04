@@ -6,6 +6,7 @@ import imgui.ImVec2;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
+import org.joml.Matrix4f;
 import org.lime.core.Application;
 import org.lime.core.Layer;
 import org.lime.core.controllers.OrthographicCameraController;
@@ -18,12 +19,11 @@ import org.lime.core.renderer.textures.Texture2D;
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.Scene;
 import org.lime.core.scene.components.SpriteRendererComponent;
+import org.lime.core.scene.components.TagComponent;
 import org.lime.core.scene.components.TransformComponent;
 import org.lime.core.time.TimeStep;
 
 import java.util.Objects;
-
-import static org.lime.core.utils.Log.LM_CORE_DEBUG;
 
 public class EditorLayer extends Layer {
     private Scene activeScene;
@@ -50,8 +50,7 @@ public class EditorLayer extends Layer {
         this.frameBuffer = FrameBuffer.create(specification);
         this.activeScene = new Scene();
 
-        entity = activeScene.createEntity();
-        entity.addComponent(new TransformComponent());
+        entity = activeScene.createEntity("Square");
         entity.addComponent(new SpriteRendererComponent(Color.create(0.8f, 0.2f, 0.3f, 1.0f)));
     }
 
@@ -115,12 +114,17 @@ public class EditorLayer extends Layer {
 
         ImGui.begin("Inspector");
 
-        Color color = entity.getComponent(SpriteRendererComponent.class).color;
-        float[] value = new float[]{color.r(), color.g(), color.b(), color.a()};
+        ImGui.separator();
+        if (entity.isValid()) {
+            ImGui.text(entity.getComponent(TagComponent.class).tag);
 
-        if (ImGui.colorEdit4("Color", value)) {
-            color.set(value[0], value[1], value[2], value[3]);
+            Color color = entity.getComponent(SpriteRendererComponent.class).color;
+            float[] colorValue = new float[]{color.r(), color.g(), color.b(), color.a()};
+            if (ImGui.colorEdit4("Color", colorValue)) {
+                color.set(colorValue[0], colorValue[1], colorValue[2], colorValue[3]);
+            }
         }
+        ImGui.separator();
 
         ImGui.text(String.format("%d drawCalls", Renderer2D.getStatistics().drawCalls));
         ImGui.text(String.format("%d quad Count", Renderer2D.getStatistics().quadCount));
