@@ -5,7 +5,11 @@ import org.joml.Matrix4f;
 
 public class Camera {
     @Getter
-    private Matrix4f projection;
+    protected Matrix4f projection;
+
+    public Camera() {
+        this.projection = new Matrix4f();
+    }
 
     public Camera(Matrix4f projection) {
         this.projection = projection;

@@ -32,7 +32,7 @@ public class EditorLayer extends Layer {
     private Entity secondCamera;
     private OrthographicCameraController cameraController;
     private FrameBuffer frameBuffer;
-    private ImVec2 viewPortSize;
+    private ImVec2 viewPortSize = new ImVec2(0.0f, 0.0f);
     private boolean viewportFocused = false;
     private boolean viewportHovered = false;
     private boolean primaryCamera = true;
@@ -55,10 +55,10 @@ public class EditorLayer extends Layer {
         squareEntity.addComponent(new SpriteRendererComponent(Color.create(0.8f, 0.2f, 0.3f, 1.0f)));
 
         cameraEntity = activeScene.createEntity("Camera");
-        cameraEntity.addComponent(new CameraComponent(new Matrix4f().ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f)));
+        cameraEntity.addComponent(new CameraComponent());
 
         secondCamera = activeScene.createEntity("Clip space Camera");
-        var cc = secondCamera.addComponent(new CameraComponent(new Matrix4f().ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f)));
+        var cc = secondCamera.addComponent(new CameraComponent());
         cc.isPrimary = false;
     }
 
@@ -70,6 +70,15 @@ public class EditorLayer extends Layer {
     @Override
     public void onUpdate(TimeStep timestep) {
         Renderer2D.resetStatistics();
+
+        FrameBuffer.Specification specification = frameBuffer.getSpecification();
+        if (viewPortSize.x > 0.0f && viewPortSize.y > 0.0f &&
+                (specification.width != viewPortSize.x || specification.height != viewPortSize.y)) {
+            frameBuffer.resize((int) viewPortSize.x, (int) viewPortSize.y);
+            cameraController.onResize(viewPortSize.x, viewPortSize.y);
+            activeScene.onViewportResize((int) viewPortSize.x, (int) viewPortSize.y);
+        }
+
         if (viewportFocused)
             cameraController.onUpdate(timestep);
 
@@ -148,6 +157,15 @@ public class EditorLayer extends Layer {
             }
         }
 
+        var camera = secondCamera.getComponent(CameraComponent.class).camera;
+        float[] orthoSize = new float[]{camera.getOrthographicSize()};
+        if (ImGui.dragFloat("Second camera ortho size", orthoSize)) {
+            camera.setOrthographicSize(orthoSize[0]);
+        }
+
+        ImGui.end();
+
+        ImGui.begin("Statistics");
         ImGui.text(String.format("%d drawCalls", Renderer2D.getStatistics().drawCalls));
         ImGui.text(String.format("%d quad Count", Renderer2D.getStatistics().quadCount));
         ImGui.text(String.format("%d vertex Count", Renderer2D.getStatistics().getTotalVertexCount()));
@@ -161,13 +179,8 @@ public class EditorLayer extends Layer {
         viewportHovered = ImGui.isWindowHovered();
         Application.get().getImGuiLayer().setBlockEvents(!viewportFocused || !viewportHovered);
 
-        ImVec2 viewPortPanelSize = ImGui.getContentRegionAvail();
-        ImGui.image(frameBuffer.getColorAttachment(), viewPortPanelSize.x, viewPortPanelSize.y, 0, 1, 1, 0);
-        if (!Objects.equals(viewPortSize, viewPortPanelSize) && viewPortPanelSize.x > 0 && viewPortPanelSize.y > 0) {
-            frameBuffer.resize((int) viewPortPanelSize.x, (int) viewPortPanelSize.y);
-            viewPortSize = viewPortPanelSize;
-            cameraController.onResize(viewPortPanelSize.x, viewPortPanelSize.y);
-        }
+        viewPortSize = ImGui.getContentRegionAvail();
+        ImGui.image(frameBuffer.getColorAttachment(), viewPortSize.x, viewPortSize.y, 0, 1, 1, 0);
 
         ImGui.end();
         ImGui.popStyleVar();

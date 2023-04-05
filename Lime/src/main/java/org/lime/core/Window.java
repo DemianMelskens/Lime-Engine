@@ -15,7 +15,7 @@ import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 public abstract class Window {
 
     public static Window create(String title) {
-        return create(title, 1280, 720);
+        return create(title, 1600, 900);
     }
 
     public static Window create(String title, int width, int height) {

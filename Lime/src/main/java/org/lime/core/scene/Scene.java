@@ -10,6 +10,7 @@ import org.lime.core.scene.components.TransformComponent;
 import org.lime.core.time.TimeStep;
 import org.lime.lentt.Group;
 import org.lime.lentt.Registry;
+import org.lime.lentt.View;
 
 public class Scene {
 
@@ -60,6 +61,16 @@ public class Scene {
         entity.addComponent(new TagComponent(name));
         entity.addComponent(new TransformComponent());
         return entity;
+    }
+
+    public void onViewportResize(int width, int height) {
+        View view = registry.view(CameraComponent.class);
+        for (int entity : view) {
+            var cameraComponent = view.get(entity, CameraComponent.class);
+            if (!cameraComponent.hasFixedAspectRatio) {
+                cameraComponent.camera.setViewportSize(width, height);
+            }
+        }
     }
 
     public void shutdown() {

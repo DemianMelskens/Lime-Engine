@@ -1,13 +1,14 @@
 package org.lime.core.scene.components;
 
-import org.joml.Matrix4f;
-import org.lime.core.renderer.camera.Camera;
+import org.lime.core.scene.SceneCamera;
 
 public class CameraComponent {
-    public Camera camera;
+    public SceneCamera camera;
+    public boolean hasFixedAspectRatio;
     public boolean isPrimary = true; // TODO think about moving to scene
 
-    public CameraComponent(Matrix4f projection) {
-        this.camera = new Camera(projection);
+    public CameraComponent() {
+        this.camera = new SceneCamera();
+        this.hasFixedAspectRatio = false;
     }
 }
