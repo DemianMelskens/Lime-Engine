@@ -91,8 +91,9 @@ public class Renderer2D {
     }
 
     public static void beginScene(Camera camera, Matrix4f transform) {
-        Matrix4f viewProjection = new Matrix4f();
-        camera.getProjection().mul(transform.invert(), viewProjection);
+        Matrix4f view = transform.invert(new Matrix4f());
+        Matrix4f viewProjection = camera.getProjection().mul(view, new Matrix4f());
+
         Shader textureShader = data.shaderLibrary.get(SHADER_NAME);
         textureShader.bind();
         textureShader.setMat4("u_ViewProjection", viewProjection);

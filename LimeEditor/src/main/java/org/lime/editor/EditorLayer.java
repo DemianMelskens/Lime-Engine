@@ -35,7 +35,7 @@ public class EditorLayer extends Layer {
     private ImVec2 viewPortSize;
     private boolean viewportFocused = false;
     private boolean viewportHovered = false;
-    private boolean primaryCamera = false;
+    private boolean primaryCamera = true;
 
     public EditorLayer() {
         super("Example");
@@ -136,12 +136,13 @@ public class EditorLayer extends Layer {
             Matrix4f transform = cameraEntity.getComponent(TransformComponent.class).transform;
             float[] transformValue = new float[]{transform.m30(), transform.m31(), transform.m32()};
             if (ImGui.dragFloat3("Camera Transform", transformValue)) {
-                transform.m30(2.0f);
-                transform.m31(2.0f);
-                transform.m32(2.0f);
+                transform.m30(transformValue[0]);
+                transform.m31(transformValue[1]);
+                transform.m32(transformValue[2]);
             }
 
             if (ImGui.checkbox("Camera A", primaryCamera)) {
+                primaryCamera = !primaryCamera;
                 cameraEntity.getComponent(CameraComponent.class).isPrimary = primaryCamera;
                 secondCamera.getComponent(CameraComponent.class).isPrimary = !primaryCamera;
             }
