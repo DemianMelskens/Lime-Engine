@@ -11,8 +11,7 @@ repositories {
     mavenLocal()
 }
 
-dependencies {
-}
+dependencies {}
 
 publishing {
     publications {
@@ -24,6 +23,11 @@ publishing {
             from components.java
         }
     }
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 task buildAndPublish() {

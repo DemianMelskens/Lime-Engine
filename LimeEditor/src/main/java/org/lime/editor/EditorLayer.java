@@ -52,13 +52,13 @@ public class EditorLayer extends Layer {
         this.activeScene = new Scene();
 
         squareEntity = activeScene.createEntity("Square");
-        squareEntity.addComponent(new SpriteRendererComponent(Color.create(0.8f, 0.2f, 0.3f, 1.0f)));
+        squareEntity.addComponent(SpriteRendererComponent.class, Color.create(0.8f, 0.2f, 0.3f, 1.0f));
 
         cameraEntity = activeScene.createEntity("Camera");
-        cameraEntity.addComponent(new CameraComponent());
+        cameraEntity.addComponent(CameraComponent.class);
 
         secondCamera = activeScene.createEntity("Clip space Camera");
-        var cc = secondCamera.addComponent(new CameraComponent());
+        var cc = secondCamera.addComponent(CameraComponent.class);
         cc.isPrimary = false;
     }
 

@@ -29,9 +29,9 @@ public class Entity {
         return scene.registry.get(entityHandle, clazz);
     }
 
-    public <T> T addComponent(T component) {
-        LM_CORE_ASSERT(!hasComponent(component.getClass()), "Entity already has component!");
-        return scene.registry.emplace(entityHandle, component);
+    public <T> T addComponent(Class<T> clazz, Object... args) {
+        LM_CORE_ASSERT(!hasComponent(clazz), "Entity already has component!");
+        return scene.registry.emplace(entityHandle, clazz, args);
     }
 
     public void removeComponent(Class<?> clazz) {

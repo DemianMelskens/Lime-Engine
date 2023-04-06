@@ -58,8 +58,8 @@ public class Scene {
 
     public Entity createEntity(String name) {
         Entity entity = new Entity(registry.create(), this);
-        entity.addComponent(new TagComponent(name));
-        entity.addComponent(new TransformComponent());
+        entity.addComponent(TagComponent.class, name);
+        entity.addComponent(TransformComponent.class);
         return entity;
     }
 
