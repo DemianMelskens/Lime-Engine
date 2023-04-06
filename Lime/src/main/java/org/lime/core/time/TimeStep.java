@@ -15,4 +15,9 @@ public class TimeStep {
     public float getMilliseconds() {
         return time * 1000.0f;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(time);
+    }
 }

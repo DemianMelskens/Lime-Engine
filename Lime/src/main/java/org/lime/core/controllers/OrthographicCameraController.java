@@ -11,7 +11,7 @@ import org.lime.core.events.mouse.MouseScrollEvent;
 import org.lime.core.renderer.camera.OrthographicCamera;
 import org.lime.core.time.TimeStep;
 
-import static org.lime.core.KeyCodes.*;
+import static org.lime.core.KeyCode.*;
 
 public class OrthographicCameraController {
 

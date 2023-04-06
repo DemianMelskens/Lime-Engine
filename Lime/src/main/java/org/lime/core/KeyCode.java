@@ -1,6 +1,6 @@
 package org.lime.core;
 
-public class KeyCodes {
+public class KeyCode {
     /**
      * Printable keys.
      */

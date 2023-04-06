@@ -3,10 +3,7 @@ package org.lime.core.scene;
 import org.joml.Matrix4f;
 import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.camera.Camera;
-import org.lime.core.scene.components.CameraComponent;
-import org.lime.core.scene.components.SpriteRendererComponent;
-import org.lime.core.scene.components.TagComponent;
-import org.lime.core.scene.components.TransformComponent;
+import org.lime.core.scene.components.*;
 import org.lime.core.time.TimeStep;
 import org.lime.lentt.Group;
 import org.lime.lentt.Registry;
@@ -21,6 +18,18 @@ public class Scene {
     }
 
     public void onUpdate(TimeStep timeStep) {
+        // update scripts
+        registry.view(NativeScriptComponent.class)
+                .forEach((entity, component) -> {
+                    if (component.instance == null) {
+                        component.instantiateFunction.run();
+                        component.instance.entity = new Entity(entity, this);
+                        component.instance.onCreate();
+                    }
+
+                    component.instance.onUpdate(timeStep);
+                });
+
         Camera mainCamera = null;
         Matrix4f mainCameraTransform = null;
 
@@ -64,9 +73,9 @@ public class Scene {
     }
 
     public void onViewportResize(int width, int height) {
-        View view = registry.view(CameraComponent.class);
+        View<CameraComponent> view = registry.view(CameraComponent.class);
         for (int entity : view) {
-            var cameraComponent = view.get(entity, CameraComponent.class);
+            var cameraComponent = view.get(entity);
             if (!cameraComponent.hasFixedAspectRatio) {
                 cameraComponent.camera.setViewportSize(width, height);
             }

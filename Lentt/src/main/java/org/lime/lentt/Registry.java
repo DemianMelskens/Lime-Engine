@@ -145,16 +145,17 @@ public class Registry {
      * </p>
      *
      * @param clazz class type for requested component.
+     * @param <T>   component class type.
      * @return The new view.
      * @see View
      */
-    public View view(Class<?> clazz) {
+    public <T> View<T> view(Class<T> clazz) {
         Set<Integer> filteredEntities = entities.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().contains(clazz))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
-        return new View(filteredEntities, this);
+        return new View<>(clazz, filteredEntities, this);
     }
 
     /**

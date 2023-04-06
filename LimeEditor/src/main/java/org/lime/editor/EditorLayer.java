@@ -17,13 +17,8 @@ import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.buffers.FrameBuffer;
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.Scene;
-import org.lime.core.scene.components.CameraComponent;
-import org.lime.core.scene.components.SpriteRendererComponent;
-import org.lime.core.scene.components.TagComponent;
-import org.lime.core.scene.components.TransformComponent;
+import org.lime.core.scene.components.*;
 import org.lime.core.time.TimeStep;
-
-import java.util.Objects;
 
 public class EditorLayer extends Layer {
     private Scene activeScene;
@@ -60,6 +55,7 @@ public class EditorLayer extends Layer {
         secondCamera = activeScene.createEntity("Clip space Camera");
         var cc = secondCamera.addComponent(CameraComponent.class);
         cc.isPrimary = false;
+        cameraEntity.addComponent(NativeScriptComponent.class).bind(CameraController.class);
     }
 
     @Override
