@@ -3,15 +3,19 @@ package org.lime.core.scene.components;
 import org.lime.core.scripting.Scriptable;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 
 public class NativeScriptComponent {
     public Scriptable instance;
-    public Runnable instantiateFunction;
+    public Supplier<Scriptable> instantiate;
+    public Consumer<NativeScriptComponent> destroy;
 
     public <T extends Scriptable> void bind(Class<T> clazz) {
-        instantiateFunction = () -> this.instance = getInstance(clazz);
+        instantiate = () -> getInstance(clazz);
+        destroy = component -> component.instance = null;
     }
 
     private <T> T getInstance(Class<T> clazz) {

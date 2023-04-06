@@ -51,11 +51,12 @@ public class EditorLayer extends Layer {
 
         cameraEntity = activeScene.createEntity("Camera");
         cameraEntity.addComponent(CameraComponent.class);
+        cameraEntity.addComponent(NativeScriptComponent.class).bind(CameraController.class);
 
         secondCamera = activeScene.createEntity("Clip space Camera");
         var cc = secondCamera.addComponent(CameraComponent.class);
         cc.isPrimary = false;
-        cameraEntity.addComponent(NativeScriptComponent.class).bind(CameraController.class);
+        secondCamera.addComponent(NativeScriptComponent.class).bind(CameraController.class);
     }
 
     @Override

@@ -18,11 +18,11 @@ public class Scene {
     }
 
     public void onUpdate(TimeStep timeStep) {
-        // update scripts
+        //TODO: move to onScene play
         registry.view(NativeScriptComponent.class)
                 .forEach((entity, component) -> {
                     if (component.instance == null) {
-                        component.instantiateFunction.run();
+                        component.instance = component.instantiate.get();
                         component.instance.entity = new Entity(entity, this);
                         component.instance.onCreate();
                     }
