@@ -24,13 +24,12 @@ import org.lime.editor.panels.SceneHierarchyPanel;
 import org.lime.editor.panels.StatisticsPanel;
 import org.lime.editor.scripts.CameraController;
 
-import static org.lime.core.utils.Log.LM_INFO;
-
 public class EditorLayer extends Layer {
     private Scene activeScene;
     private SceneHierarchyPanel sceneHierarchyPanel;
     private StatisticsPanel statisticsPanel;
-    private Entity squareEntity;
+    private Entity greenSquare;
+    private Entity redSquare;
     private Entity cameraEntity;
     private Entity secondCamera;
 
@@ -59,8 +58,11 @@ public class EditorLayer extends Layer {
         this.activeScene = new Scene();
         this.sceneHierarchyPanel.setContext(activeScene);
 
-        squareEntity = activeScene.createEntity("Square");
-        squareEntity.addComponent(SpriteRendererComponent.class, Color.create(0.8f, 0.2f, 0.3f, 1.0f));
+        greenSquare = activeScene.createEntity("Green Square");
+        greenSquare.addComponent(SpriteRendererComponent.class, Color.create(0.3f, 0.8f, 0.2f, 1.0f));
+
+        redSquare = activeScene.createEntity("Red Square");
+        redSquare.addComponent(SpriteRendererComponent.class, Color.create(0.8f, 0.2f, 0.3f, 1.0f));
 
         cameraEntity = activeScene.createEntity("Camera 1");
         cameraEntity.addComponent(CameraComponent.class);
