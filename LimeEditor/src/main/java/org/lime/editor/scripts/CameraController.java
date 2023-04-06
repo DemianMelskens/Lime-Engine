@@ -1,4 +1,4 @@
-package org.lime.editor;
+package org.lime.editor.scripts;
 
 import org.lime.core.Input;
 import org.lime.core.KeyCode;

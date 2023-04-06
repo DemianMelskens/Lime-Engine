@@ -1,7 +1,9 @@
 package org.lime.core.scene.components;
 
+import lombok.EqualsAndHashCode;
 import org.joml.Matrix4f;
 
+@EqualsAndHashCode
 public class TransformComponent {
 
     public Matrix4f transform;

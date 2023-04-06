@@ -3,6 +3,7 @@ package org.lime.lentt;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.lime.lentt.utils.Assert.LNTT_CORE_EXCEPTION;
@@ -10,7 +11,7 @@ import static org.lime.lentt.utils.Assert.LNTT_CORE_EXCEPTION;
 /**
  * The registry is responsible for managing the entities and components.
  */
-public class Registry {
+public class Registry implements Iterable<Integer> {
     private int entityCount;
     private final Map<Integer, Set<Class<?>>> entities;
     private final Map<Class<?>, Map<Integer, Object>> pools;
@@ -198,5 +199,20 @@ public class Registry {
         } catch (NoSuchMethodException | IllegalArgumentException ex) {
             throw LNTT_CORE_EXCEPTION(String.format("Tried to get construct class for %s with args %s!", clazz.getName(), Arrays.toString(ctorArgs)));
         }
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return entities.keySet().iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super Integer> action) {
+        entities.keySet().forEach(action);
+    }
+
+    @Override
+    public Spliterator<Integer> spliterator() {
+        return entities.keySet().spliterator();
     }
 }

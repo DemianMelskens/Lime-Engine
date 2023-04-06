@@ -1,9 +1,14 @@
 package org.lime.core.scene;
 
+import lombok.Getter;
+
+import java.util.Objects;
+
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 
 public class Entity {
 
+    @Getter
     private Integer entityHandle;
     private Scene scene;
 
@@ -40,5 +45,19 @@ public class Entity {
 
     public boolean isValid() {
         return entityHandle != null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Entity entity = (Entity) o;
+        return Objects.equals(entityHandle, entity.entityHandle);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(entityHandle, scene);
     }
 }

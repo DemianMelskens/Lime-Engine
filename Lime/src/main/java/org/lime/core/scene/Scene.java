@@ -17,6 +17,10 @@ public class Scene {
         this.registry = new Registry();
     }
 
+    public Registry getRegistry() {
+        return registry;
+    }
+
     public void onUpdate(TimeStep timeStep) {
         //TODO: move to onScene play
         registry.view(NativeScriptComponent.class)
@@ -62,7 +66,7 @@ public class Scene {
     }
 
     public Entity createEntity() {
-        return createEntity("Entity");
+        return createEntity("Unnamed entity");
     }
 
     public Entity createEntity(String name) {

@@ -1,5 +1,6 @@
 package org.lime.core.scene.components;
 
+import lombok.EqualsAndHashCode;
 import org.lime.core.scripting.Scriptable;
 
 import java.lang.reflect.InvocationTargetException;
@@ -8,6 +9,7 @@ import java.util.function.Supplier;
 
 import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 
+@EqualsAndHashCode
 public class NativeScriptComponent {
     public Scriptable instance;
     public Supplier<Scriptable> instantiate;

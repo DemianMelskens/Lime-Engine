@@ -84,8 +84,8 @@ public class ImGuiLayer extends Layer {
     public void onEvent(Event event) {
         if (blockEvents) {
             ImGuiIO io = ImGui.getIO();
-            event.isHandled |= event.isInCategory(EventCategory.MOUSE) & io.getWantCaptureMouse();
-            event.isHandled |= event.isInCategory(EventCategory.KEYBOARD) & io.getWantCaptureKeyboard();
+            event.isHandled |= event.isInCategory(EventCategory.MOUSE) && io.getWantCaptureMouse();
+            event.isHandled |= event.isInCategory(EventCategory.KEYBOARD) && io.getWantCaptureKeyboard();
         }
     }
 }

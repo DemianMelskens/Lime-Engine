@@ -1,7 +1,9 @@
 package org.lime.core.scene.components;
 
+import lombok.EqualsAndHashCode;
 import org.lime.core.renderer.Color;
 
+@EqualsAndHashCode
 public class SpriteRendererComponent {
     public Color color;
 
