@@ -45,7 +45,7 @@ public class Entity {
     }
 
     public boolean isValid() {
-        return entityHandle != null && scene.registry.hasEntity(entityHandle);
+        return entityHandle != null && scene.registry.has(entityHandle);
     }
 
     @Override

@@ -48,7 +48,13 @@ public class Registry implements Iterable<Integer> {
         entities.remove(entity);
     }
 
-    public boolean hasEntity(int entity) {
+    /**
+     * Checks if the given entity exists in the registry.
+     *
+     * @param entity entity id.
+     * @return True if the entity is found otherwise false.
+     */
+    public boolean has(int entity) {
         return entities.containsKey(entity);
     }
 
