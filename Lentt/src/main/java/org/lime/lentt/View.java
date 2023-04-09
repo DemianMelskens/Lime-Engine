@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 public class View<T> implements Iterable<Integer> {
     private final Set<Integer> entities;
@@ -33,5 +34,9 @@ public class View<T> implements Iterable<Integer> {
     @Override
     public Spliterator<Integer> spliterator() {
         return entities.spliterator();
+    }
+
+    public Stream<Integer> stream() {
+        return entities.stream();
     }
 }

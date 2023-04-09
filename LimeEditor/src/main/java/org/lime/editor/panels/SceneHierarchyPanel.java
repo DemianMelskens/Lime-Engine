@@ -6,7 +6,14 @@ import org.lime.core.scene.Entity;
 import org.lime.core.scene.Scene;
 import org.lime.core.scene.components.TagComponent;
 
-import static org.lime.core.utils.Log.LM_INFO;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+
+import static org.lime.core.imgui.ImGuiControls.contextWindow;
+import static org.lime.core.imgui.ImGuiControls.menuItem;
 
 public class SceneHierarchyPanel {
     private final PropertiesPanel propertiesPanel;
@@ -24,30 +31,52 @@ public class SceneHierarchyPanel {
     public void onImGuiRender() {
         ImGui.begin("Scene Hierarchy");
 
-        context.getRegistry()
-                .forEach(entity -> drawEntityNode(new Entity(entity, context)));
+        Set<Entity> toDelete = context.getRegistry().stream()
+                .map(entity -> new Entity(entity, context))
+                .map(this::drawEntityNode)
+                .collect(Collectors.toSet());
+
+        toDelete.stream()
+                .filter(Objects::nonNull)
+                .forEach(context::deleteEntity);
 
         if (ImGui.isMouseDown(0) && ImGui.isWindowHovered()) {
             this.setSelection(null);
         }
 
-        ImGui.end();
+        contextWindow(() ->
+                menuItem("Add Entity",
+                        () -> context.createEntity()
+                )
+        );
 
+        ImGui.end();
         propertiesPanel.onImGuiRender();
     }
 
-    private void drawEntityNode(Entity entity) {
+    private Entity drawEntityNode(Entity entity) {
         String tag = entity.getComponent(TagComponent.class).tag;
 
         int flags = (entity.equals(selectionContext) ? ImGuiTreeNodeFlags.Selected : 0);
         flags |= ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.OpenOnDoubleClick;
-        boolean opened = ImGui.treeNodeEx(entity.getEntityHandle().toString(), flags, tag);
+        boolean opened = ImGui.treeNodeEx(entity.get().toString(), flags, tag);
         if (ImGui.isItemClicked()) {
             this.setSelection(entity);
         }
 
+        AtomicBoolean entityDeleted = new AtomicBoolean(false);
+        contextWindow(() ->
+                menuItem("Delete Entity",
+                        () -> entityDeleted.set(true)
+                )
+        );
+
         if (opened)
             ImGui.treePop();
+
+        if (entityDeleted.get())
+            return entity;
+        return null;
     }
 
     private void setSelection(Entity entity) {

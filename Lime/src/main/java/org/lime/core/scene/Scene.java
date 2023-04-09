@@ -76,6 +76,10 @@ public class Scene {
         return entity;
     }
 
+    public void deleteEntity(Entity entity) {
+        registry.delete(entity.get());
+    }
+
     public void onViewportResize(int width, int height) {
         View<CameraComponent> view = registry.view(CameraComponent.class);
         for (int entity : view) {

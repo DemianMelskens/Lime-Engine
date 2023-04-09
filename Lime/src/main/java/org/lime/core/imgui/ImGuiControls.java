@@ -2,6 +2,7 @@ package org.lime.core.imgui;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiPopupFlags;
 import imgui.flag.ImGuiStyleVar;
 import imgui.type.ImString;
 import org.joml.Vector3f;
@@ -70,7 +71,7 @@ public class ImGuiControls {
 
         ImGui.sameLine();
         ImGui.pushItemWidth(itemWidth);
-        dragFloat("##Y", value.y, 0.1f, 0.0f, 0.0f, "%.2f",output -> onChange.accept(new Vector3f(value.x, output, value.z)));
+        dragFloat("##Y", value.y, 0.1f, 0.0f, 0.0f, "%.2f", output -> onChange.accept(new Vector3f(value.x, output, value.z)));
         ImGui.popItemWidth();
         ImGui.sameLine();
 
@@ -102,6 +103,20 @@ public class ImGuiControls {
         ImString output = new ImString(value, 256);
         if (ImGui.inputText(label, output)) {
             onChange.accept(output.get());
+        }
+    }
+
+    public static void contextWindow(Runnable children) {
+        int popupFlags = ImGuiPopupFlags.MouseButtonRight;
+        if (ImGui.beginPopupContextWindow(popupFlags)) {
+            children.run();
+            ImGui.endPopup();
+        }
+    }
+
+    public static void menuItem(String label, Runnable onClick) {
+        if (ImGui.menuItem(label)) {
+            onClick.run();
         }
     }
 }

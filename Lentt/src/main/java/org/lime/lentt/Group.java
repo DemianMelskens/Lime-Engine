@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class Group implements Iterable<Integer> {
     private final Set<Integer> entities;
@@ -31,5 +32,9 @@ public class Group implements Iterable<Integer> {
     @Override
     public Spliterator<Integer> spliterator() {
         return entities.spliterator();
+    }
+
+    public Stream<Integer> stream() {
+        return entities.stream();
     }
 }

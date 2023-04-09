@@ -21,10 +21,9 @@ public class PropertiesPanel {
     }
 
     public void onImGuiRender() {
-        ImGui.showDemoWindow();
         ImGui.begin("Properties");
 
-        if (context != null) {
+        if (context != null && context.isValid()) {
             drawComponents(context);
         }
 

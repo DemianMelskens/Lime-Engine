@@ -1,14 +1,11 @@
 package org.lime.core.scene;
 
-import lombok.Getter;
-
 import java.util.Objects;
 
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 
 public class Entity {
 
-    @Getter
     private Integer entityHandle;
     private Scene scene;
 
@@ -23,6 +20,10 @@ public class Entity {
     public Entity(Entity other) {
         this.entityHandle = other.entityHandle;
         this.scene = other.scene;
+    }
+
+    public Integer get() {
+        return entityHandle;
     }
 
     public boolean hasComponent(Class<?> clazz) {
@@ -44,7 +45,7 @@ public class Entity {
     }
 
     public boolean isValid() {
-        return entityHandle != null;
+        return entityHandle != null && scene.registry.hasEntity(entityHandle);
     }
 
     @Override

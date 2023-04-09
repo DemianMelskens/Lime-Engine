@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.lime.lentt.utils.Assert.LNTT_CORE_EXCEPTION;
 
@@ -45,6 +46,10 @@ public class Registry implements Iterable<Integer> {
         entities.get(entity)
                 .forEach(clazz -> pools.get(clazz).remove(entity));
         entities.remove(entity);
+    }
+
+    public boolean hasEntity(int entity) {
+        return entities.containsKey(entity);
     }
 
 
@@ -214,5 +219,9 @@ public class Registry implements Iterable<Integer> {
     @Override
     public Spliterator<Integer> spliterator() {
         return entities.keySet().spliterator();
+    }
+
+    public Stream<Integer> stream() {
+        return entities.keySet().stream();
     }
 }
