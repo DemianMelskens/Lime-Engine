@@ -39,10 +39,10 @@ public class Color {
 
     private Color(String hex) {
         this.value = new Vector4f(
-                toColorSpace(hex.substring(1, 3)),
-                toColorSpace(hex.substring(3, 5)),
-                toColorSpace(hex.substring(5, 7)),
-                getOptionalAlpha(hex)
+            toColorSpace(hex.substring(1, 3)),
+            toColorSpace(hex.substring(3, 5)),
+            toColorSpace(hex.substring(5, 7)),
+            getOptionalAlpha(hex)
         );
     }
 

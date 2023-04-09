@@ -93,13 +93,13 @@ public class WindowsWindow extends Window {
         });
 
         glfwSetScrollCallback(
-                windowHandle,
-                (window, xoffset, yoffset) -> eventCallback.accept(new MouseScrollEvent((float) xoffset, (float) yoffset))
+            windowHandle,
+            (window, xoffset, yoffset) -> eventCallback.accept(new MouseScrollEvent((float) xoffset, (float) yoffset))
         );
 
         glfwSetCursorPosCallback(
-                windowHandle,
-                (window, xpos, ypos) -> eventCallback.accept(new MouseMoveEvent((float) xpos, (float) ypos))
+            windowHandle,
+            (window, xpos, ypos) -> eventCallback.accept(new MouseMoveEvent((float) xpos, (float) ypos))
         );
     }
 

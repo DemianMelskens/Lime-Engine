@@ -44,7 +44,7 @@ public class Registry implements Iterable<Integer> {
      */
     public void delete(int entity) {
         entities.get(entity)
-                .forEach(clazz -> pools.get(clazz).remove(entity));
+            .forEach(clazz -> pools.get(clazz).remove(entity));
         entities.remove(entity);
     }
 
@@ -163,10 +163,10 @@ public class Registry implements Iterable<Integer> {
      */
     public <T> View<T> view(Class<T> clazz) {
         Set<Integer> filteredEntities = entities.entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().contains(clazz))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+            .stream()
+            .filter(entry -> entry.getValue().contains(clazz))
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
         return new View<>(clazz, filteredEntities, this);
     }
 
@@ -184,10 +184,10 @@ public class Registry implements Iterable<Integer> {
      */
     public Group group(Class<?>... classes) {
         Set<Integer> filteredEntities = entities.entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().containsAll(Set.of(classes)))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+            .stream()
+            .filter(entry -> entry.getValue().containsAll(Set.of(classes)))
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
 
         return new Group(filteredEntities, this);
     }

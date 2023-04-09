@@ -20,8 +20,8 @@ public class TransformComponent {
 
     public Matrix4f getTransform() {
         return new Matrix4f()
-                .translate(position)
-                .rotateXYZ(rotation)
-                .scale(scale);
+            .translate(position)
+            .rotateXYZ(rotation)
+            .scale(scale);
     }
 }

@@ -2,7 +2,6 @@ package org.lime.platform.opengl.renderer.buffers;
 
 import org.lime.core.renderer.buffers.BufferLayout;
 import org.lime.core.renderer.buffers.VertexBuffer;
-import org.lime.core.renderer.buffers.vertices.QuadVertex;
 
 import static org.lwjgl.opengl.GL46.*;
 

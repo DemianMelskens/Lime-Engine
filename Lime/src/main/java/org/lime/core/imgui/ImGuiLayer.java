@@ -13,13 +13,6 @@ import org.lime.core.time.TimeStep;
 import org.lime.core.utils.Resources;
 import org.lwjgl.glfw.GLFW;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.FileSystemNotFoundException;
-
-import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
-import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
-
 public class ImGuiLayer extends Layer {
 
     private final ImGuiImplGlfw imGuiGlfw;
@@ -32,13 +25,9 @@ public class ImGuiLayer extends Layer {
         super("ImGui Layer");
         this.imGuiGlfw = new ImGuiImplGlfw();
         this.imGuiGl3 = new ImGuiImplGl3();
-    }
 
-    @Override
-    public void onAttach() {
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
-        ImFontAtlas fontAtlas = io.getFonts();
 
         io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
@@ -46,9 +35,7 @@ public class ImGuiLayer extends Layer {
         io.setConfigViewportsNoTaskBarIcon(true);
 
         ImGui.styleColorsDark();
-
-        fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/open-sans/OpenSans-Bold.ttf"), 18.0f);
-        io.setFontDefault(fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/open-sans/OpenSans-Regular.ttf"), 18.0f));
+        initFonts(io);
 
         ImGuiStyle style = ImGui.getStyle();
         if (io.hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
@@ -57,6 +44,10 @@ public class ImGuiLayer extends Layer {
         }
         imGuiGlfw.init(GLFW.glfwGetCurrentContext(), true);
         imGuiGl3.init("#version 410");
+    }
+
+    @Override
+    public void onAttach() {
     }
 
     @Override
@@ -100,5 +91,25 @@ public class ImGuiLayer extends Layer {
         }
     }
 
+    private void initFonts(ImGuiIO io) {
+        ImFontAtlas fontAtlas = io.getFonts();
+        fontAtlas.addFontDefault();
+
+        final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
+        rangesBuilder.addRanges(io.getFonts().getGlyphRangesDefault());
+        rangesBuilder.addRanges(ImGuiIcons._IconRange);
+
+        final ImFontConfig fontConfig = new ImFontConfig();
+        fontConfig.setMergeMode(true);
+
+        final short[] glyphRanges = rangesBuilder.buildRanges();
+        fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/open-sans/OpenSans-Regular.ttf"), 20.0f, fontConfig, glyphRanges);
+        fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/open-sans/OpenSans-Bold.ttf"), 20.0f, fontConfig, glyphRanges);
+        fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/fontawesome/fa-regular-400.ttf"), 10.0f, fontConfig, glyphRanges);
+        fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/fontawesome/fa-solid-900.ttf"), 10.0f, fontConfig, glyphRanges);
+        io.getFonts().build();
+
+        fontConfig.destroy();
+    }
 
 }

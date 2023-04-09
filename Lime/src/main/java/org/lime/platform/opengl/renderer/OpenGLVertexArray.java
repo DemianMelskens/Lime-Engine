@@ -52,12 +52,12 @@ public class OpenGLVertexArray extends VertexArray {
         for (BufferElement element : vertexBuffer.getLayout()) {
             glEnableVertexAttribArray(index);
             glVertexAttribPointer(
-                    index,
-                    element.getComponentCount(),
-                    ShaderDataType.toOpenGLBaseType(element.getType()),
-                    element.isNormalized(),
-                    vertexBuffer.getLayout().getStride(),
-                    element.getOffset()
+                index,
+                element.getComponentCount(),
+                ShaderDataType.toOpenGLBaseType(element.getType()),
+                element.isNormalized(),
+                vertexBuffer.getLayout().getStride(),
+                element.getOffset()
             );
             index++;
         }

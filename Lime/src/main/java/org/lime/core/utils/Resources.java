@@ -2,7 +2,6 @@ package org.lime.core.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystemNotFoundException;
 
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;

@@ -3,8 +3,6 @@ package org.lime.editor.panels;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import org.joml.Math;
-import org.joml.Vector3f;
-import org.lime.core.imgui.ImGuiControls;
 import org.lime.core.renderer.camera.ProjectionType;
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.components.CameraComponent;
@@ -12,6 +10,8 @@ import org.lime.core.scene.components.SpriteRendererComponent;
 import org.lime.core.scene.components.TagComponent;
 import org.lime.core.scene.components.TransformComponent;
 import org.lime.core.utils.VectorMath;
+
+import static org.lime.core.imgui.ImGuiControls.*;
 
 public class PropertiesPanel {
     private Entity context;
@@ -46,8 +46,8 @@ public class PropertiesPanel {
 
     private void drawTagComponent(Entity context) {
         var tagComponent = context.getComponent(TagComponent.class);
-        ImGuiControls.inputText("Tag", tagComponent.tag, output ->
-                tagComponent.tag = output
+        inputText("Tag", tagComponent.tag, output ->
+            tagComponent.tag = output
         );
     }
 
@@ -56,19 +56,19 @@ public class PropertiesPanel {
             var transformComponent = context.getComponent(TransformComponent.class);
 
             var position = transformComponent.position;
-            ImGuiControls.dragFloat3("Position", position, output -> {
+            dragFloat3("Position", position, output -> {
                 position.x = output.x;
                 position.y = output.y;
                 position.z = output.z;
             });
 
             var rotation = transformComponent.rotation;
-            ImGuiControls.dragFloat3("Rotation", VectorMath.toDegrees(rotation), output -> {
+            dragFloat3("Rotation", VectorMath.toDegrees(rotation), output -> {
                 transformComponent.rotation = VectorMath.toRadians(output);
             });
 
             var scale = transformComponent.scale;
-            ImGuiControls.dragFloat3("Scale", scale, output -> {
+            dragFloat3("Scale", scale, output -> {
                 scale.x = output.x;
                 scale.y = output.y;
                 scale.z = output.z;
@@ -81,8 +81,8 @@ public class PropertiesPanel {
             var cameraComponent = context.getComponent(CameraComponent.class);
             var camera = cameraComponent.camera;
 
-            ImGuiControls.checkbox("Primary", cameraComponent.isPrimary, output ->
-                    cameraComponent.isPrimary = output
+            checkbox("Primary", cameraComponent.isPrimary, output ->
+                cameraComponent.isPrimary = output
             );
 
             ProjectionType currentProjectionType = camera.getProjectionType();
@@ -103,26 +103,26 @@ public class PropertiesPanel {
 
             if (ProjectionType.Perspective.equals(currentProjectionType)) {
                 float perspectiveFOV = camera.getPerspectiveFOV();
-                ImGuiControls.dragFloat("FOV", (float) Math.toDegrees(perspectiveFOV), output ->
-                        camera.setPerspectiveFOV(Math.toRadians(output))
+                dragFloat("FOV", (float) Math.toDegrees(perspectiveFOV), output ->
+                    camera.setPerspectiveFOV(Math.toRadians(output))
                 );
 
                 float perspectiveNearClip = camera.getPerspectiveNearClip();
-                ImGuiControls.dragFloat("Near", perspectiveNearClip, camera::setPerspectiveNearClip);
+                dragFloat("Near", perspectiveNearClip, camera::setPerspectiveNearClip);
 
                 float perspectiveFarClip = camera.getPerspectiveFarClip();
-                ImGuiControls.dragFloat("Far", perspectiveFarClip, camera::setPerspectiveFarClip);
+                dragFloat("Far", perspectiveFarClip, camera::setPerspectiveFarClip);
             }
 
             if (ProjectionType.Orthographic.equals(currentProjectionType)) {
                 float orthographicSize = camera.getOrthographicSize();
-                ImGuiControls.dragFloat("Size", orthographicSize, camera::setOrthographicSize);
+                dragFloat("Size", orthographicSize, camera::setOrthographicSize);
 
                 float orthographicNearClip = camera.getOrthographicNearClip();
-                ImGuiControls.dragFloat("Near", orthographicNearClip, camera::setOrthographicNearClip);
+                dragFloat("Near", orthographicNearClip, camera::setOrthographicNearClip);
 
                 float orthographicFarClip = camera.getOrthographicFarClip();
-                ImGuiControls.dragFloat("Far", orthographicFarClip, camera::setOrthographicFarClip);
+                dragFloat("Far", orthographicFarClip, camera::setOrthographicFarClip);
             }
         });
     }
@@ -130,8 +130,8 @@ public class PropertiesPanel {
     private void drawSpriteRendererComponent(Entity context) {
         drawComponent(SpriteRendererComponent.class, "Sprite Renderer", () -> {
             var spriteRendererComponent = context.getComponent(SpriteRendererComponent.class);
-            ImGuiControls.colorEdit4("Color", spriteRendererComponent.color, (output) ->
-                    spriteRendererComponent.color = output
+            colorEdit4("Color", spriteRendererComponent.color, (output) ->
+                spriteRendererComponent.color = output
             );
         });
     }

@@ -24,11 +24,11 @@ public class QuadVertex {
 
     private static List<ShaderDataType> structure() {
         return List.of(
-                ShaderDataType.Float3,
-                ShaderDataType.Float4,
-                ShaderDataType.Float2,
-                ShaderDataType.Float,
-                ShaderDataType.Float
+            ShaderDataType.Float3,
+            ShaderDataType.Float4,
+            ShaderDataType.Float2,
+            ShaderDataType.Float,
+            ShaderDataType.Float
         );
     }
 

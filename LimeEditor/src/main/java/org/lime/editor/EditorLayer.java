@@ -19,7 +19,6 @@ import org.lime.core.scene.Scene;
 import org.lime.core.scene.components.CameraComponent;
 import org.lime.core.scene.components.NativeScriptComponent;
 import org.lime.core.scene.components.SpriteRendererComponent;
-import org.lime.core.scene.components.TransformComponent;
 import org.lime.core.time.TimeStep;
 import org.lime.editor.panels.SceneHierarchyPanel;
 import org.lime.editor.panels.StatisticsPanel;
@@ -52,8 +51,8 @@ public class EditorLayer extends Layer {
         this.statisticsPanel = new StatisticsPanel();
 
         FrameBuffer.Specification specification = FrameBuffer.createSpec(
-                Application.getWindow().getWidth(),
-                Application.getWindow().getHeight()
+            Application.getWindow().getWidth(),
+            Application.getWindow().getHeight()
         );
         this.frameBuffer = FrameBuffer.create(specification);
         this.activeScene = new Scene();
@@ -86,7 +85,7 @@ public class EditorLayer extends Layer {
 
         FrameBuffer.Specification specification = frameBuffer.getSpecification();
         if (viewPortSize.x > 0.0f && viewPortSize.y > 0.0f &&
-                (specification.width != viewPortSize.x || specification.height != viewPortSize.y)) {
+            (specification.width != viewPortSize.x || specification.height != viewPortSize.y)) {
             frameBuffer.resize((int) viewPortSize.x, (int) viewPortSize.y);
             cameraController.onResize(viewPortSize.x, viewPortSize.y);
             activeScene.onViewportResize((int) viewPortSize.x, (int) viewPortSize.y);

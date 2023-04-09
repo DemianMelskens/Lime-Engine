@@ -1,7 +1,6 @@
 package org.lime.core.scene;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.joml.Math;
 import org.joml.Matrix4f;
 import org.lime.core.renderer.camera.Camera;
@@ -103,7 +102,7 @@ public class SceneCamera extends Camera {
 
     private void reCalculatePerspective() {
         projection = new Matrix4f()
-                .perspective(perspectiveFOV, aspectRatio, perspectiveNearClip, perspectiveFarClip);
+            .perspective(perspectiveFOV, aspectRatio, perspectiveNearClip, perspectiveFarClip);
     }
 
     private void reCalculateOrthographic() {
@@ -113,6 +112,6 @@ public class SceneCamera extends Camera {
         float orthographicTop = orthographicSize * 0.5f;
 
         projection = new Matrix4f().ortho(orthographicLeft, orthographicRight,
-                orthographicBottom, orthographicTop, orthographicNearClip, orthographicFarClip);
+            orthographicBottom, orthographicTop, orthographicNearClip, orthographicFarClip);
     }
 }

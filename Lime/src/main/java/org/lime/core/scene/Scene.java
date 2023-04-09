@@ -24,15 +24,15 @@ public class Scene {
     public void onUpdate(TimeStep timeStep) {
         //TODO: move to onScene play
         registry.view(NativeScriptComponent.class)
-                .forEach((entity, component) -> {
-                    if (component.instance == null) {
-                        component.instance = component.instantiate.get();
-                        component.instance.entity = new Entity(entity, this);
-                        component.instance.onCreate();
-                    }
+            .forEach((entity, component) -> {
+                if (component.instance == null) {
+                    component.instance = component.instantiate.get();
+                    component.instance.entity = new Entity(entity, this);
+                    component.instance.onCreate();
+                }
 
-                    component.instance.onUpdate(timeStep);
-                });
+                component.instance.onUpdate(timeStep);
+            });
 
         Camera mainCamera = null;
         Matrix4f mainCameraTransform = null;

@@ -37,11 +37,11 @@ public class Renderer2D {
 
         data.quadVertexBuffer = VertexBuffer.create(Data.MAX_VERTICES * QuadVertex.getBytes());
         BufferLayout layout = BufferLayout.create(
-                BufferElement.of(ShaderDataType.Float3, "a_Position"),
-                BufferElement.of(ShaderDataType.Float4, "a_Color"),
-                BufferElement.of(ShaderDataType.Float2, "a_TexCoord"),
-                BufferElement.of(ShaderDataType.Float, "a_TexIndex"),
-                BufferElement.of(ShaderDataType.Float, "a_TexTilingFactor")
+            BufferElement.of(ShaderDataType.Float3, "a_Position"),
+            BufferElement.of(ShaderDataType.Float4, "a_Color"),
+            BufferElement.of(ShaderDataType.Float2, "a_TexCoord"),
+            BufferElement.of(ShaderDataType.Float, "a_TexIndex"),
+            BufferElement.of(ShaderDataType.Float, "a_TexTilingFactor")
         );
         data.quadVertexBuffer.setLayout(layout);
         data.quadVertexArray.addVertexBuffer(data.quadVertexBuffer);
@@ -146,16 +146,16 @@ public class Renderer2D {
 
     public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture, Vector4f color, float tilingFactor) {
         Matrix4f transform = new Matrix4f()
-                .translate(position)
-                .scale(new Vector3f(size, 1.0f));
+            .translate(position)
+            .scale(new Vector3f(size, 1.0f));
 
         drawQuad(transform, texture, color, tilingFactor);
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, SubTexture2D subTexture, Vector4f color, float tilingFactor) {
         Matrix4f transform = new Matrix4f()
-                .translate(position)
-                .scale(new Vector3f(size, 1.0f));
+            .translate(position)
+            .scale(new Vector3f(size, 1.0f));
 
         drawQuad(transform, subTexture.getTexture(), subTexture.getTextureCoordinates(), color, tilingFactor);
     }
@@ -176,11 +176,11 @@ public class Renderer2D {
 
         for (int i = 0; i < 4; i++) {
             data.quadVertexBase.add(new QuadVertex(
-                    new Vector4f(Data.QUAD_VERTEX_POSITIONS[i]).mul(transform),
-                    color,
-                    textureCoordinates[i],
-                    textureIndex,
-                    tilingFactor
+                new Vector4f(Data.QUAD_VERTEX_POSITIONS[i]).mul(transform),
+                color,
+                textureCoordinates[i],
+                textureIndex,
+                tilingFactor
             ));
         }
 
@@ -219,18 +219,18 @@ public class Renderer2D {
 
     public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Texture2D texture, Vector4f color, float tilingFactor) {
         Matrix4f transform = new Matrix4f()
-                .translate(position)
-                .rotate(radians, new Vector3f(0.0f, 0.0f, 1.0f))
-                .scale(new Vector3f(size, 1.0f));
+            .translate(position)
+            .rotate(radians, new Vector3f(0.0f, 0.0f, 1.0f))
+            .scale(new Vector3f(size, 1.0f));
 
         drawQuad(transform, texture, color, tilingFactor);
     }
 
     public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, SubTexture2D subTexture, Vector4f color, float tilingFactor) {
         Matrix4f transform = new Matrix4f()
-                .translate(position)
-                .rotate(radians, new Vector3f(0.0f, 0.0f, 1.0f))
-                .scale(new Vector3f(size, 1.0f));
+            .translate(position)
+            .rotate(radians, new Vector3f(0.0f, 0.0f, 1.0f))
+            .scale(new Vector3f(size, 1.0f));
 
         drawQuad(transform, subTexture.getTexture(), subTexture.getTextureCoordinates(), color, tilingFactor);
     }
@@ -250,17 +250,17 @@ public class Renderer2D {
         public static final int MAX_INDICES = MAX_QUAD * 6;
         public static final int MAX_TEXTURE_SLOTS = 32;
         public static final Vector2f[] QUAD_TEXTURE_COORDS = new Vector2f[]{
-                new Vector2f(0.0f, 0.0f),
-                new Vector2f(1.0f, 0.0f),
-                new Vector2f(1.0f, 1.0f),
-                new Vector2f(0.0f, 1.0f)
+            new Vector2f(0.0f, 0.0f),
+            new Vector2f(1.0f, 0.0f),
+            new Vector2f(1.0f, 1.0f),
+            new Vector2f(0.0f, 1.0f)
         };
 
         public static final Vector4f[] QUAD_VERTEX_POSITIONS = new Vector4f[]{
-                new Vector4f(-0.5f, -0.5f, 0.0f, 1.0f),
-                new Vector4f(0.5f, -0.5f, 0.0f, 1.0f),
-                new Vector4f(0.5f, 0.5f, 0.0f, 1.0f),
-                new Vector4f(-0.5f, 0.5f, 0.0f, 1.0f)
+            new Vector4f(-0.5f, -0.5f, 0.0f, 1.0f),
+            new Vector4f(0.5f, -0.5f, 0.0f, 1.0f),
+            new Vector4f(0.5f, 0.5f, 0.0f, 1.0f),
+            new Vector4f(-0.5f, 0.5f, 0.0f, 1.0f)
         };
 
         public VertexArray quadVertexArray;

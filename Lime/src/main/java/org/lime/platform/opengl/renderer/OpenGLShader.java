@@ -30,8 +30,8 @@ public class OpenGLShader extends Shader {
     public OpenGLShader(String name, String vertexSource, String fragmentSource) {
         super(name);
         Map<Integer, String> shaderSources = Map.of(
-                GL_VERTEX_SHADER, vertexSource,
-                GL_FRAGMENT_SHADER, fragmentSource
+            GL_VERTEX_SHADER, vertexSource,
+            GL_FRAGMENT_SHADER, fragmentSource
         );
         compile(shaderSources);
     }
@@ -131,11 +131,11 @@ public class OpenGLShader extends Shader {
 
     private Map<Integer, String> preProcess(String shaderSource) {
         return Arrays.stream(shaderSource.split("((?=#type))"))
-                .map(source -> source.split("((?=#version))"))
-                .collect(Collectors.toMap(
-                        values -> shaderTypeFromString(values[0]),
-                        values -> values[1]
-                ));
+            .map(source -> source.split("((?=#version))"))
+            .collect(Collectors.toMap(
+                values -> shaderTypeFromString(values[0]),
+                values -> values[1]
+            ));
     }
 
     private int shaderTypeFromString(String type) {
@@ -149,24 +149,24 @@ public class OpenGLShader extends Shader {
     private void compile(Map<Integer, String> shaderSources) {
         int program = glCreateProgram();
         Set<Integer> shaderIds = shaderSources.entrySet()
-                .stream()
-                .map(entry -> {
-                    int type = entry.getKey();
-                    String source = entry.getValue();
-                    int shader = glCreateShader(type);
-                    glShaderSource(shader, source);
-                    glCompileShader(shader);
+            .stream()
+            .map(entry -> {
+                int type = entry.getKey();
+                String source = entry.getValue();
+                int shader = glCreateShader(type);
+                glShaderSource(shader, source);
+                glCompileShader(shader);
 
-                    if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
-                        glDeleteShader(shader);
+                if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
+                    glDeleteShader(shader);
 
-                        LM_CORE_ERROR(String.format("Shader compilation failure! (%s)", name));
-                        LM_CORE_ERROR(glGetShaderInfoLog(shader));
-                    }
+                    LM_CORE_ERROR(String.format("Shader compilation failure! (%s)", name));
+                    LM_CORE_ERROR(glGetShaderInfoLog(shader));
+                }
 
-                    glAttachShader(program, shader);
-                    return shader;
-                }).collect(Collectors.toSet());
+                glAttachShader(program, shader);
+                return shader;
+            }).collect(Collectors.toSet());
 
         rendererId = program;
 

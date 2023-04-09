@@ -106,9 +106,31 @@ public class ImGuiControls {
         }
     }
 
-    public static void contextWindow(Runnable children) {
+    public static void popupContextWindow(String id, Runnable children) {
         int popupFlags = ImGuiPopupFlags.MouseButtonRight;
-        if (ImGui.beginPopupContextWindow(popupFlags)) {
+        if (ImGui.beginPopupContextWindow(id, popupFlags)) {
+            children.run();
+            ImGui.endPopup();
+        }
+    }
+
+    public static void menuBar(Runnable children) {
+        if (ImGui.beginMenuBar()) {
+            children.run();
+            ImGui.endMenuBar();
+        }
+    }
+
+    public static void menu(String label, Runnable children) {
+        if (ImGui.beginMenu(label)) {
+            children.run();
+            ImGui.endMenu();
+        }
+    }
+
+    public static void popupContextItem(Runnable children) {
+        int popupFlags = ImGuiPopupFlags.MouseButtonRight;
+        if (ImGui.beginPopupContextItem(popupFlags)) {
             children.run();
             ImGui.endPopup();
         }

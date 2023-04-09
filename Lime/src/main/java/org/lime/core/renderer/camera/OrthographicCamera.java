@@ -40,12 +40,12 @@ public class OrthographicCamera {
 
     private void reCalculateViewMatrix() {
         Matrix4f transform = new Matrix4f()
+            .identity()
+            .translate(position)
+            .mul(new Matrix4f()
                 .identity()
-                .translate(position)
-                .mul(new Matrix4f()
-                        .identity()
-                        .rotate(Math.toRadians(rotation), new Vector3f(0.0f, 0.0f, 1.0f))
-                );
+                .rotate(Math.toRadians(rotation), new Vector3f(0.0f, 0.0f, 1.0f))
+            );
 
         viewMatrix = transform.invert();
         projectionMatrix.mul(viewMatrix, viewProjectionMatrix);
