@@ -12,6 +12,18 @@ import java.util.function.Consumer;
 
 public class ImGuiControls {
 
+    public static void button(String label, Runnable onClick) {
+        if (ImGui.button(label)) {
+            onClick.run();
+        }
+    }
+
+    public static void button(String label, float width, float height, Runnable onClick) {
+        if (ImGui.button(label, width, height)) {
+            onClick.run();
+        }
+    }
+
     public static void checkbox(String label, boolean value, Consumer<Boolean> onChange) {
         if (ImGui.checkbox(label, value)) {
             onChange.accept(!value);
@@ -33,7 +45,7 @@ public class ImGuiControls {
     }
 
     public static void dragFloat3(String label, Vector3f value, Consumer<Vector3f> onChange) {
-        dragFloat3(label, value, onChange, 0.0f, 100.0f);
+        dragFloat3(label, value, onChange, 0.0f, 80.0f);
     }
 
     public static void dragFloat3(String label, Vector3f value, Consumer<Vector3f> onChange, float resetValue, float columnWidth) {
@@ -128,9 +140,24 @@ public class ImGuiControls {
         }
     }
 
+    public static void popup(String id, Runnable children) {
+        if (ImGui.beginPopup(id)) {
+            children.run();
+            ImGui.endPopup();
+        }
+    }
+
     public static void popupContextItem(Runnable children) {
         int popupFlags = ImGuiPopupFlags.MouseButtonRight;
         if (ImGui.beginPopupContextItem(popupFlags)) {
+            children.run();
+            ImGui.endPopup();
+        }
+    }
+
+    public static void popupContextWindow(Runnable children) {
+        int popupFlags = ImGuiPopupFlags.MouseButtonRight;
+        if (ImGui.beginPopupContextWindow(popupFlags)) {
             children.run();
             ImGui.endPopup();
         }

@@ -32,6 +32,21 @@ public class SceneHierarchyPanel {
         int windowFlags = ImGuiWindowFlags.MenuBar;
         ImGui.begin("Scene Hierarchy", windowFlags);
 
+        menuBar(
+            () -> menu(
+                String.format("%s %s", ImGuiIcons.Plus, ImGuiIcons.CaretDown),
+                () -> menuItem("Add entity",
+                    () -> context.createEntity()
+                )
+            )
+        );
+
+        popupContextWindow(
+            () -> menuItem(String.format("%s Add entity", ImGuiIcons.Plus),
+                () -> context.createEntity()
+            )
+        );
+
         Set<Entity> toDelete = context.getRegistry().stream()
             .map(entity -> new Entity(entity, context))
             .map(this::drawEntityNode)
@@ -45,21 +60,12 @@ public class SceneHierarchyPanel {
             this.setSelection(null);
         }
 
-        menuBar(
-            () -> menu(
-                String.format("%s %s", ImGuiIcons.Plus, ImGuiIcons.CaretDown),
-                () -> menuItem("Add Entity",
-                    () -> context.createEntity()
-                )
-            )
-        );
-
         ImGui.end();
         propertiesPanel.onImGuiRender();
     }
 
     private Entity drawEntityNode(Entity entity) {
-        AtomicBoolean entityDeleted = new AtomicBoolean(false);
+        AtomicBoolean shouldDelete = new AtomicBoolean(false);
         String tag = entity.getComponent(TagComponent.class).tag;
 
         int flags = (entity.equals(selectionContext) ? ImGuiTreeNodeFlags.Selected : 0);
@@ -71,14 +77,14 @@ public class SceneHierarchyPanel {
 
         popupContextItem(() ->
             menuItem(String.format("%s Delete", ImGuiIcons.Trash),
-                () -> entityDeleted.set(true)
+                () -> shouldDelete.set(true)
             )
         );
 
         if (opened)
             ImGui.treePop();
 
-        if (entityDeleted.get())
+        if (shouldDelete.get())
             return entity;
         return null;
     }

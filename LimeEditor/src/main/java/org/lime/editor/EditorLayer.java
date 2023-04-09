@@ -24,6 +24,8 @@ import org.lime.editor.panels.SceneHierarchyPanel;
 import org.lime.editor.panels.StatisticsPanel;
 import org.lime.editor.scripts.CameraController;
 
+import static org.lime.core.utils.Log.LM_INFO;
+
 public class EditorLayer extends Layer {
     private Scene activeScene;
     private SceneHierarchyPanel sceneHierarchyPanel;
@@ -56,6 +58,9 @@ public class EditorLayer extends Layer {
         );
         this.frameBuffer = FrameBuffer.create(specification);
         this.activeScene = new Scene();
+        activeScene.getRegistry().onConstruct(CameraComponent.class,
+            (camera) -> LM_INFO(String.format("Camera constructer with hash: %s", camera.hashCode()))
+        );
         this.sceneHierarchyPanel.setContext(activeScene);
 
         greenSquare = activeScene.createEntity("Green Square");

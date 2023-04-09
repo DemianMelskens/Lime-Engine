@@ -16,14 +16,16 @@ public class Registry implements Iterable<Integer> {
     private int entityCount;
     private final Map<Integer, Set<Class<?>>> entities;
     private final Map<Class<?>, Map<Integer, Object>> pools;
+    private final Map<Class<?>, Consumer<?>> constructEventHandlers;
 
     /**
      * Registry default constructor.
      */
     public Registry() {
+        this.entityCount = 0;
         this.pools = new HashMap<>();
         this.entities = new HashMap<>();
-        this.entityCount = 0;
+        this.constructEventHandlers = new HashMap<>();
     }
 
     /**
@@ -46,6 +48,10 @@ public class Registry implements Iterable<Integer> {
         entities.get(entity)
             .forEach(clazz -> pools.get(clazz).remove(entity));
         entities.remove(entity);
+    }
+
+    public <T> void onConstruct(Class<T> clazz, Consumer<T> function) {
+        constructEventHandlers.put(clazz, function);
     }
 
     /**
@@ -102,6 +108,9 @@ public class Registry implements Iterable<Integer> {
             T component = getConstructor(clazz, args).newInstance(args);
             getPool(clazz).put(entity, component);
             entities.get(entity).add(clazz);
+
+            getOnConstruct(clazz).ifPresent(function -> function.accept(component));
+
             return component;
         } catch (InstantiationException |
                  IllegalAccessException |
@@ -210,6 +219,10 @@ public class Registry implements Iterable<Integer> {
         } catch (NoSuchMethodException | IllegalArgumentException ex) {
             throw LNTT_CORE_EXCEPTION(String.format("Tried to get construct class for %s with args %s!", clazz.getName(), Arrays.toString(ctorArgs)));
         }
+    }
+
+    private <T> Optional<Consumer<T>> getOnConstruct(Class<T> clazz) {
+        return Optional.ofNullable((Consumer<T>) constructEventHandlers.get(clazz));
     }
 
     @Override

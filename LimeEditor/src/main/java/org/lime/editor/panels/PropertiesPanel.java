@@ -1,8 +1,10 @@
 package org.lime.editor.panels;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiTreeNodeFlags;
 import org.joml.Math;
+import org.lime.core.imgui.ImGuiIcons;
 import org.lime.core.renderer.camera.ProjectionType;
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.components.CameraComponent;
@@ -10,6 +12,8 @@ import org.lime.core.scene.components.SpriteRendererComponent;
 import org.lime.core.scene.components.TagComponent;
 import org.lime.core.scene.components.TransformComponent;
 import org.lime.core.utils.VectorMath;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lime.core.imgui.ImGuiControls.*;
 
@@ -31,8 +35,26 @@ public class PropertiesPanel {
     }
 
     private void drawComponents(Entity context) {
-        if (context.hasComponent(TagComponent.class))
+        if (context.hasComponent(TagComponent.class)) {
             drawTagComponent(context);
+            ImGui.sameLine(ImGui.getWindowWidth() - 65.0f);
+
+            button(String.format("%s Add %s", ImGuiIcons.Plus, ImGuiIcons.CaretDown),
+                () -> ImGui.openPopup("AddPopup")
+            );
+
+            popup("AddPopup", () -> {
+                menuItem("Camera", () -> {
+                    context.addComponent(CameraComponent.class);
+                    ImGui.closeCurrentPopup();
+                });
+
+                menuItem("Sprite Renderer", () -> {
+                    context.addComponent(SpriteRendererComponent.class);
+                    ImGui.closeCurrentPopup();
+                });
+            });
+        }
 
         if (context.hasComponent(TransformComponent.class))
             drawTransformComponent(context);
@@ -137,11 +159,35 @@ public class PropertiesPanel {
     }
 
     private void drawComponent(Class<?> clazz, String label, Runnable children) {
+        AtomicBoolean shouldRemove = new AtomicBoolean(false);
         int flags = ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.SpanAvailWidth;
-        flags |= ImGuiTreeNodeFlags.OpenOnDoubleClick;
-        if (ImGui.treeNodeEx(clazz.hashCode(), flags, label)) {
+        flags |= ImGuiTreeNodeFlags.OpenOnDoubleClick | ImGuiTreeNodeFlags.AllowItemOverlap;
+
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 4.0f, 4.0f);
+
+        boolean open = ImGui.treeNodeEx(clazz.hashCode(), flags, label);
+        ImGui.sameLine(ImGui.getWindowWidth() - 27.0f);
+        button(String.format("%s", ImGuiIcons.EllipsisH), 20.0f, 20.0f,
+            () -> ImGui.openPopup("ComponentContext")
+        );
+
+        ImGui.popStyleVar();
+
+        popup("ComponentContext",
+            () -> menuItem(String.format("%s Remove", ImGuiIcons.Trash),
+                () -> {
+                    shouldRemove.set(true);
+                    ImGui.closeCurrentPopup();
+                }
+            )
+        );
+
+        if (open) {
             children.run();
             ImGui.treePop();
         }
+
+        if (shouldRemove.get())
+            context.removeComponent(clazz);
     }
 }
