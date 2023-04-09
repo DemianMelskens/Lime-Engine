@@ -44,7 +44,7 @@ public class Scene {
 
             if (camera.isPrimary) {
                 mainCamera = camera.camera;
-                mainCameraTransform = transform.transform;
+                mainCameraTransform = transform.getTransform();
                 break;
             }
         }
@@ -57,7 +57,7 @@ public class Scene {
                 TransformComponent transform = group.get(entity, TransformComponent.class);
                 SpriteRendererComponent sprite = group.get(entity, SpriteRendererComponent.class);
 
-                Renderer2D.drawQuad(transform.transform, sprite.color.getValue());
+                Renderer2D.drawQuad(transform.getTransform(), sprite.color.getValue());
             }
 
             Renderer2D.endScene();

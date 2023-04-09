@@ -19,6 +19,7 @@ import org.lime.core.scene.Scene;
 import org.lime.core.scene.components.CameraComponent;
 import org.lime.core.scene.components.NativeScriptComponent;
 import org.lime.core.scene.components.SpriteRendererComponent;
+import org.lime.core.scene.components.TransformComponent;
 import org.lime.core.time.TimeStep;
 import org.lime.editor.panels.SceneHierarchyPanel;
 import org.lime.editor.panels.StatisticsPanel;
@@ -64,11 +65,11 @@ public class EditorLayer extends Layer {
         redSquare = activeScene.createEntity("Red Square");
         redSquare.addComponent(SpriteRendererComponent.class, Color.create(0.8f, 0.2f, 0.3f, 1.0f));
 
-        cameraEntity = activeScene.createEntity("Camera 1");
+        cameraEntity = activeScene.createEntity("Camera A");
         cameraEntity.addComponent(CameraComponent.class);
         cameraEntity.addComponent(NativeScriptComponent.class).bind(CameraController.class);
 
-        secondCamera = activeScene.createEntity("Camera 2");
+        secondCamera = activeScene.createEntity("Camera B");
         var cc = secondCamera.addComponent(CameraComponent.class);
         cc.isPrimary = false;
         secondCamera.addComponent(NativeScriptComponent.class).bind(CameraController.class);
@@ -138,7 +139,6 @@ public class EditorLayer extends Layer {
 
         sceneHierarchyPanel.onImGuiRender();
         statisticsPanel.onImGuiRender();
-
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0.0f, 0.0f);
         ImGui.begin("Scene");

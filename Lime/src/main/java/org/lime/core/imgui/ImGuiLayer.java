@@ -1,8 +1,6 @@
 package org.lime.core.imgui;
 
-import imgui.ImGui;
-import imgui.ImGuiIO;
-import imgui.ImGuiStyle;
+import imgui.*;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
@@ -12,7 +10,15 @@ import org.lime.core.Layer;
 import org.lime.core.events.Event;
 import org.lime.core.events.EventCategory;
 import org.lime.core.time.TimeStep;
+import org.lime.core.utils.Resources;
 import org.lwjgl.glfw.GLFW;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.FileSystemNotFoundException;
+
+import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
+import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 
 public class ImGuiLayer extends Layer {
 
@@ -32,12 +38,17 @@ public class ImGuiLayer extends Layer {
     public void onAttach() {
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
-        io.setConfigFlags(
-                ImGuiConfigFlags.NavEnableKeyboard |
-                        ImGuiConfigFlags.DockingEnable |
-                        ImGuiConfigFlags.ViewportsEnable
-        );
+        ImFontAtlas fontAtlas = io.getFonts();
+
+        io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
+        io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
+        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+        io.setConfigViewportsNoTaskBarIcon(true);
+
         ImGui.styleColorsDark();
+
+        fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/open-sans/OpenSans-Bold.ttf"), 18.0f);
+        io.setFontDefault(fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/open-sans/OpenSans-Regular.ttf"), 18.0f));
 
         ImGuiStyle style = ImGui.getStyle();
         if (io.hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
@@ -88,4 +99,6 @@ public class ImGuiLayer extends Layer {
             event.isHandled |= event.isInCategory(EventCategory.KEYBOARD) && io.getWantCaptureKeyboard();
         }
     }
+
+
 }

@@ -8,8 +8,10 @@ import org.lime.core.imgui.ImGuiControls;
 import org.lime.core.renderer.camera.ProjectionType;
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.components.CameraComponent;
+import org.lime.core.scene.components.SpriteRendererComponent;
 import org.lime.core.scene.components.TagComponent;
 import org.lime.core.scene.components.TransformComponent;
+import org.lime.core.utils.VectorMath;
 
 public class PropertiesPanel {
     private Entity context;
@@ -19,6 +21,7 @@ public class PropertiesPanel {
     }
 
     public void onImGuiRender() {
+        ImGui.showDemoWindow();
         ImGui.begin("Properties");
 
         if (context != null) {
@@ -31,10 +34,15 @@ public class PropertiesPanel {
     private void drawComponents(Entity context) {
         if (context.hasComponent(TagComponent.class))
             drawTagComponent(context);
+
         if (context.hasComponent(TransformComponent.class))
             drawTransformComponent(context);
+
         if (context.hasComponent(CameraComponent.class))
             drawCameraComponent(context);
+
+        if (context.hasComponent(SpriteRendererComponent.class))
+            drawSpriteRendererComponent(context);
     }
 
     private void drawTagComponent(Entity context) {
@@ -45,24 +53,32 @@ public class PropertiesPanel {
     }
 
     private void drawTransformComponent(Entity context) {
+        drawComponent(TransformComponent.class, "Transform", () -> {
+            var transformComponent = context.getComponent(TransformComponent.class);
 
-        int flags = ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.SpanAvailWidth;
-        flags |= ImGuiTreeNodeFlags.OpenOnDoubleClick;
-        if (ImGui.treeNodeEx(TransformComponent.class.hashCode(), flags, "Transform")) {
-            var transform = context.getComponent(TransformComponent.class).transform;
-            ImGuiControls.dragFloat3("Position", new Vector3f(transform.m30(), transform.m31(), transform.m32()), output ->
-                    transform.m30(output.x)
-                            .m31(output.y)
-                            .m32(output.z)
-            );
-            ImGui.treePop();
-        }
+            var position = transformComponent.position;
+            ImGuiControls.dragFloat3("Position", position, output -> {
+                position.x = output.x;
+                position.y = output.y;
+                position.z = output.z;
+            });
+
+            var rotation = transformComponent.rotation;
+            ImGuiControls.dragFloat3("Rotation", VectorMath.toDegrees(rotation), output -> {
+                transformComponent.rotation = VectorMath.toRadians(output);
+            });
+
+            var scale = transformComponent.scale;
+            ImGuiControls.dragFloat3("Scale", scale, output -> {
+                scale.x = output.x;
+                scale.y = output.y;
+                scale.z = output.z;
+            });
+        });
     }
 
     private void drawCameraComponent(Entity context) {
-        int flags = ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.SpanAvailWidth;
-        flags |= ImGuiTreeNodeFlags.OpenOnDoubleClick;
-        if (ImGui.treeNodeEx(CameraComponent.class.hashCode(), flags, "Camera")) {
+        drawComponent(CameraComponent.class, "Camera", () -> {
             var cameraComponent = context.getComponent(CameraComponent.class);
             var camera = cameraComponent.camera;
 
@@ -109,7 +125,23 @@ public class PropertiesPanel {
                 float orthographicFarClip = camera.getOrthographicFarClip();
                 ImGuiControls.dragFloat("Far", orthographicFarClip, camera::setOrthographicFarClip);
             }
+        });
+    }
 
+    private void drawSpriteRendererComponent(Entity context) {
+        drawComponent(SpriteRendererComponent.class, "Sprite Renderer", () -> {
+            var spriteRendererComponent = context.getComponent(SpriteRendererComponent.class);
+            ImGuiControls.colorEdit4("Color", spriteRendererComponent.color, (output) ->
+                    spriteRendererComponent.color = output
+            );
+        });
+    }
+
+    private void drawComponent(Class<?> clazz, String label, Runnable children) {
+        int flags = ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.SpanAvailWidth;
+        flags |= ImGuiTreeNodeFlags.OpenOnDoubleClick;
+        if (ImGui.treeNodeEx(clazz.hashCode(), flags, label)) {
+            children.run();
             ImGui.treePop();
         }
     }

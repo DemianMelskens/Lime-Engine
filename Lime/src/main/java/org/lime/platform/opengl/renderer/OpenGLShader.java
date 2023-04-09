@@ -2,19 +2,16 @@ package org.lime.platform.opengl.renderer;
 
 import org.joml.*;
 import org.lime.core.renderer.shader.Shader;
+import org.lime.core.utils.Resources;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.FloatBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 import static org.lime.core.utils.Log.LM_CORE_ERROR;
 import static org.lwjgl.opengl.GL20.glDeleteShader;
@@ -25,7 +22,7 @@ public class OpenGLShader extends Shader {
 
     public OpenGLShader(String filePath) {
         super(filePath);
-        String source = readFile(filePath);
+        String source = Resources.loadContent(filePath);
         Map<Integer, String> shaderSources = preProcess(source);
         compile(shaderSources);
     }
@@ -130,15 +127,6 @@ public class OpenGLShader extends Shader {
             value.get(buffer);
             glUniformMatrix4fv(location, false, buffer);
         }
-    }
-
-    private String readFile(String filePath) {
-        try (InputStream inputStream = this.getClass().getResourceAsStream(filePath)) {
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            LM_CORE_ASSERT(false, String.format("Could not open file '%s', reason: %s", filePath, e.getCause()));
-        }
-        return "";
     }
 
     private Map<Integer, String> preProcess(String shaderSource) {
