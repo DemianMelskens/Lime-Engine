@@ -1,10 +1,12 @@
 package org.lime.editor.panels;
 
 import imgui.ImGui;
+import imgui.ImVec2;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiTreeNodeFlags;
 import org.joml.Math;
 import org.lime.core.imgui.ImGuiIcons;
+import org.lime.core.imgui.ImGuiUtils;
 import org.lime.core.renderer.camera.ProjectionType;
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.components.CameraComponent;
@@ -37,7 +39,8 @@ public class PropertiesPanel {
     private void drawComponents(Entity context) {
         if (context.hasComponent(TagComponent.class)) {
             drawTagComponent(context);
-            ImGui.sameLine(ImGui.getWindowWidth() - 65.0f);
+            ImGui.sameLine();
+            ImGui.pushItemWidth(-1);
 
             button(String.format("%s Add %s", ImGuiIcons.Plus, ImGuiIcons.CaretDown),
                 () -> ImGui.openPopup("AddPopup")
@@ -54,6 +57,7 @@ public class PropertiesPanel {
                     ImGui.closeCurrentPopup();
                 });
             });
+            ImGui.popItemWidth();
         }
 
         if (context.hasComponent(TransformComponent.class))
@@ -68,7 +72,7 @@ public class PropertiesPanel {
 
     private void drawTagComponent(Entity context) {
         var tagComponent = context.getComponent(TagComponent.class);
-        inputText("Tag", tagComponent.tag, output ->
+        inputText("##Tag", tagComponent.tag, output ->
             tagComponent.tag = output
         );
     }
@@ -160,18 +164,20 @@ public class PropertiesPanel {
 
     private void drawComponent(Class<?> clazz, String label, Runnable children) {
         AtomicBoolean shouldRemove = new AtomicBoolean(false);
-        int flags = ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.SpanAvailWidth;
-        flags |= ImGuiTreeNodeFlags.OpenOnDoubleClick | ImGuiTreeNodeFlags.AllowItemOverlap;
+        int flags = ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.Framed;
+        flags |= ImGuiTreeNodeFlags.OpenOnDoubleClick | ImGuiTreeNodeFlags.AllowItemOverlap | ImGuiTreeNodeFlags.FramePadding;
+        ImVec2 contentRegionAvailable = ImGui.getContentRegionAvail();
 
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 4.0f, 4.0f);
-
+        float lineHeight = ImGuiUtils.getLineHeight();
+        ImGui.separator();
         boolean open = ImGui.treeNodeEx(clazz.hashCode(), flags, label);
-        ImGui.sameLine(ImGui.getWindowWidth() - 27.0f);
-        button(String.format("%s", ImGuiIcons.EllipsisH), 20.0f, 20.0f,
+        ImGui.popStyleVar();
+
+        ImGui.sameLine(contentRegionAvailable.x - (lineHeight * 0.5f));
+        button(String.format("%s", ImGuiIcons.EllipsisH), lineHeight, lineHeight,
             () -> ImGui.openPopup("ComponentContext")
         );
-
-        ImGui.popStyleVar();
 
         popup("ComponentContext",
             () -> menuItem(String.format("%s Remove", ImGuiIcons.Trash),

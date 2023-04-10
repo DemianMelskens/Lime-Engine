@@ -1,6 +1,8 @@
 package org.lime.core.imgui;
 
-import imgui.*;
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.ImGuiStyle;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
@@ -10,7 +12,6 @@ import org.lime.core.Layer;
 import org.lime.core.events.Event;
 import org.lime.core.events.EventCategory;
 import org.lime.core.time.TimeStep;
-import org.lime.core.utils.Resources;
 import org.lwjgl.glfw.GLFW;
 
 public class ImGuiLayer extends Layer {
@@ -34,14 +35,16 @@ public class ImGuiLayer extends Layer {
         io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         io.setConfigViewportsNoTaskBarIcon(true);
 
-        ImGui.styleColorsDark();
-        initFonts(io);
+        ImGuiFonts.get().initFonts(io);
 
         ImGuiStyle style = ImGui.getStyle();
         if (io.hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
             style.setWindowRounding(0.0f);
             style.setColor(ImGuiCol.WindowBg, 0.0f, 0.0f, 0.0f, 1.0f);
         }
+
+        setDarkTheme();
+
         imGuiGlfw.init(GLFW.glfwGetCurrentContext(), true);
         imGuiGl3.init("#version 410");
     }
@@ -91,25 +94,35 @@ public class ImGuiLayer extends Layer {
         }
     }
 
-    private void initFonts(ImGuiIO io) {
-        ImFontAtlas fontAtlas = io.getFonts();
-        fontAtlas.addFontDefault();
+    public void setDarkTheme() {
+        ImGuiStyle style = ImGui.getStyle();
+        style.setColor(ImGuiCol.WindowBg, 0.1f, 0.105f, 0.11f, 1.0f);
 
-        final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
-        rangesBuilder.addRanges(io.getFonts().getGlyphRangesDefault());
-        rangesBuilder.addRanges(ImGuiIcons._IconRange);
+        //Headers
+        style.setColor(ImGuiCol.Header, 0.2f, 0.205f, 0.21f, 1.0f);
+        style.setColor(ImGuiCol.HeaderActive, 0.3f, 0.305f, 0.31f, 1.0f);
+        style.setColor(ImGuiCol.HeaderHovered, 0.15f, 0.1505f, 0.151f, 1.0f);
 
-        final ImFontConfig fontConfig = new ImFontConfig();
-        fontConfig.setMergeMode(true);
+        //Buttons
+        style.setColor(ImGuiCol.Button, 0.2f, 0.205f, 0.21f, 1.0f);
+        style.setColor(ImGuiCol.ButtonActive, 0.3f, 0.305f, 0.31f, 1.0f);
+        style.setColor(ImGuiCol.ButtonHovered, 0.15f, 0.1505f, 0.151f, 1.0f);
 
-        final short[] glyphRanges = rangesBuilder.buildRanges();
-        fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/open-sans/OpenSans-Regular.ttf"), 20.0f, fontConfig, glyphRanges);
-        fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/open-sans/OpenSans-Bold.ttf"), 20.0f, fontConfig, glyphRanges);
-        fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/fontawesome/fa-regular-400.ttf"), 10.0f, fontConfig, glyphRanges);
-        fontAtlas.addFontFromMemoryTTF(Resources.load("/fonts/fontawesome/fa-solid-900.ttf"), 10.0f, fontConfig, glyphRanges);
-        io.getFonts().build();
+        //Frame background
+        style.setColor(ImGuiCol.FrameBg, 0.2f, 0.205f, 0.21f, 1.0f);
+        style.setColor(ImGuiCol.FrameBgActive, 0.3f, 0.305f, 0.31f, 1.0f);
+        style.setColor(ImGuiCol.FrameBgHovered, 0.15f, 0.1505f, 0.151f, 1.0f);
 
-        fontConfig.destroy();
+        //Tabs
+        style.setColor(ImGuiCol.Tab, 0.15f, 0.1505f, 0.151f, 1.0f);
+        style.setColor(ImGuiCol.TabActive, 0.38f, 0.3805f, 0.381f, 1.0f);
+        style.setColor(ImGuiCol.TabHovered, 0.28f, 0.2805f, 0.281f, 1.0f);
+        style.setColor(ImGuiCol.TabUnfocused, 0.015f, 0.1505f, 0.151f, 1.0f);
+        style.setColor(ImGuiCol.TabUnfocusedActive, 0.2f, 0.205f, 0.21f, 1.0f);
+
+        //Title
+        style.setColor(ImGuiCol.TitleBg, 0.15f, 0.1505f, 0.151f, 1.0f);
+        style.setColor(ImGuiCol.TitleBgActive, 0.15f, 0.1505f, 0.151f, 1.0f);
+        style.setColor(ImGuiCol.TitleBgCollapsed, 0.95f, 0.1505f, 0.951f, 1.0f);
     }
-
 }

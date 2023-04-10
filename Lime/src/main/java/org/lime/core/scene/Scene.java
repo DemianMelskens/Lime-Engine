@@ -12,9 +12,14 @@ import org.lime.lentt.View;
 public class Scene {
 
     Registry registry;
+    private int viewPortWidth = 0;
+    private int viewPortHeight = 0;
 
     public Scene() {
         this.registry = new Registry();
+        registry.onConstruct(CameraComponent.class,
+            (cameraComponent) -> cameraComponent.camera.setViewportSize(viewPortWidth, viewPortHeight)
+        );
     }
 
     public Registry getRegistry() {
@@ -85,7 +90,9 @@ public class Scene {
         for (int entity : view) {
             var cameraComponent = view.get(entity);
             if (!cameraComponent.hasFixedAspectRatio) {
-                cameraComponent.camera.setViewportSize(width, height);
+                viewPortWidth = width;
+                viewPortHeight = height;
+                cameraComponent.camera.setViewportSize(viewPortWidth, viewPortHeight);
             }
         }
     }

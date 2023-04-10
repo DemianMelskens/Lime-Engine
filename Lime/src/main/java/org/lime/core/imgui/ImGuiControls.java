@@ -49,6 +49,8 @@ public class ImGuiControls {
     }
 
     public static void dragFloat3(String label, Vector3f value, Consumer<Vector3f> onChange, float resetValue, float columnWidth) {
+        ImGuiFonts fonts = ImGuiFonts.get();
+
         ImGui.pushID(label);
         ImGui.columns(2);
         ImGui.setColumnWidth(0, columnWidth);
@@ -64,8 +66,10 @@ public class ImGuiControls {
         ImGui.pushStyleColor(ImGuiCol.Button, 0.8f, 0.1f, 0.15f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.9f, 0.2f, 0.2f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.8f, 0.1f, 0.15f, 1.0f);
+        ImGui.pushFont(fonts.getFont("OpenSans-Bold"));
         if (ImGui.button("X", btnSize, btnSize))
             onChange.accept(new Vector3f(resetValue, value.y, value.z));
+        ImGui.popFont();
         ImGui.popStyleColor(3);
 
         ImGui.sameLine();
@@ -77,8 +81,10 @@ public class ImGuiControls {
         ImGui.pushStyleColor(ImGuiCol.Button, 0.2f, 0.7f, 0.2f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.3f, 0.8f, 0.3f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.2f, 0.7f, 0.2f, 1.0f);
+        ImGui.pushFont(fonts.getFont("OpenSans-Bold"));
         if (ImGui.button("Y", btnSize, btnSize))
             onChange.accept(new Vector3f(value.x, resetValue, value.z));
+        ImGui.popFont();
         ImGui.popStyleColor(3);
 
         ImGui.sameLine();
@@ -90,8 +96,10 @@ public class ImGuiControls {
         ImGui.pushStyleColor(ImGuiCol.Button, 0.1f, 0.25f, 0.8f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.2f, 0.35f, 0.8f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.1f, 0.25f, 0.8f, 1.0f);
+        ImGui.pushFont(fonts.getFont("OpenSans-Bold"));
         if (ImGui.button("Z", btnSize, btnSize))
             onChange.accept(new Vector3f(value.x, value.y, resetValue));
+        ImGui.popFont();
         ImGui.popStyleColor(3);
 
         ImGui.sameLine();
