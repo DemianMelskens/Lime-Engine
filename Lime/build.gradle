@@ -13,6 +13,7 @@ project.ext.jomlVersion = "1.10.5"
 project.ext.jomlPrimVersion = "1.10.0"
 project.ext.imguiVersion = "1.86.7"
 project.ext.artemisVersion = "2.3.0"
+project.ext.jacksonDataformat = "2.14.2"
 
 repositories {
     mavenCentral()

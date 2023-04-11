@@ -1,6 +1,7 @@
 package org.lime.core.scene;
 
 import java.util.Objects;
+import java.util.Set;
 
 import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 
@@ -28,6 +29,10 @@ public class Entity {
 
     public boolean hasComponent(Class<?> clazz) {
         return scene.registry.has(entityHandle, clazz);
+    }
+
+    public Set<Object> getAllComponents() {
+        return scene.registry.getAll(entityHandle);
     }
 
     public <T> T getComponent(Class<T> clazz) {

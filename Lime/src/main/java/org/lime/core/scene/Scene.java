@@ -62,7 +62,7 @@ public class Scene {
                 TransformComponent transform = group.get(entity, TransformComponent.class);
                 SpriteRendererComponent sprite = group.get(entity, SpriteRendererComponent.class);
 
-                Renderer2D.drawQuad(transform.getTransform(), sprite.color.getValue());
+                Renderer2D.drawQuad(transform.getTransform(), sprite.color.get());
             }
 
             Renderer2D.endScene();

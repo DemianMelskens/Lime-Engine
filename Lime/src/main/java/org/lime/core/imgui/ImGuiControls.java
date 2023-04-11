@@ -113,7 +113,7 @@ public class ImGuiControls {
     }
 
     public static void colorEdit4(String label, Color value, Consumer<Color> onChange) {
-        float[] output = new float[]{value.r(), value.g(), value.b(), value.a()};
+        float[] output = new float[]{value.r, value.g, value.b, value.a};
         if (ImGui.colorEdit4(label, output)) {
             onChange.accept(Color.create(output[0], output[1], output[2], output[3]));
         }

@@ -1,13 +1,15 @@
 package org.lime.core.renderer;
 
-import lombok.Getter;
 import org.joml.Vector4f;
 
 import java.nio.ByteBuffer;
 
 public class Color {
-    @Getter
-    private Vector4f value;
+
+    public float r;
+    public float g;
+    public float b;
+    public float a;
 
     public static Color white() {
         return new Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -34,60 +36,36 @@ public class Color {
     }
 
     private Color(float r, float g, float b, float a) {
-        this.value = new Vector4f(r, g, b, a);
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
     }
 
     private Color(String hex) {
-        this.value = new Vector4f(
-            toColorSpace(hex.substring(1, 3)),
-            toColorSpace(hex.substring(3, 5)),
-            toColorSpace(hex.substring(5, 7)),
-            getOptionalAlpha(hex)
-        );
+        this.r = toColorSpace(hex.substring(1, 3));
+        this.g = toColorSpace(hex.substring(3, 5));
+        this.b = toColorSpace(hex.substring(5, 7));
+        this.a = getOptionalAlpha(hex);
     }
 
     public void set(float r, float g, float b, float a) {
-        value.set(r, g, b, a);
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
     }
 
-    public float r() {
-        return value.x;
-    }
-
-    public void r(float r) {
-        value.x = r;
-    }
-
-    public float g() {
-        return value.y;
-    }
-
-    public void g(float g) {
-        value.y = g;
-    }
-
-    public float b() {
-        return value.z;
-    }
-
-    public void b(float b) {
-        value.z = b;
-    }
-
-    public float a() {
-        return value.w;
-    }
-
-    public void a(float a) {
-        value.w = a;
+    public Vector4f get() {
+        return new Vector4f(r, g, b, a);
     }
 
     public ByteBuffer getBuffer() {
         ByteBuffer buffer = ByteBuffer.allocateDirect(4);
-        buffer.put((byte) (255.0f * r()));
-        buffer.put((byte) (255.0f * g()));
-        buffer.put((byte) (255.0f * b()));
-        buffer.put((byte) (255.0f * a()));
+        buffer.put((byte) (255.0f * r));
+        buffer.put((byte) (255.0f * g));
+        buffer.put((byte) (255.0f * b));
+        buffer.put((byte) (255.0f * a));
         buffer.rewind();
         return buffer;
     }

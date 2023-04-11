@@ -121,19 +121,19 @@ public class Renderer2D {
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture) {
-        drawQuad(position, size, texture, Color.white().getValue());
+        drawQuad(position, size, texture, Color.white().get());
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, SubTexture2D subTexture) {
-        drawQuad(position, size, subTexture, Color.white().getValue());
+        drawQuad(position, size, subTexture, Color.white().get());
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture, float tilingFactor) {
-        drawQuad(position, size, texture, Color.white().getValue(), tilingFactor);
+        drawQuad(position, size, texture, Color.white().get(), tilingFactor);
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, SubTexture2D subTexture, float tilingFactor) {
-        drawQuad(position, size, subTexture, Color.white().getValue(), tilingFactor);
+        drawQuad(position, size, subTexture, Color.white().get(), tilingFactor);
     }
 
     public static void drawQuad(Vector3f position, Vector2f size, Texture2D texture, Vector4f color) {
@@ -194,19 +194,19 @@ public class Renderer2D {
     }
 
     public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Texture2D texture) {
-        drawRotatedQuad(position, size, radians, texture, Color.white().getValue());
+        drawRotatedQuad(position, size, radians, texture, Color.white().get());
     }
 
     public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, SubTexture2D subTexture) {
-        drawRotatedQuad(position, size, radians, subTexture, Color.white().getValue());
+        drawRotatedQuad(position, size, radians, subTexture, Color.white().get());
     }
 
     public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Texture2D texture, float tilingFactor) {
-        drawRotatedQuad(position, size, radians, texture, Color.white().getValue(), tilingFactor);
+        drawRotatedQuad(position, size, radians, texture, Color.white().get(), tilingFactor);
     }
 
     public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, SubTexture2D subTexture, float tilingFactor) {
-        drawRotatedQuad(position, size, radians, subTexture, Color.white().getValue(), tilingFactor);
+        drawRotatedQuad(position, size, radians, subTexture, Color.white().get(), tilingFactor);
     }
 
     public static void drawRotatedQuad(Vector3f position, Vector2f size, float radians, Texture2D texture, Vector4f color) {
