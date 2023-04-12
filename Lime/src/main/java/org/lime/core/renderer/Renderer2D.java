@@ -73,7 +73,7 @@ public class Renderer2D {
         for (int i = 0; i < TextureSlots.MAX_SLOTS; i++)
             samplers[i] = i;
 
-        Shader textureShader = data.shaderLibrary.load("/shaders/Texture.glsl");
+        Shader textureShader = data.shaderLibrary.load("shaders/Texture.glsl");
         textureShader.bind();
         textureShader.setIntArray("u_Textures", samplers);
 

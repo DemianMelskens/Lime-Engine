@@ -19,6 +19,7 @@ import org.lime.core.scene.Scene;
 import org.lime.core.scene.components.CameraComponent;
 import org.lime.core.scene.components.NativeScriptComponent;
 import org.lime.core.scene.components.SpriteRendererComponent;
+import org.lime.core.scene.serialization.SceneDeserializer;
 import org.lime.core.scene.serialization.SceneSerializer;
 import org.lime.core.time.TimeStep;
 import org.lime.editor.panels.SceneHierarchyPanel;
@@ -75,6 +76,7 @@ public class EditorLayer extends Layer {
         secondCamera.addComponent(NativeScriptComponent.class).bind(CameraController.class);
 
         activeScene.serialize();
+        new SceneDeserializer("scenes/scene.lime").deserialize();
     }
 
     @Override

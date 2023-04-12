@@ -19,7 +19,7 @@ public class Scene {
     public Scene() {
         this.registry = new Registry();
         registry.onConstruct(CameraComponent.class,
-            (cameraComponent) -> cameraComponent.camera.setViewportSize(viewPortWidth, viewPortHeight)
+            cameraComponent -> cameraComponent.camera.setViewportSize(viewPortWidth, viewPortHeight)
         );
     }
 
@@ -100,7 +100,7 @@ public class Scene {
 
     public void serialize() {
         SceneSerializer sceneSerializer = new SceneSerializer(this);
-        sceneSerializer.serialize("src/main/resources/scenes/scene.lime");
+        sceneSerializer.serialize("scenes/scene.lime");
     }
 
     public void shutdown() {

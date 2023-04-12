@@ -1,7 +1,7 @@
 package org.lime.core.serialization;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import org.lime.core.utils.Assets;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -18,8 +18,7 @@ public class YamlWriter implements AutoCloseable {
     private int activeLists;
 
     public YamlWriter(String filePath) throws IOException {
-        File file = new File(filePath);
-        this.outputStream = new FileOutputStream(file);
+        this.outputStream = Assets.getOutputStream(filePath);
         this.indents = 0;
         this.activeObjects = 0;
         this.activeLists = 0;

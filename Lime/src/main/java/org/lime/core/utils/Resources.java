@@ -8,7 +8,6 @@ import static org.lime.core.utils.Assert.LM_CORE_ASSERT;
 import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 
 public class Resources {
-
     public static byte[] load(String filePath) {
         try (InputStream inputStream = Resources.class.getResourceAsStream(filePath)) {
             LM_CORE_ASSERT(inputStream != null, String.format("Could not load file '%s'", filePath));

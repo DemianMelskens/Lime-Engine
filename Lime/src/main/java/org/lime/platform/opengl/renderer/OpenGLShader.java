@@ -2,7 +2,7 @@ package org.lime.platform.opengl.renderer;
 
 import org.joml.*;
 import org.lime.core.renderer.shader.Shader;
-import org.lime.core.utils.Resources;
+import org.lime.core.utils.Assets;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
@@ -22,7 +22,7 @@ public class OpenGLShader extends Shader {
 
     public OpenGLShader(String filePath) {
         super(filePath);
-        String source = Resources.loadContent(filePath);
+        String source = Assets.loadContent(filePath);
         Map<Integer, String> shaderSources = preProcess(source);
         compile(shaderSources);
     }
