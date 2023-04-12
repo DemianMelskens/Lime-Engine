@@ -4,6 +4,7 @@ import org.joml.Matrix4f;
 import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.camera.Camera;
 import org.lime.core.scene.components.*;
+import org.lime.core.scene.serialization.SceneSerializer;
 import org.lime.core.time.TimeStep;
 import org.lime.lentt.Group;
 import org.lime.lentt.Registry;
@@ -95,6 +96,11 @@ public class Scene {
                 cameraComponent.camera.setViewportSize(viewPortWidth, viewPortHeight);
             }
         }
+    }
+
+    public void serialize() {
+        SceneSerializer sceneSerializer = new SceneSerializer(this);
+        sceneSerializer.serialize("src/main/resources/scenes/scene.lime");
     }
 
     public void shutdown() {

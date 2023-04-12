@@ -21,11 +21,13 @@ public class SceneSerializer {
         try (YamlWriter yamlWriter = new YamlWriter(filePath);) {
             handleScene(yamlWriter);
         } catch (Exception e) {
-            throw LM_CORE_EXCEPTION(String.format("Failed to serialize scene. reason: %s", e.getCause()));
+            throw LM_CORE_EXCEPTION(String.format("Failed to serialize scene. reason: %s", e.getMessage()));
         }
     }
 
     private void handleScene(YamlWriter yamlWriter) throws IOException {
+        yamlWriter.addField("name", "Scene name");
+
         yamlWriter.pushList("entities");
 
         for (int entity : scene.getRegistry()) {
@@ -42,28 +44,22 @@ public class SceneSerializer {
         yamlWriter.addField("tag", tag);
         yamlWriter.pushList("components");
 
-        for (Object component : entity.getAllComponents()) {
-            handleComponent(yamlWriter, component);
-        }
+        if (entity.hasComponent(TagComponent.class))
+            handleTagComponent(yamlWriter, entity.getComponent(TagComponent.class));
+
+        if (entity.hasComponent(TransformComponent.class))
+            handleTransformComponent(yamlWriter, entity.getComponent(TransformComponent.class));
+
+        if (entity.hasComponent(SpriteRendererComponent.class))
+            handleSpriteRendererComponent(yamlWriter, entity.getComponent(SpriteRendererComponent.class));
+
+        if (entity.hasComponent(CameraComponent.class))
+            handleCameraComponent(yamlWriter, entity.getComponent(CameraComponent.class));
+
+        if (entity.hasComponent(NativeScriptComponent.class))
+            handleNativeScriptComponent(yamlWriter, entity.getComponent(NativeScriptComponent.class));
 
         yamlWriter.popList();
-    }
-
-    private void handleComponent(YamlWriter yamlWriter, Object component) throws IOException {
-        if (component instanceof TagComponent tagComponent)
-            handleTagComponent(yamlWriter, tagComponent);
-
-        if (component instanceof TransformComponent transformComponent)
-            handleTransformComponent(yamlWriter, transformComponent);
-
-        if (component instanceof SpriteRendererComponent spriteRendererComponent)
-            handleSpriteRendererComponent(yamlWriter, spriteRendererComponent);
-
-        if (component instanceof CameraComponent cameraComponent)
-            handleCameraComponent(yamlWriter, cameraComponent);
-
-        if (component instanceof NativeScriptComponent scriptComponent)
-            handleNativeScriptComponent(yamlWriter, scriptComponent);
     }
 
     private void handleTagComponent(YamlWriter yamlWriter, TagComponent component) throws IOException {
@@ -131,8 +127,8 @@ public class SceneSerializer {
     }
 
     private void handleNativeScriptComponent(YamlWriter yamlWriter, NativeScriptComponent component) throws IOException {
-        yamlWriter.pushListItemObject("Native Script Component");
-        yamlWriter.addField("class", component.instance.getClass().getName());
-        yamlWriter.popListItemObject();
+//        yamlWriter.pushListItemObject("Native Script Component");
+//        yamlWriter.addField("class", );
+//        yamlWriter.popListItemObject();
     }
 }

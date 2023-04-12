@@ -135,12 +135,6 @@ public class Registry implements Iterable<Integer> {
         return clazz.cast(getPool(clazz).get(entity));
     }
 
-    public Set<Object> getAll(int entity) {
-        return entities.get(entity).stream()
-            .map(clazz -> pools.get(clazz).get(entity))
-            .collect(Collectors.toSet());
-    }
-
     /**
      * Checks if the given entity has a component instance.
      *

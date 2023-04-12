@@ -31,10 +31,6 @@ public class Entity {
         return scene.registry.has(entityHandle, clazz);
     }
 
-    public Set<Object> getAllComponents() {
-        return scene.registry.getAll(entityHandle);
-    }
-
     public <T> T getComponent(Class<T> clazz) {
         LM_CORE_ASSERT(hasComponent(clazz), "Entity does not have component!");
         return scene.registry.get(entityHandle, clazz);
