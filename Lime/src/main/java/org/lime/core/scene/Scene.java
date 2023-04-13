@@ -5,6 +5,7 @@ import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.camera.Camera;
 import org.lime.core.scene.components.*;
 import org.lime.core.scene.serialization.SceneSerializer;
+import org.lime.core.scripting.Scriptable;
 import org.lime.core.time.TimeStep;
 import org.lime.lentt.Group;
 import org.lime.lentt.Registry;
@@ -32,7 +33,7 @@ public class Scene {
         registry.view(NativeScriptComponent.class)
             .forEach((entity, component) -> {
                 if (component.instance == null) {
-                    component.instance = component.instantiate.get();
+                    component.instance = (Scriptable) component.instantiate.get();
                     component.instance.entity = new Entity(entity, this);
                     component.instance.onCreate();
                 }

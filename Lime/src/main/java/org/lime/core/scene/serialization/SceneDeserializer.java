@@ -3,10 +3,7 @@ package org.lime.core.scene.serialization;
 import org.lime.core.renderer.Color;
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.Scene;
-import org.lime.core.scene.components.CameraComponent;
-import org.lime.core.scene.components.SpriteRendererComponent;
-import org.lime.core.scene.components.TagComponent;
-import org.lime.core.scene.components.TransformComponent;
+import org.lime.core.scene.components.*;
 import org.lime.core.utils.Assets;
 import org.yaml.snakeyaml.Yaml;
 
@@ -14,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 
 public class SceneDeserializer {
 
@@ -66,6 +65,9 @@ public class SceneDeserializer {
 
         if (serializedComponent.get("type").equals("Camera Component"))
             deserializeCameraComponent(entity, serializedComponent);
+
+        if (serializedComponent.get("type").equals("Native Script Component"))
+            deserializeNativeScriptComponent(entity, serializedComponent);
     }
 
     private void deserializeTagComponent(Entity entity, Map<String, Object> serializedComponent) {
@@ -113,6 +115,17 @@ public class SceneDeserializer {
         cameraComponent.camera.setOrthographicSize(getFloat(serializedComponent, "camera.orthographicSize"));
         cameraComponent.camera.setOrthographicNearClip(getFloat(serializedComponent, "camera.orthographicNearClip"));
         cameraComponent.camera.setOrthographicFarClip(getFloat(serializedComponent, "camera.orthographicFarClip"));
+    }
+
+    private void deserializeNativeScriptComponent(Entity entity, Map<String, Object> serializedComponent) {
+        String className = get(serializedComponent, "class");
+        try {
+            entity.addComponent(NativeScriptComponent.class, Class.forName(className)).bind();
+        } catch (ClassNotFoundException e) {
+            throw LM_CORE_EXCEPTION(
+                String.format("Failed to load script with name: %s!", className)
+            );
+        }
     }
 
     private <T> T getAndCast(Map<String, Object> object, String key) {

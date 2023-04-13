@@ -28,6 +28,7 @@ entities:
     type: Camera Component
     camera: {orthographicFarClip: 1.0, perspectiveFOV: 0.7853982, orthographicNearClip: -1.0,
       perspectiveNearClip: 0.01, perspectiveFarClip: 1000.0, orthographicSize: 10.0}
+  - {type: Native Script Component, class: org.lime.editor.scripts.CameraController}
   id: 2
 - components:
   - {tag: Camera B, type: Tag Component}
@@ -40,5 +41,6 @@ entities:
     type: Camera Component
     camera: {orthographicFarClip: 1.0, perspectiveFOV: 0.7853982, orthographicNearClip: -1.0,
       perspectiveNearClip: 0.01, perspectiveFarClip: 1000.0, orthographicSize: 10.0}
+  - {type: Native Script Component, class: org.lime.editor.scripts.CameraController}
   id: 3
 name: Scene name

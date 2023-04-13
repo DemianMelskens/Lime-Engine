@@ -2,10 +2,7 @@ package org.lime.core.scene.serialization;
 
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.Scene;
-import org.lime.core.scene.components.CameraComponent;
-import org.lime.core.scene.components.SpriteRendererComponent;
-import org.lime.core.scene.components.TagComponent;
-import org.lime.core.scene.components.TransformComponent;
+import org.lime.core.scene.components.*;
 import org.lime.core.utils.Assets;
 import org.yaml.snakeyaml.Yaml;
 
@@ -66,6 +63,9 @@ public class SceneSerializer {
 
         if (entity.hasComponent(CameraComponent.class))
             components.add(serializeCameraComponent(entity.getComponent(CameraComponent.class)));
+
+        if (entity.hasComponent(NativeScriptComponent.class))
+            components.add(serializeNativeScriptComponent(entity.getComponent(NativeScriptComponent.class)));
 
         return components;
     }
@@ -130,6 +130,14 @@ public class SceneSerializer {
         serializedCamera.put("orthographicNearClip", component.camera.getOrthographicNearClip());
         serializedCamera.put("orthographicFarClip", component.camera.getOrthographicFarClip());
         serializedComponent.put("camera", serializedCamera);
+
+        return serializedComponent;
+    }
+
+    private Map<String, Object> serializeNativeScriptComponent(NativeScriptComponent component) {
+        Map<String, Object> serializedComponent = new HashMap<>();
+        serializedComponent.put("type", "Native Script Component");
+        serializedComponent.put("class", component.clazz.getName());
 
         return serializedComponent;
     }

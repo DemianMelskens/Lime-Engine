@@ -10,20 +10,15 @@ import org.lime.core.Application;
 import org.lime.core.Layer;
 import org.lime.core.controllers.OrthographicCameraController;
 import org.lime.core.events.Event;
-import org.lime.core.renderer.Color;
 import org.lime.core.renderer.RenderCommand;
 import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.buffers.FrameBuffer;
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.Scene;
-import org.lime.core.scene.components.CameraComponent;
-import org.lime.core.scene.components.NativeScriptComponent;
-import org.lime.core.scene.components.SpriteRendererComponent;
 import org.lime.core.scene.serialization.SceneDeserializer;
 import org.lime.core.time.TimeStep;
 import org.lime.editor.panels.SceneHierarchyPanel;
 import org.lime.editor.panels.StatisticsPanel;
-import org.lime.editor.scripts.CameraController;
 
 public class EditorLayer extends Layer {
     private Scene activeScene;
@@ -56,9 +51,9 @@ public class EditorLayer extends Layer {
             Application.getWindow().getHeight()
         );
         this.frameBuffer = FrameBuffer.create(specification);
-        this.activeScene = SceneDeserializer.create().deserialize("scenes/scene.lime");
+        this.activeScene = SceneDeserializer.create().deserialize("scenes/scene.lime"); //new Scene();
         this.sceneHierarchyPanel.setContext(activeScene);
-
+//
 //        greenSquare = activeScene.createEntity("Green Square");
 //        greenSquare.addComponent(SpriteRendererComponent.class, Color.create(0.3f, 0.8f, 0.2f, 1.0f));
 //
@@ -67,12 +62,12 @@ public class EditorLayer extends Layer {
 //
 //        cameraEntity = activeScene.createEntity("Camera A");
 //        cameraEntity.addComponent(CameraComponent.class);
-//        cameraEntity.addComponent(NativeScriptComponent.class).bind(CameraController.class);
+//        cameraEntity.addComponent(NativeScriptComponent.class, CameraController.class).bind();
 //
 //        secondCamera = activeScene.createEntity("Camera B");
 //        var cc = secondCamera.addComponent(CameraComponent.class);
 //        cc.isPrimary = false;
-//        secondCamera.addComponent(NativeScriptComponent.class).bind(CameraController.class);
+//        secondCamera.addComponent(NativeScriptComponent.class, CameraController.class).bind();
 //        activeScene.serialize();
     }
 

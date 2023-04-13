@@ -10,17 +10,22 @@ import java.util.function.Supplier;
 import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 
 @EqualsAndHashCode
-public class NativeScriptComponent {
+public class NativeScriptComponent<T extends Scriptable> {
+    public Class<T> clazz;
     public Scriptable instance;
     public Supplier<Scriptable> instantiate;
     public Consumer<NativeScriptComponent> destroy;
 
-    public <T extends Scriptable> void bind(Class<T> clazz) {
+    public NativeScriptComponent(Class<T> clazz) {
+        this.clazz = clazz;
+    }
+
+    public void bind() {
         instantiate = () -> getInstance(clazz);
         destroy = component -> component.instance = null;
     }
 
-    private <T> T getInstance(Class<T> clazz) {
+    private T getInstance(Class<T> clazz) {
         try {
             return clazz.getConstructor().newInstance();
         } catch (InvocationTargetException |
