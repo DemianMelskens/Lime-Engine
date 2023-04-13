@@ -13,9 +13,9 @@ import org.lime.core.events.Event;
 import org.lime.core.renderer.RenderCommand;
 import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.buffers.FrameBuffer;
-import org.lime.core.scene.Entity;
 import org.lime.core.scene.Scene;
 import org.lime.core.scene.serialization.SceneDeserializer;
+import org.lime.core.scene.serialization.SceneSerializer;
 import org.lime.core.time.TimeStep;
 import org.lime.editor.panels.SceneHierarchyPanel;
 import org.lime.editor.panels.StatisticsPanel;
@@ -24,17 +24,11 @@ public class EditorLayer extends Layer {
     private Scene activeScene;
     private SceneHierarchyPanel sceneHierarchyPanel;
     private StatisticsPanel statisticsPanel;
-    private Entity greenSquare;
-    private Entity redSquare;
-    private Entity cameraEntity;
-    private Entity secondCamera;
-
     private OrthographicCameraController cameraController;
     private FrameBuffer frameBuffer;
     private ImVec2 viewPortSize = new ImVec2(0.0f, 0.0f);
     private boolean viewportFocused = false;
     private boolean viewportHovered = false;
-    private boolean primaryCamera = true;
 
     public EditorLayer() {
         super("Example");
@@ -51,24 +45,7 @@ public class EditorLayer extends Layer {
             Application.getWindow().getHeight()
         );
         this.frameBuffer = FrameBuffer.create(specification);
-        this.activeScene = SceneDeserializer.create().deserialize("scenes/scene.lime"); //new Scene();
-        this.sceneHierarchyPanel.setContext(activeScene);
-//
-//        greenSquare = activeScene.createEntity("Green Square");
-//        greenSquare.addComponent(SpriteRendererComponent.class, Color.create(0.3f, 0.8f, 0.2f, 1.0f));
-//
-//        redSquare = activeScene.createEntity("Red Square");
-//        redSquare.addComponent(SpriteRendererComponent.class, Color.create(0.8f, 0.2f, 0.3f, 1.0f));
-//
-//        cameraEntity = activeScene.createEntity("Camera A");
-//        cameraEntity.addComponent(CameraComponent.class);
-//        cameraEntity.addComponent(NativeScriptComponent.class, CameraController.class).bind();
-//
-//        secondCamera = activeScene.createEntity("Camera B");
-//        var cc = secondCamera.addComponent(CameraComponent.class);
-//        cc.isPrimary = false;
-//        secondCamera.addComponent(NativeScriptComponent.class, CameraController.class).bind();
-//        activeScene.serialize();
+        setScene(new Scene());
     }
 
     @Override
@@ -121,9 +98,15 @@ public class EditorLayer extends Layer {
 
         if (ImGui.beginMenuBar()) {
             if (ImGui.beginMenu("File")) {
-                if (ImGui.menuItem("close")) {
+                if (ImGui.menuItem("Close"))
                     Application.get().shutdown();
-                }
+
+                if (ImGui.menuItem("Open"))
+                    setScene(SceneDeserializer.create().deserialize("scenes/scene.lime"));
+
+                if (ImGui.menuItem("Save"))
+                    SceneSerializer.create(activeScene).serialize("scenes/scene.lime");
+
                 ImGui.endMenu();
             }
             ImGui.endMenuBar();
@@ -158,5 +141,11 @@ public class EditorLayer extends Layer {
     @Override
     public void onEvent(Event event) {
         cameraController.onEvent(event);
+    }
+
+    private void setScene(Scene scene) {
+        this.activeScene = scene;
+        this.sceneHierarchyPanel.setContext(scene);
+        activeScene.onViewportResize((int) viewPortSize.x, (int) viewPortSize.y);
     }
 }

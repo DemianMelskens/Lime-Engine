@@ -99,10 +99,6 @@ public class Scene {
         }
     }
 
-    public void serialize() {
-        SceneSerializer.create(this).serialize("scenes/scene.lime");
-    }
-
     public void shutdown() {
     }
 }
