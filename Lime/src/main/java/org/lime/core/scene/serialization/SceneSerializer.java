@@ -44,7 +44,6 @@ public class SceneSerializer {
     private Map<String, Object> serializeEntity(Entity entity) {
         Map<String, Object> serializedEntity = new HashMap<>();
 
-        serializedEntity.put("id", entity.get());
         serializedEntity.put("components", serializeComponents(entity));
         return serializedEntity;
     }

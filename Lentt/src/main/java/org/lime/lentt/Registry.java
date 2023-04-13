@@ -39,11 +39,6 @@ public class Registry implements Iterable<Integer> {
         return entity;
     }
 
-    public int add(int entity) {
-        entities.put(entity, new HashSet<>());
-        return entity;
-    }
-
     /**
      * Deletes the entity and all its components
      *

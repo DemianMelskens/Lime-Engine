@@ -42,8 +42,7 @@ public class SceneDeserializer {
     }
 
     private void deserializeEntity(Scene scene, Map<String, Object> serializedEntity) {
-        Integer entity = (Integer) serializedEntity.get("id");
-        scene.getRegistry().add(entity);
+        int entity = scene.getRegistry().create();
         deserializeComponents(new Entity(entity, scene), serializedEntity);
     }
 
