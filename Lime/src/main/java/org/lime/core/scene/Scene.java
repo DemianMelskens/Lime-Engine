@@ -99,8 +99,7 @@ public class Scene {
     }
 
     public void serialize() {
-        SceneSerializer sceneSerializer = new SceneSerializer(this);
-        sceneSerializer.serialize("scenes/scene.lime");
+        SceneSerializer.create(this).serialize("scenes/scene.lime");
     }
 
     public void shutdown() {

@@ -1,12 +1,6 @@
 package org.lime.core.utils;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
+import java.io.*;
 
 import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
 
@@ -16,7 +10,7 @@ public class Assets {
         try {
             return new FileInputStream("assets/" + relativeFilePath);
         } catch (FileNotFoundException e) {
-            throw LM_CORE_EXCEPTION(String.format("Could open inputstream to file '%s', reason: %s", relativeFilePath, e.getMessage()));
+            throw LM_CORE_EXCEPTION(String.format("Could open InputStream to file '%s', reason: %s", relativeFilePath, e.getMessage()));
         }
     }
 
@@ -24,7 +18,15 @@ public class Assets {
         try {
             return new FileOutputStream("assets/" + relativeFilePath);
         } catch (FileNotFoundException e) {
-            throw LM_CORE_EXCEPTION(String.format("Could open outputstream to file'%s', reason: %s", relativeFilePath, e.getMessage()));
+            throw LM_CORE_EXCEPTION(String.format("Could open OutputStream to file'%s', reason: %s", relativeFilePath, e.getMessage()));
+        }
+    }
+
+    public static FileWriter getFileWriter(String relativeFilePath) {
+        try {
+            return new FileWriter("assets/" + relativeFilePath);
+        } catch (IOException e) {
+            throw LM_CORE_EXCEPTION(String.format("Could open FileWriter to file'%s', reason: %s", relativeFilePath, e.getMessage()));
         }
     }
 
@@ -38,13 +40,5 @@ public class Assets {
 
     public static String loadContent(String relativeFilePath) {
         return new String(load(relativeFilePath));
-    }
-
-    public static List<String> loadContentLines(String relativeFilePath) {
-        try {
-            return Files.readAllLines(Path.of("assets/" + relativeFilePath));
-        } catch (IOException e) {
-            throw LM_CORE_EXCEPTION(String.format("Could not load file '%s', reason: %s", relativeFilePath, e.getMessage()));
-        }
     }
 }

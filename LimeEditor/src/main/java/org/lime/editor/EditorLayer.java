@@ -20,7 +20,6 @@ import org.lime.core.scene.components.CameraComponent;
 import org.lime.core.scene.components.NativeScriptComponent;
 import org.lime.core.scene.components.SpriteRendererComponent;
 import org.lime.core.scene.serialization.SceneDeserializer;
-import org.lime.core.scene.serialization.SceneSerializer;
 import org.lime.core.time.TimeStep;
 import org.lime.editor.panels.SceneHierarchyPanel;
 import org.lime.editor.panels.StatisticsPanel;
@@ -57,26 +56,24 @@ public class EditorLayer extends Layer {
             Application.getWindow().getHeight()
         );
         this.frameBuffer = FrameBuffer.create(specification);
-        this.activeScene = new Scene();
+        this.activeScene = SceneDeserializer.create().deserialize("scenes/scene.lime");
         this.sceneHierarchyPanel.setContext(activeScene);
 
-        greenSquare = activeScene.createEntity("Green Square");
-        greenSquare.addComponent(SpriteRendererComponent.class, Color.create(0.3f, 0.8f, 0.2f, 1.0f));
-
-        redSquare = activeScene.createEntity("Red Square");
-        redSquare.addComponent(SpriteRendererComponent.class, Color.create(0.8f, 0.2f, 0.3f, 1.0f));
-
-        cameraEntity = activeScene.createEntity("Camera A");
-        cameraEntity.addComponent(CameraComponent.class);
-        cameraEntity.addComponent(NativeScriptComponent.class).bind(CameraController.class);
-
-        secondCamera = activeScene.createEntity("Camera B");
-        var cc = secondCamera.addComponent(CameraComponent.class);
-        cc.isPrimary = false;
-        secondCamera.addComponent(NativeScriptComponent.class).bind(CameraController.class);
-
-        activeScene.serialize();
-        new SceneDeserializer("scenes/scene.lime").deserialize();
+//        greenSquare = activeScene.createEntity("Green Square");
+//        greenSquare.addComponent(SpriteRendererComponent.class, Color.create(0.3f, 0.8f, 0.2f, 1.0f));
+//
+//        redSquare = activeScene.createEntity("Red Square");
+//        redSquare.addComponent(SpriteRendererComponent.class, Color.create(0.8f, 0.2f, 0.3f, 1.0f));
+//
+//        cameraEntity = activeScene.createEntity("Camera A");
+//        cameraEntity.addComponent(CameraComponent.class);
+//        cameraEntity.addComponent(NativeScriptComponent.class).bind(CameraController.class);
+//
+//        secondCamera = activeScene.createEntity("Camera B");
+//        var cc = secondCamera.addComponent(CameraComponent.class);
+//        cc.isPrimary = false;
+//        secondCamera.addComponent(NativeScriptComponent.class).bind(CameraController.class);
+//        activeScene.serialize();
     }
 
     @Override

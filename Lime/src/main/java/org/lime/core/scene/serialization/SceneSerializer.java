@@ -6,123 +6,131 @@ import org.lime.core.scene.components.CameraComponent;
 import org.lime.core.scene.components.SpriteRendererComponent;
 import org.lime.core.scene.components.TagComponent;
 import org.lime.core.scene.components.TransformComponent;
-import org.lime.core.serialization.YamlWriter;
+import org.lime.core.utils.Assets;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
-
-import static org.lime.core.utils.Assert.LM_CORE_EXCEPTION;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SceneSerializer {
 
     private Scene scene;
 
-    public SceneSerializer(Scene scene) {
+    public static SceneSerializer create(Scene scene) {
+        return new SceneSerializer(scene);
+    }
+
+    private SceneSerializer(Scene scene) {
         this.scene = scene;
     }
 
     public void serialize(String filePath) {
-        try (YamlWriter yamlWriter = new YamlWriter(filePath);) {
-            serializeScene(yamlWriter);
-        } catch (Exception e) {
-            throw LM_CORE_EXCEPTION(String.format("Failed to serialize scene. reason: %s", e.getMessage()));
-        }
+        Yaml yaml = new Yaml();
+        yaml.dump(serializeScene(), Assets.getFileWriter(filePath));
     }
 
-    private void serializeScene(YamlWriter yamlWriter) throws IOException {
-        yamlWriter.addField("name", "Scene name");
-
-        yamlWriter.pushList("entities");
-
-        for (int entity : scene.getRegistry()) {
-            yamlWriter.pushListItemObject("entity");
-            serializeEntity(yamlWriter, new Entity(entity, scene));
-            yamlWriter.popListItemObject();
-        }
-
-        yamlWriter.popList();
+    private Map<String, Object> serializeScene() {
+        Map<String, Object> serializedScene = new HashMap<>();
+        serializedScene.put("name", "Scene name");
+        serializedScene.put("entities", serializeEntities());
+        return serializedScene;
     }
 
-    private void serializeEntity(YamlWriter yamlWriter, Entity entity) throws IOException {
-        String tag = entity.getComponent(TagComponent.class).tag;
-        yamlWriter.addField("tag", tag);
-        yamlWriter.pushList("components");
+    private List<Map<String, Object>> serializeEntities() {
+        return scene.getRegistry().stream()
+            .map(entity -> serializeEntity(new Entity(entity, scene)))
+            .toList();
+    }
+
+    private Map<String, Object> serializeEntity(Entity entity) {
+        Map<String, Object> serializedEntity = new HashMap<>();
+
+        serializedEntity.put("id", entity.get());
+        serializedEntity.put("components", serializeComponents(entity));
+        return serializedEntity;
+    }
+
+    private List<Map<String, Object>> serializeComponents(Entity entity) {
+        List<Map<String, Object>> components = new ArrayList<>();
 
         if (entity.hasComponent(TagComponent.class))
-            serializeTagComponent(yamlWriter, entity.getComponent(TagComponent.class));
+            components.add(serializeTagComponent(entity.getComponent(TagComponent.class)));
 
         if (entity.hasComponent(TransformComponent.class))
-            serializeTransformComponent(yamlWriter, entity.getComponent(TransformComponent.class));
+            components.add(serializeTransformComponent(entity.getComponent(TransformComponent.class)));
 
         if (entity.hasComponent(SpriteRendererComponent.class))
-            serializeSpriteRendererComponent(yamlWriter, entity.getComponent(SpriteRendererComponent.class));
+            components.add(serializeSpriteRendererComponent(entity.getComponent(SpriteRendererComponent.class)));
 
         if (entity.hasComponent(CameraComponent.class))
-            serializeCameraComponent(yamlWriter, entity.getComponent(CameraComponent.class));
+            components.add(serializeCameraComponent(entity.getComponent(CameraComponent.class)));
 
-        yamlWriter.popList();
+        return components;
     }
 
-    private void serializeTagComponent(YamlWriter yamlWriter, TagComponent component) throws IOException {
-        yamlWriter.pushListItemObject("Tag Component");
-        yamlWriter.addField("tag", component.tag);
-        yamlWriter.popListItemObject();
+    private Map<String, Object> serializeTagComponent(TagComponent component) {
+        Map<String, Object> serializedComponent = new HashMap<>();
+        serializedComponent.put("type", "Tag Component");
+        serializedComponent.put("tag", component.tag);
+        return serializedComponent;
     }
 
-    private void serializeTransformComponent(YamlWriter yamlWriter, TransformComponent component) throws IOException {
-        yamlWriter.pushListItemObject("Transform Component");
+    private Map<String, Object> serializeTransformComponent(TransformComponent component) {
+        Map<String, Object> serializedComponent = new HashMap<>();
+        serializedComponent.put("type", "Transform Component");
 
-        yamlWriter.pushObject("position");
-        yamlWriter.addField("x", component.position.x);
-        yamlWriter.addField("y", component.position.y);
-        yamlWriter.addField("z", component.position.z);
-        yamlWriter.popObject();
+        Map<String, Object> serializedPosition = new HashMap<>();
+        serializedPosition.put("x", component.position.x);
+        serializedPosition.put("y", component.position.y);
+        serializedPosition.put("z", component.position.z);
+        serializedComponent.put("position", serializedPosition);
 
-        yamlWriter.pushObject("rotation");
-        yamlWriter.addField("x", component.rotation.x);
-        yamlWriter.addField("y", component.rotation.y);
-        yamlWriter.addField("z", component.rotation.z);
-        yamlWriter.popObject();
+        Map<String, Object> serializedRotation = new HashMap<>();
+        serializedRotation.put("x", component.rotation.x);
+        serializedRotation.put("y", component.rotation.y);
+        serializedRotation.put("z", component.rotation.z);
+        serializedComponent.put("rotation", serializedRotation);
 
-        yamlWriter.pushObject("scale");
-        yamlWriter.addField("x", component.scale.x);
-        yamlWriter.addField("y", component.scale.y);
-        yamlWriter.addField("z", component.scale.z);
-        yamlWriter.popObject();
+        Map<String, Object> serializedScale = new HashMap<>();
+        serializedScale.put("x", component.scale.x);
+        serializedScale.put("y", component.scale.y);
+        serializedScale.put("z", component.scale.z);
+        serializedComponent.put("scale", serializedScale);
 
-        yamlWriter.popListItemObject();
+        return serializedComponent;
     }
 
-    private void serializeSpriteRendererComponent(YamlWriter yamlWriter, SpriteRendererComponent component) throws IOException {
-        yamlWriter.pushListItemObject("SpriteRenderer Component");
+    private Map<String, Object> serializeSpriteRendererComponent(SpriteRendererComponent component) {
+        Map<String, Object> serializedComponent = new HashMap<>();
+        serializedComponent.put("type", "SpriteRenderer Component");
 
-        yamlWriter.pushObject("color");
-        yamlWriter.addField("r", component.color.r);
-        yamlWriter.addField("g", component.color.g);
-        yamlWriter.addField("b", component.color.b);
-        yamlWriter.addField("a", component.color.a);
-        yamlWriter.popObject();
+        Map<String, Object> serializedColor = new HashMap<>();
+        serializedColor.put("r", component.color.r);
+        serializedColor.put("g", component.color.g);
+        serializedColor.put("b", component.color.b);
+        serializedColor.put("a", component.color.a);
+        serializedComponent.put("color", serializedColor);
 
-        yamlWriter.popListItemObject();
+        return serializedComponent;
     }
 
-    private void serializeCameraComponent(YamlWriter yamlWriter, CameraComponent component) throws IOException {
-        yamlWriter.pushListItemObject("Camera Component");
+    private Map<String, Object> serializeCameraComponent(CameraComponent component) {
+        Map<String, Object> serializedComponent = new HashMap<>();
+        serializedComponent.put("type", "Camera Component");
+        serializedComponent.put("isPrimary", component.isPrimary);
+        serializedComponent.put("hasFixedAspectRatio", component.hasFixedAspectRatio);
 
-        yamlWriter.addField("isPrimary", component.isPrimary);
-        yamlWriter.addField("hasFixedAspectRatio", component.hasFixedAspectRatio);
+        Map<String, Object> serializedCamera = new HashMap<>();
+        serializedCamera.put("perspectiveFOV", component.camera.getPerspectiveFOV());
+        serializedCamera.put("perspectiveNearClip", component.camera.getPerspectiveNearClip());
+        serializedCamera.put("perspectiveFarClip", component.camera.getPerspectiveFarClip());
+        serializedCamera.put("orthographicSize", component.camera.getOrthographicSize());
+        serializedCamera.put("orthographicNearClip", component.camera.getOrthographicNearClip());
+        serializedCamera.put("orthographicFarClip", component.camera.getOrthographicFarClip());
+        serializedComponent.put("camera", serializedCamera);
 
-        yamlWriter.pushObject("camera");
-
-        yamlWriter.addField("perspectiveFOV", component.camera.getPerspectiveFOV());
-        yamlWriter.addField("perspectiveNearClip", component.camera.getPerspectiveNearClip());
-        yamlWriter.addField("perspectiveFarClip", component.camera.getPerspectiveFarClip());
-
-        yamlWriter.addField("orthographicSize", component.camera.getOrthographicSize());
-        yamlWriter.addField("orthographicNearClip", component.camera.getOrthographicNearClip());
-        yamlWriter.addField("orthographicFarClip", component.camera.getOrthographicFarClip());
-
-        yamlWriter.popObject();
-
-        yamlWriter.popListItemObject();
+        return serializedComponent;
     }
 }

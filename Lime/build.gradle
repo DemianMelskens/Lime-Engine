@@ -38,6 +38,9 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.4.5'
     implementation 'ch.qos.logback:logback-core:1.4.5'
 
+    //Yaml
+    implementation 'org.yaml:snakeyaml:2.0'
+
     // LWJGL
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
     implementation "org.lwjgl:lwjgl"
