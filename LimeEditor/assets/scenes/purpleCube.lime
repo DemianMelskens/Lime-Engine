@@ -1,0 +1,39 @@
+entities:
+- components:
+  - {tag: Top, type: Tag Component}
+  - rotation: {x: 1.5707964, y: 0.0, z: 0.7853982}
+    scale: {x: 1.0, y: 1.0, z: 1.0}
+    position: {x: 0.0, y: 0.5, z: 0.0}
+    type: Transform Component
+  - color: {a: 1.0, r: 0.7902669, b: 0.8880309, g: 0.16457716}
+    type: SpriteRenderer Component
+- components:
+  - {tag: Left, type: Tag Component}
+  - rotation: {x: 0.0, y: -0.7853982, z: 0.0}
+    scale: {x: 1.0, y: 1.0, z: 1.0}
+    position: {x: -0.35, y: 0.0, z: 0.35}
+    type: Transform Component
+  - color: {a: 1.0, r: 0.889249, b: 0.9150579, g: 0.30737466}
+    type: SpriteRenderer Component
+- components:
+  - {tag: Right, type: Tag Component}
+  - rotation: {x: 0.0, y: 0.7853982, z: 0.0}
+    scale: {x: 1.0, y: 1.0, z: 1.0}
+    position: {x: 0.355, y: 0.0, z: 0.35}
+    type: Transform Component
+  - color: {a: 1.0, r: 0.67833525, b: 0.87644786, g: 0.006767948}
+    type: SpriteRenderer Component
+- components:
+  - {tag: Camera, type: Tag Component}
+  - rotation: {x: -0.4049164, y: 0.0, z: 0.0}
+    scale: {x: 1.0, y: 1.0, z: 1.0}
+    position: {x: 0.0, y: 1.7, z: 4.0}
+    type: Transform Component
+  - hasFixedAspectRatio: false
+    isPrimary: true
+    type: Camera Component
+    camera: {orthographicFarClip: 1.0, perspectiveFOV: 0.5235988, orthographicNearClip: -1.0,
+      perspectiveNearClip: 0.01, perspectiveFarClip: 1000.0, projectionType: Perspective,
+      orthographicSize: 10.0}
+  - {type: Native Script Component, class: org.lime.editor.scripts.CameraController}
+name: Scene name

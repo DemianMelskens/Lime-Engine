@@ -9,7 +9,7 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_openFileDialog;
 import static org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_saveFileDialog;
 
-public class FileDialog {
+public class FileDialogs {
 
     public static String openFile(String title, String description, List<String> accept) {
         return openFile(title, "", description, false, accept);

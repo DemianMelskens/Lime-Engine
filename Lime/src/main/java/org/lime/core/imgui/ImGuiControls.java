@@ -7,7 +7,7 @@ import imgui.flag.ImGuiStyleVar;
 import imgui.type.ImString;
 import org.joml.Vector3f;
 import org.lime.core.renderer.Color;
-import org.lime.core.utils.FileDialog;
+import org.lime.core.utils.FileDialogs;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -180,13 +180,13 @@ public class ImGuiControls {
     }
 
     public static void openFile(String title, String description, List<String> accept, Consumer<String> onOpen) {
-        String path = FileDialog.openFile(title, description, accept);
+        String path = FileDialogs.openFile(title, description, accept);
         if (path != null)
             onOpen.accept(path);
     }
 
     public static void saveFile(String title, String description, List<String> accept, Consumer<String> onSave) {
-        String path = FileDialog.openFile(title, description, accept);
+        String path = FileDialogs.saveFile(title, description, accept);
         if (path != null)
             onSave.accept(path);
     }

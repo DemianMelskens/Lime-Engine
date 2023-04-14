@@ -122,6 +122,7 @@ public class SceneSerializer {
         serializedComponent.put("hasFixedAspectRatio", component.hasFixedAspectRatio);
 
         Map<String, Object> serializedCamera = new HashMap<>();
+        serializedCamera.put("projectionType", component.camera.getProjectionType().name());
         serializedCamera.put("perspectiveFOV", component.camera.getPerspectiveFOV());
         serializedCamera.put("perspectiveNearClip", component.camera.getPerspectiveNearClip());
         serializedCamera.put("perspectiveFarClip", component.camera.getPerspectiveFarClip());

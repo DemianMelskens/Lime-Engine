@@ -101,18 +101,21 @@ public class EditorLayer extends Layer {
 
         if (ImGui.beginMenuBar()) {
             if (ImGui.beginMenu("File")) {
-                if (ImGui.menuItem("Close"))
-                    Application.get().shutdown();
+                if (ImGui.menuItem("New", "Ctrl+N"))
+                    setScene(new Scene());
 
-                if (ImGui.menuItem("Open"))
-                    ImGuiControls.openFile("Open", "Lime engine scene file (*.lime)", List.of("*.lime"),
+                if (ImGui.menuItem("Open...", "Ctrl+O"))
+                    ImGuiControls.openFile("Open", "Lime Scene (*.lime)", List.of("*.lime"),
                         path -> setScene(SceneDeserializer.create().deserialize(path))
                     );
 
-                if (ImGui.menuItem("Save as..."))
-                    ImGuiControls.saveFile("Save as..", "Lime engine scene file (*.lime)", List.of("*.lime"),
+                if (ImGui.menuItem("Save as...", "Ctrl+Shift+S"))
+                    ImGuiControls.saveFile("Save as..", "Lime Scene (*.lime)", List.of("*.lime"),
                         path -> SceneSerializer.create(activeScene).serialize(path)
                     );
+
+                if (ImGui.menuItem("Exit"))
+                    Application.get().shutdown();
 
                 ImGui.endMenu();
             }
@@ -152,7 +155,7 @@ public class EditorLayer extends Layer {
 
     private void setScene(Scene scene) {
         this.activeScene = scene;
+        this.activeScene.onViewportResize((int) viewPortSize.x, (int) viewPortSize.y);
         this.sceneHierarchyPanel.setContext(scene);
-        activeScene.onViewportResize((int) viewPortSize.x, (int) viewPortSize.y);
     }
 }

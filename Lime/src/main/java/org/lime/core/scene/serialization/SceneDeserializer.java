@@ -1,6 +1,7 @@
 package org.lime.core.scene.serialization;
 
 import org.lime.core.renderer.Color;
+import org.lime.core.renderer.camera.ProjectionType;
 import org.lime.core.scene.Entity;
 import org.lime.core.scene.Scene;
 import org.lime.core.scene.components.*;
@@ -106,6 +107,9 @@ public class SceneDeserializer {
 
         cameraComponent.isPrimary = getBoolean(serializedComponent, "isPrimary");
         cameraComponent.hasFixedAspectRatio = getBoolean(serializedComponent, "hasFixedAspectRatio");
+
+        String projectionType = getString(serializedComponent, "camera.projectionType");
+        cameraComponent.camera.setProjectionType(ProjectionType.valueOf(projectionType));
 
         cameraComponent.camera.setPerspectiveFOV(getFloat(serializedComponent, "camera.perspectiveFOV"));
         cameraComponent.camera.setPerspectiveNearClip(getFloat(serializedComponent, "camera.perspectiveNearClip"));

@@ -26,6 +26,8 @@ public class SceneHierarchyPanel {
 
     public void setContext(Scene scene) {
         this.context = scene;
+        this.selectionContext = null;
+        propertiesPanel.setContext(null);
     }
 
     public void onImGuiRender() {
