@@ -10,6 +10,7 @@ import org.lime.core.Application;
 import org.lime.core.Layer;
 import org.lime.core.controllers.OrthographicCameraController;
 import org.lime.core.events.Event;
+import org.lime.core.imgui.ImGuiControls;
 import org.lime.core.renderer.RenderCommand;
 import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.buffers.FrameBuffer;
@@ -19,6 +20,8 @@ import org.lime.core.scene.serialization.SceneSerializer;
 import org.lime.core.time.TimeStep;
 import org.lime.editor.panels.SceneHierarchyPanel;
 import org.lime.editor.panels.StatisticsPanel;
+
+import java.util.List;
 
 public class EditorLayer extends Layer {
     private Scene activeScene;
@@ -102,10 +105,14 @@ public class EditorLayer extends Layer {
                     Application.get().shutdown();
 
                 if (ImGui.menuItem("Open"))
-                    setScene(SceneDeserializer.create().deserialize("scenes/scene.lime"));
+                    ImGuiControls.openFile("Open", "Lime engine scene file (*.lime)", List.of("*.lime"),
+                        path -> setScene(SceneDeserializer.create().deserialize(path))
+                    );
 
-                if (ImGui.menuItem("Save"))
-                    SceneSerializer.create(activeScene).serialize("scenes/scene.lime");
+                if (ImGui.menuItem("Save as..."))
+                    ImGuiControls.saveFile("Save as..", "Lime engine scene file (*.lime)", List.of("*.lime"),
+                        path -> SceneSerializer.create(activeScene).serialize(path)
+                    );
 
                 ImGui.endMenu();
             }
