@@ -7,9 +7,12 @@ import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import org.lime.core.Application;
+import org.lime.core.Input;
+import org.lime.core.KeyCode;
 import org.lime.core.Layer;
-import org.lime.core.controllers.OrthographicCameraController;
 import org.lime.core.events.Event;
+import org.lime.core.events.EventDispatcher;
+import org.lime.core.events.key.KeyPressedEvent;
 import org.lime.core.imgui.ImGuiControls;
 import org.lime.core.renderer.RenderCommand;
 import org.lime.core.renderer.Renderer2D;
@@ -27,7 +30,6 @@ public class EditorLayer extends Layer {
     private Scene activeScene;
     private SceneHierarchyPanel sceneHierarchyPanel;
     private StatisticsPanel statisticsPanel;
-    private OrthographicCameraController cameraController;
     private FrameBuffer frameBuffer;
     private ImVec2 viewPortSize = new ImVec2(0.0f, 0.0f);
     private boolean viewportFocused = false;
@@ -35,7 +37,6 @@ public class EditorLayer extends Layer {
 
     public EditorLayer() {
         super("Example");
-        this.cameraController = new OrthographicCameraController(1280.0f / 720.0f, false);
     }
 
     @Override
@@ -64,13 +65,8 @@ public class EditorLayer extends Layer {
         if (viewPortSize.x > 0.0f && viewPortSize.y > 0.0f &&
             (specification.width != viewPortSize.x || specification.height != viewPortSize.y)) {
             frameBuffer.resize((int) viewPortSize.x, (int) viewPortSize.y);
-            cameraController.onResize(viewPortSize.x, viewPortSize.y);
             activeScene.onViewportResize((int) viewPortSize.x, (int) viewPortSize.y);
         }
-
-        if (viewportFocused)
-            cameraController.onUpdate(timestep);
-
 
         frameBuffer.bind();
         RenderCommand.setClearColor(0.1f, 0.1f, 0.1f, 1f);
@@ -102,17 +98,13 @@ public class EditorLayer extends Layer {
         if (ImGui.beginMenuBar()) {
             if (ImGui.beginMenu("File")) {
                 if (ImGui.menuItem("New", "Ctrl+N"))
-                    setScene(new Scene());
+                    newScene();
 
                 if (ImGui.menuItem("Open...", "Ctrl+O"))
-                    ImGuiControls.openFile("Open", "Lime Scene (*.lime)", List.of("*.lime"),
-                        path -> setScene(SceneDeserializer.create().deserialize(path))
-                    );
+                    openScene();
 
                 if (ImGui.menuItem("Save as...", "Ctrl+Shift+S"))
-                    ImGuiControls.saveFile("Save as..", "Lime Scene (*.lime)", List.of("*.lime"),
-                        path -> SceneSerializer.create(activeScene).serialize(path)
-                    );
+                    saveSceneAs();
 
                 if (ImGui.menuItem("Exit"))
                     Application.get().shutdown();
@@ -150,7 +142,49 @@ public class EditorLayer extends Layer {
 
     @Override
     public void onEvent(Event event) {
-        cameraController.onEvent(event);
+        EventDispatcher dispatcher = new EventDispatcher(event);
+        dispatcher.dispatch(this::onKeyPressed);
+    }
+
+    public boolean onKeyPressed(KeyPressedEvent event) {
+        if (event.getRepeatCount() > 0)
+            return false;
+
+        boolean controlPressed = Input.isKeyPressed(KeyCode.KEY_LEFT_CONTROL) || Input.isKeyPressed(KeyCode.KEY_RIGHT_CONTROL);
+        boolean shiftPressed = Input.isKeyPressed(KeyCode.KEY_LEFT_SHIFT) || Input.isKeyPressed(KeyCode.KEY_RIGHT_SHIFT);
+
+        switch (event.getKeyCode()) {
+            case KeyCode.KEY_N -> {
+                if (controlPressed)
+                    newScene();
+            }
+            case KeyCode.KEY_O -> {
+                if (controlPressed)
+                    openScene();
+            }
+            case KeyCode.KEY_S -> {
+                if (controlPressed && shiftPressed)
+                    saveSceneAs();
+            }
+        }
+
+        return false;
+    }
+
+    private void newScene() {
+        setScene(new Scene());
+    }
+
+    private void openScene() {
+        ImGuiControls.openFile("Open", "Lime Scene (*.lime)", List.of("*.lime"),
+            path -> setScene(SceneDeserializer.create().deserialize(path))
+        );
+    }
+
+    private void saveSceneAs() {
+        ImGuiControls.saveFile("Save as..", "Lime Scene (*.lime)", List.of("*.lime"),
+            path -> SceneSerializer.create(activeScene).serialize(path)
+        );
     }
 
     private void setScene(Scene scene) {

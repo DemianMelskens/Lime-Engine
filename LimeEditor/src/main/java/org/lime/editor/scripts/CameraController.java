@@ -13,16 +13,16 @@ public class CameraController extends Scriptable {
     public void onUpdate(TimeStep timeStep) {
         var position = getComponent(TransformComponent.class).position;
         var isActive = getComponent(CameraComponent.class).isPrimary;
-        float speed = 5.0f;
+        float speed = 2.5f;
 
         if (isActive) {
-            if (Input.isKeyPressed(KeyCode.LM_KEY_A))
+            if (Input.isKeyPressed(KeyCode.KEY_A))
                 position.x -= speed * timeStep.getSeconds();
-            if (Input.isKeyPressed(KeyCode.LM_KEY_D))
+            if (Input.isKeyPressed(KeyCode.KEY_D))
                 position.x += speed * timeStep.getSeconds();
-            if (Input.isKeyPressed(KeyCode.LM_KEY_W))
+            if (Input.isKeyPressed(KeyCode.KEY_W))
                 position.y += speed * timeStep.getSeconds();
-            if (Input.isKeyPressed(KeyCode.LM_KEY_S))
+            if (Input.isKeyPressed(KeyCode.KEY_S))
                 position.y -= speed * timeStep.getSeconds();
         }
     }

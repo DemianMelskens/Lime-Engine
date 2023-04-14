@@ -38,20 +38,20 @@ public class OrthographicCameraController {
     }
 
     public void onUpdate(TimeStep timestep) {
-        if (Input.isKeyPressed(LM_KEY_A))
+        if (Input.isKeyPressed(KEY_A))
             cameraPosition.x -= (cameraTranslationSpeed * timestep.getSeconds());
-        else if (Input.isKeyPressed(LM_KEY_D))
+        else if (Input.isKeyPressed(KEY_D))
             cameraPosition.x += (cameraTranslationSpeed * timestep.getSeconds());
 
-        if (Input.isKeyPressed(LM_KEY_W))
+        if (Input.isKeyPressed(KEY_W))
             cameraPosition.y += (cameraTranslationSpeed * timestep.getSeconds());
-        else if (Input.isKeyPressed(LM_KEY_S))
+        else if (Input.isKeyPressed(KEY_S))
             cameraPosition.y -= (cameraTranslationSpeed * timestep.getSeconds());
 
         if (canRotate) {
-            if (Input.isKeyPressed(LM_KEY_Q))
+            if (Input.isKeyPressed(KEY_Q))
                 cameraRotation += (cameraRotationSpeed * timestep.getSeconds());
-            else if (Input.isKeyPressed(LM_KEY_E))
+            else if (Input.isKeyPressed(KEY_E))
                 cameraRotation -= (cameraRotationSpeed * timestep.getSeconds());
 
             camera.setRotation(cameraRotation);
