@@ -27,7 +27,7 @@ entities:
   - {tag: Camera, type: Tag Component}
   - rotation: {x: -0.4049164, y: 0.0, z: 0.0}
     scale: {x: 1.0, y: 1.0, z: 1.0}
-    position: {x: 0.0, y: 1.0333626, z: 4.0}
+    position: {x: 0.0, y: 1.7461412, z: 4.0}
     type: Transform Component
   - hasFixedAspectRatio: false
     isPrimary: true
