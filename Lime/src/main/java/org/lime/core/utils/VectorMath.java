@@ -20,4 +20,12 @@ public class VectorMath {
             Math.toRadians(degrees.z)
         );
     }
+
+    public static Vector3f toRadians(float[] degrees) {
+        return new Vector3f(
+            Math.toRadians(degrees[0]),
+            Math.toRadians(degrees[1]),
+            Math.toRadians(degrees[2])
+        );
+    }
 }

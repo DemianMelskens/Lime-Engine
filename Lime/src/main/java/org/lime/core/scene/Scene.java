@@ -4,7 +4,6 @@ import org.joml.Matrix4f;
 import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.camera.Camera;
 import org.lime.core.scene.components.*;
-import org.lime.core.scene.serialization.SceneSerializer;
 import org.lime.core.scripting.Scriptable;
 import org.lime.core.time.TimeStep;
 import org.lime.lentt.Group;
@@ -26,6 +25,17 @@ public class Scene {
 
     public Registry getRegistry() {
         return registry;
+    }
+
+    public Entity getPrimaryCamera() {
+        View<CameraComponent> view = registry.view(CameraComponent.class);
+        for (Integer entity : view) {
+            boolean isPrimary = view.get(entity).isPrimary;
+            if (isPrimary) {
+                return new Entity(entity, this);
+            }
+        }
+        return null;
     }
 
     public void onUpdate(TimeStep timeStep) {

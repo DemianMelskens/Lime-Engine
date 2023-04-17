@@ -3,6 +3,7 @@ package org.lime.core.imgui;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiStyle;
+import imgui.extension.imguizmo.ImGuizmo;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
@@ -67,6 +68,7 @@ public class ImGuiLayer extends Layer {
     public void begin() {
         imGuiGlfw.newFrame();
         ImGui.newFrame();
+        ImGuizmo.beginFrame();
     }
 
     public void end() {

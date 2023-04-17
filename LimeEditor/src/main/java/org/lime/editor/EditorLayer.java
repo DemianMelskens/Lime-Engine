@@ -3,9 +3,14 @@ package org.lime.editor;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
+import imgui.extension.imguizmo.ImGuizmo;
+import imgui.extension.imguizmo.flag.Mode;
+import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lime.core.Application;
 import org.lime.core.Input;
 import org.lime.core.KeyCode;
@@ -17,10 +22,14 @@ import org.lime.core.imgui.ImGuiControls;
 import org.lime.core.renderer.RenderCommand;
 import org.lime.core.renderer.Renderer2D;
 import org.lime.core.renderer.buffers.FrameBuffer;
+import org.lime.core.scene.Entity;
 import org.lime.core.scene.Scene;
+import org.lime.core.scene.components.CameraComponent;
+import org.lime.core.scene.components.TransformComponent;
 import org.lime.core.scene.serialization.SceneDeserializer;
 import org.lime.core.scene.serialization.SceneSerializer;
 import org.lime.core.time.TimeStep;
+import org.lime.core.utils.VectorMath;
 import org.lime.editor.panels.SceneHierarchyPanel;
 import org.lime.editor.panels.StatisticsPanel;
 
@@ -32,6 +41,8 @@ public class EditorLayer extends Layer {
     private StatisticsPanel statisticsPanel;
     private FrameBuffer frameBuffer;
     private ImVec2 viewPortSize = new ImVec2(0.0f, 0.0f);
+
+    private int gizmoMode = -1;
     private boolean viewportFocused = false;
     private boolean viewportHovered = false;
 
@@ -135,6 +146,40 @@ public class EditorLayer extends Layer {
 
         viewPortSize = ImGui.getContentRegionAvail();
         ImGui.image(frameBuffer.getColorAttachment(), viewPortSize.x, viewPortSize.y, 0, 1, 1, 0);
+
+        gizmoMode = Operation.ROTATE;
+
+        //Gizmos
+        Entity selectedEntity = sceneHierarchyPanel.getSelectedEntity();
+        if (selectedEntity != null && gizmoMode != -1) {
+            ImGuizmo.setOrthographic(false);
+            ImGuizmo.setDrawList();
+            ImGuizmo.setRect(ImGui.getWindowPosX(), ImGui.getWindowPosY(), ImGui.getWindowWidth(), ImGui.getWindowHeight());
+
+            // Camera
+            var cameraEntity = activeScene.getPrimaryCamera();
+            var camera = cameraEntity.getComponent(CameraComponent.class).camera;
+            float[] cameraProjection = camera.getProjection().get(new float[16]);
+            float[] cameraView = cameraEntity.getComponent(TransformComponent.class).getTransform().invert(new Matrix4f()).get(new float[16]);
+
+            // Entity transform
+            var transformComponent = selectedEntity.getComponent(TransformComponent.class);
+            float[] transform = transformComponent.getTransform().get(new float[16]);
+
+            ImGuizmo.manipulate(cameraView, cameraProjection, transform, gizmoMode, Mode.LOCAL);
+
+            if (ImGuizmo.isUsing()) {
+                float[] position = new float[3];
+                float[] rotation = new float[3];
+                float[] scale = new float[3];
+                ImGuizmo.decomposeMatrixToComponents(transform, position, rotation, scale);
+
+//                Vector3f deltaRotation = VectorMath.toRadians(rotation).sub(transformComponent.rotation);
+                transformComponent.position.set(position);
+                transformComponent.rotation.set(VectorMath.toRadians(rotation));
+                transformComponent.scale.set(scale);
+            }
+        }
 
         ImGui.end();
         ImGui.popStyleVar();

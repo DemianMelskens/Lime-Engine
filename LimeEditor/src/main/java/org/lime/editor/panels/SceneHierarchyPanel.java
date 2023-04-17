@@ -24,6 +24,10 @@ public class SceneHierarchyPanel {
         this.propertiesPanel = new PropertiesPanel();
     }
 
+    public Entity getSelectedEntity() {
+        return selectionContext;
+    }
+
     public void setContext(Scene scene) {
         this.context = scene;
         this.selectionContext = null;
